@@ -1,0 +1,6 @@
+dao\MessageDAO.class
+controller\message\ChatUserServlet.class
+controller\message\ChatServerConfigurator.class
+model\Message.class
+utils\DBContext.class
+controller\message\ChatServerEndPoint.class
