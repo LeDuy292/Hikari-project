@@ -17,7 +17,7 @@ public class DBContext {
         // ✅ Thay đổi cấu hình cho MySQL
         config.setJdbcUrl("jdbc:mysql://localhost:3306/jlearning?useSSL=false&serverTimezone=UTC");
         config.setUsername("root");       // sửa lại theo thông tin thật
-        config.setPassword("1842004duy");        // sửa lại theo thông tin thật
+        config.setPassword("hungdz123");        // sửa lại theo thông tin thật
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
         // Tuỳ chỉnh hiệu suất (có thể thay đổi)
