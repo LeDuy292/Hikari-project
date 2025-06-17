@@ -29,9 +29,26 @@ public class DBContext {
 
         dataSource = new HikariDataSource(config);
     }
+        private Connection connection;
 
     // ✅ Lấy connection mỗi khi cần
     public Connection getConnection() throws SQLException {
         return dataSource.getConnection();
+    }
+    
+    
+     public void closeConnection() {
+        if (connection != null) {
+            try {
+                if (!connection.isClosed()) {
+                    connection.close();
+                    System.out.println("Database connection closed.");
+                }
+            } catch (SQLException e) {
+                System.err.println("Error closing database connection: " + e.getMessage());
+            } finally {
+                connection = null;
+            }
+        }
     }
 }
