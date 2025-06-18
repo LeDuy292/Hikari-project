@@ -1,5 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<% 
+     String teacherID = (String) session.getAttribute("teacherID");
+    if (teacherID == null) {
+        teacherID = "T002"; // Giả lập cho test
+        session.setAttribute("teacherID", teacherID);
+    }
+%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -10,6 +17,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/teacher_css/manageCourse.css" />
+    <script>
+        window.contextPath = '${pageContext.request.contextPath}';
+        window.userID = '<%= teacherID %>';
+    </script>
+</script>
 </head>
 <body>
     <div class="container-fluid">
@@ -17,7 +29,7 @@
             <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
             <!-- Main Content -->
-            <main class="main-content">
+            <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="content-wrapper">
                     <!-- Header -->
                     <%@ include file="header.jsp" %>
@@ -25,208 +37,34 @@
                         <!-- Course List -->
                         <div class="col-12" id="courseList">
                             <div class="course-grid">
-                                <div class="course-card" data-course-id="1">
-                                    <img src="${pageContext.request.contextPath}/img/Japanese-N1.jpg" alt="Tiếng Nhật N1" class="course-image" />
-                                    <div class="course-content">
-                                        <div class="course-title">Tiếng Nhật N1</div>
-                                        <div class="course-description">Khóa học N1 dành cho người học nâng cao, chuẩn bị thi JLPT N1.</div>
-                                        <div class="course-footer">
-                                            <span class="course-students"><i class="fas fa-users"></i> 120 học viên</span>
-                                            <button class="course-action-btn btn-primary">Xem chi tiết</button>
+                                <c:forEach var="course" items="${courses}">
+                                    <div class="course-card" data-course-id="${course.courseID}">
+                                        <img src="${pageContext.request.contextPath}/img/${course.image}" alt="${course.title}" class="course-image" />
+                                        <div class="course-content">
+                                            <div class="course-title">${course.title}</div>
+                                            <div class="course-description">${course.description}</div>
+                                            <div class="course-footer">
+                                                <span class="course-students"><i class="fas fa-users"></i> ${course.studentCount} học viên</span>
+                                                <button class="course-action-btn btn btn-primary">Xem chi tiết</button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="course-card" data-course-id="2">
-                                    <img src="img/Japanese-N2.png" alt="Tiếng Nhật N2" class="course-image" />
-                                    <div class="course-content">
-                                        <div class="course-title">Tiếng Nhật N2</div>
-                                        <div class="course-description">Khóa học N2 dành cho người học trung cấp, chuẩn bị thi JLPT N2.</div>
-                                        <div class="course-footer">
-                                            <span class="course-students"><i class="fas fa-users"></i> 85 học viên</span>
-                                            <button class="course-action-btn btn-primary ">Xem chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="course-card" data-course-id="3">
-                                    <img src="${pageContext.request.contextPath}/img/Japanese-N1.jpg" alt="Tiếng Nhật N3" class="course-image" />
-                                    <div class="course-content">
-                                        <div class="course-title">Tiếng Nhật N3</div>
-                                        <div class="course-description">Khóa học N3 dành cho người học trung cấp, chuẩn bị thi JLPT N3.</div>
-                                        <div class="course-footer">
-                                            <span class="course-students"><i class="fas fa-users"></i> 60 học viên</span>
-                                            <button class="course-action-btn btn-primary">Xem chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="course-card" data-course-id="4">
-                                    <img src="${pageContext.request.contextPath}/img/Japanese-N4.jpg" alt="Tiếng Nhật N4" class="course-image" />
-                                    <div class="course-content">
-                                        <div class="course-title">Tiếng Nhật N4</div>
-                                        <div class="course-description">Khóa học N4 dành cho người học cơ bản, chuẩn bị thi JLPT N4.</div>
-                                        <div class="course-footer">
-                                            <span class="course-students"><i class="fas fa-users"></i> 45 học viên</span>
-                                            <button class="course-action-btn btn-primary">Xem chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="course-card" data-course-id="5">
-                                    <img src="${pageContext.request.contextPath}/img/Japanese-N4.jpg" alt="Tiếng Nhật N5" class="course-image" />
-                                    <div class="course-content">
-                                        <div class="course-title">Tiếng Nhật N5</div>
-                                        <div class="course-description">Khóa học N5 dành cho người mới bắt đầu, chuẩn bị thi JLPT N5.</div>
-                                        <div class="course-footer">
-                                            <span class="course-students"><i class="fas fa-users"></i> 30 học viên</span>
-                                            <button class="course-action-btn btn-primary">Xem chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Sections List -->
-                        <div class="col-12" id="sectionList" style="display: none;">
-                            <a href="#" class="back-btn" id="backToCourses"><i class="fas fa-arrow-left"></i> Quay lại Khóa Học</a>
-                            <h2 class="course-title" id="selectedCourseTitle"></h2>
-                            <div class="section-card " data-section="speaking">
-                                <div class="section-info">
-                                    <i class="fas fa-microphone section-icon "></i>
-                                    <div class="section-title">Speaking</div>
-                                </div>
-                                <button class="add-lesson-btn" data-section="speaking">Thêm Bài Học</button>
-                            </div>
-                            <div class="section-card " data-section="listening">
-                                <div class="section-info">
-                                    <i class="fas fa-headphones section-icon"></i>
-                                    <div class="section-title">Listening</div>
-                                </div>
-                                <button class="add-lesson-btn" data-section="listening">Thêm Bài Học</button>
-                            </div>
-                            <div class="section-card" data-section="reading">
-                                <div class="section-info">
-                                    <i class="fas fa-book-open section-icon "></i>
-                                    <div class="section-title">Reading</div>
-                                </div>
-                                <button class="add-lesson-btn" data-section="reading">Thêm Bài Học</button>
-                            </div>
-                            <div class="section-card" data-section="writing">
-                                <div class="section-info">
-                                    <i class="fas fa-pen section-icon"></i>
-                                    <div class="section-title">Writing</div>
-                                </div>
-                                <button class="add-lesson-btn" data-section="writing">Thêm Bài Học</button>
-                            </div>
-                            <!-- Add Lesson Form -->
-                            <div class="add-lesson-form" id="addLessonForm" style="display: none;">
-                                <form>
-                                    <div class="mb-3">
-                                        <label for="addLessonName" class="form-label">Tên Bài Học</label>
-                                        <input type="text" class="form-control" id="addLessonName" placeholder="Nhập tên bài học">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="addLessonDescription" class="form-label">Mô Tả</label>
-                                        <textarea class="form-control" id="addLessonDescription" rows="4" placeholder="Nhập mô tả bài học"></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="addLessonDuration" class="form-label">Thời Lượng (giờ)</label>
-                                        <input type="number" class="form-control" id="addLessonDuration" placeholder="Nhập thời lượng" step="0.1">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="addLessonResource" class="form-label">Liên Kết Tài Liệu/Video</label>
-                                        <input type="url" class="form-control" id="addLessonResource" placeholder="Nhập liên kết tài liệu hoặc video">
-                                    </div>
-                                    <div class="lesson-actions">
-                                        <button type="button" class="btn btn-success" id="saveNewLessonBtn">Lưu</button>
-                                        <button type="button" class="btn btn-secondary" id="cancelAddLessonBtn">Hủy</button>
-                                    </div>
-                                </form>
+                                </c:forEach>
                             </div>
                         </div>
                         <!-- Lesson Detail -->
                         <div class="col-12" id="lessonDetail" style="display: none;">
-                            <a href="#" class="back-btn" id="backToSections"><i class="fas fa-arrow-left"></i> Quay lại Phần</a>
+                            <a href="#" class="back-btn" id="backToCourses"><i class="fas fa-arrow-left"></i> Quay lại Khóa Học</a>
                             <div class="lesson-detail">
                                 <div class="lesson-detail-left">
                                     <div class="lesson-list-header">
                                         <div class="lesson-list-title">Danh Sách Bài Học</div>
-                                        <div class="lesson-count" id="lessonCount">10</div>
+                                        <div class="lesson-count" id="lessonCount">0</div>
+                                        <button class="btn btn-primary add-lesson-btn" id="addLessonBtn">Thêm Bài Học</button>
                                     </div>
-                                    <input type="text" class="search-input" id="lessonSearch" placeholder="Tìm kiếm bài học..." />
+                                    <input type="text" class="search-input form-control" id="lessonSearch" placeholder="Tìm kiếm bài học..." />
                                     <div id="lessonList" class="lesson-progress">
-                                        <!-- Section 0 -->
-                                        <div class="section">
-                                            <div class="section-header" data-section="section-0">
-                                                <div class="section-title">Bộ 0: Nhập môn</div>
-                                                <div class="section-toggle"><i class="fas fa-chevron-right"></i></div>
-                                            </div>
-                                            <div class="section-content" id="section-0">
-                                                <div class="lesson-item" data-lesson-id="1">
-                                                    <span>Grammar explanation</span>
-                                                    <div class="lesson-status completed"></div>
-                                                </div>
-                                                <div class="lesson-item active" data-lesson-id="2">
-                                                    <span>Lesson 1</span>
-                                                    <div class="lesson-status completed"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Section 1 -->
-                                        <div class="section">
-                                            <div class="section-header" data-section="section-1">
-                                                <div class="section-title">Bộ 1: Giới thiệu về tần, tưới, quẹo quạn, nghề nghiệp</div>
-                                                <div class="section-toggle"><i class="fas fa-chevron-down"></i></div>
-                                            </div>
-                                            <div class="section-content show" id="section-1">
-                                                <div class="lesson-item" data-lesson-id="3">
-                                                    <span>Lesson 2</span>
-                                                    <div class="lesson-status completed"></div>
-                                                </div>
-                                                <div class="lesson-item" data-lesson-id="4">
-                                                    <span>Lesson 3</span>
-                                                    <div class="lesson-status completed"></div>
-                                                </div>
-                                                <div class="lesson-item" data-lesson-id="5">
-                                                    <span>Lesson 4</span>
-                                                    <div class="lesson-status completed"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Section 2 -->
-                                        <div class="section">
-                                            <div class="section-header" data-section="section-2">
-                                                <div class="section-title">Bộ 2: Giới thiệu về đồ vật</div>
-                                                <div class="section-toggle"><i class="fas fa-chevron-right"></i></div>
-                                            </div>
-                                            <div class="section-content" id="section-2">
-                                                <div class="lesson-item" data-lesson-id="6">
-                                                    <span>Lesson 5</span>
-                                                    <div class="lesson-status completed"></div>
-                                                </div>
-                                                <div class="lesson-item" data-lesson-id="7">
-                                                    <span>Lesson 6</span>
-                                                    <div class="lesson-status"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Section 3 -->
-                                        <div class="section">
-                                            <div class="section-header" data-section="section-3">
-                                                <div class="section-title">Bộ 3: Giới thiệu về thời gian</div>
-                                                <div class="section-toggle"><i class="fas fa-chevron-right"></i></div>
-                                            </div>
-                                            <div class="section-content" id="section-3">
-                                                <div class="lesson-item" data-lesson-id="8">
-                                                    <span>Lesson 7</span>
-                                                    <div class="lesson-status"></div>
-                                                </div>
-                                                <div class="lesson-item" data-lesson-id="9">
-                                                    <span>Lesson 8</span>
-                                                    <div class="lesson-status"></div>
-                                                </div>
-                                                <div class="lesson-item" data-lesson-id="10">
-                                                    <span>Lesson 9</span>
-                                                    <div class="lesson-status"></div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <!-- Bài học sẽ được tải động qua JavaScript -->
                                     </div>
                                 </div>
                                 <div class="lesson-detail-right">
@@ -240,43 +78,39 @@
                                         <button class="btn btn-lesson active" id="showLessonBtn">Bài học</button>
                                         <button class="btn btn-exercise" id="showExerciseBtn">Bài tập</button>
                                     </div>
-                                    <div class="lesson-content" id="lessonContent">
-                                        <h3>Lesson 1</h3>
-                                        <div class="lesson-meta">
-                                            <span><i class="fas fa-clock"></i> 1 giờ</span>
-                                            <span><i class="fas fa-link"></i> <a href="https://example.com/video" target="_blank">Xem tài liệu</a></span>
-                                        </div>
-                                        <p>Learn basic speaking skills with this introductory lesson.</p>
-                                        <div class="lesson-actions">
-                                            <button class="btn btn-primary" id="editLessonBtn">Chỉnh sửa bài học</button>
-                                        </div>
+                                    <div class="lesson-content" id="lessonContent" style="display: block;">
+                                        <h3>Chọn một bài học</h3>
+                                        <p>Vui lòng chọn một bài học từ danh sách bên trái để xem chi tiết.</p>
                                     </div>
                                     <div class="exercise-section" id="exerciseSection" style="display: none;">
                                         <div class="exercise-content" id="exerciseContent">
-                                            <h3>Bài tập - Speaking</h3>
-                                            <p>Practice speaking with these exercises.</p>
-                                            <div class="lesson-actions">
-                                                <button class="btn btn-primary" id="editExerciseBtn">Chỉnh sửa bài tập</button>
-                                            </div>
+                                            <h3>Bài tập</h3>
+                                            <p>Chọn một bài học để xem bài tập liên quan.</p>
                                         </div>
                                     </div>
                                     <div class="edit-lesson-form" id="editLessonForm" style="display: none;">
                                         <form>
                                             <div class="mb-3">
                                                 <label for="editLessonName" class="form-label">Tên Bài Học</label>
-                                                <input type="text" class="form-control" id="editLessonName" value="Lesson 1">
+                                                <input type="text" class="form-control" id="editLessonName" value="">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="editLessonDescription" class="form-label">Mô Tả</label>
-                                                <textarea class="form-control" id="editLessonDescription" rows="4">Learn basic speaking skills with this introductory lesson.</textarea>
+                                                <textarea class="form-control" id="editLessonDescription" rows="4"></textarea>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="editLessonDuration" class="form-label">Thời Lượng (giờ)</label>
-                                                <input type="number" class="form-control" id="editLessonDuration" value="1" step="0.1">
+                                                <label for="editLessonDuration" class="form-label">Thời Lượng (phút)</label>
+                                                <input type="number" class="form-control" id="editLessonDuration" value="0" step="1">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="editLessonResource" class="form-label">Liên Kết Tài Liệu/Video</label>
-                                                <input type="url" class="form-control" id="editLessonResource" value="https://example.com/video">
+                                                <input type="url" class="form-control" id="editLessonResource" value="">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="editLessonTopic" class="form-label">Chủ Đề</label>
+                                                <select class="form-control" id="editLessonTopic">
+                                                 
+                                                </select>
                                             </div>
                                             <div class="lesson-actions">
                                                 <button type="button" class="btn btn-success" id="saveEditLessonBtn">Lưu</button>
@@ -288,19 +122,49 @@
                                         <form>
                                             <div class="mb-3">
                                                 <label for="editExerciseName" class="form-label">Tên Bài Tập</label>
-                                                <input type="text" class="form-control" id="editExerciseName" value="Bài tập - Speaking">
+                                                <input type="text" class="form-control" id="editExerciseName" value="">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="editExerciseDescription" class="form-label">Mô Tả</label>
-                                                <textarea class="form-control" id="editExerciseDescription" rows="4">Practice speaking with these exercises.</textarea>
+                                                <textarea class="form-control" id="editExerciseDescription" rows="4"></textarea>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="editExerciseResource" class="form-label">Liên Kết Tài Liệu/Bài Tập</label>
-                                                <input type="url" class="form-control" id="editExerciseResource" value="https://example.com/exercise">
+                                                <input type="url" class="form-control" id="editExerciseResource" value="">
                                             </div>
                                             <div class="lesson-actions">
                                                 <button type="button" class="btn btn-success" id="saveEditExerciseBtn">Lưu</button>
                                                 <button type="button" class="btn btn-secondary" id="cancelEditExerciseBtn">Hủy</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="add-lesson-form" id="addLessonForm" style="display: none;">
+                                        <form>
+                                            <div class="mb-3">
+                                                <label for="addLessonName" class="form-label">Tên Bài Học</label>
+                                                <input type="text" class="form-control" id="addLessonName" placeholder="Nhập tên bài học">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="addLessonDescription" class="form-label">Mô Tả</label>
+                                                <textarea class="form-control" id="addLessonDescription" rows="4" placeholder="Nhập mô tả bài học"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="addLessonDuration" class="form-label">Thời Lượng (phút)</label>
+                                                <input type="number" class="form-control" id="addLessonDuration" value="0" step="1">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="addLessonResource" class="form-label">Liên Kết Tài Liệu/Video</label>
+                                                <input type="url" class="form-control" id="addLessonResource" placeholder="Nhập liên kết">
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <label for="addLessonTopic" class="form-label">Chủ Đề</label>
+                                                <select class="form-control" id="addLessonTopic">                                                  
+                                                </select>
+                                            </div>
+                                            <div class="lesson-actions">
+                                                <button type="button" class="btn btn-success" id="saveAddLessonBtn">Lưu</button>
+                                                <button type="button" class="btn btn-secondary" id="cancelAddLessonBtn">Hủy</button>
                                             </div>
                                         </form>
                                     </div>
@@ -314,8 +178,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-               <script src="${pageContext.request.contextPath}/assets/js/teacher_js/manageCourse.js"></script>
-
+    <script src="${pageContext.request.contextPath}/assets/js/teacher_js/manageCourse.js"></script>
 </body>
 </html>

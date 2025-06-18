@@ -8,7 +8,7 @@
         pageTitle = "Quản lý lớp học ";
     } else if (uri.contains("manageCourse")) {
         pageTitle = "Quản Lý Khóa Học";
-    } else if (uri.contains("manageMaterial")) {
+    } else if (uri.contains("manageDocument")) {
         pageTitle = "Quản lý Tài liệu ";
     } else if (uri.contains("manageTest")) {
         pageTitle = "Quản lý bài test";
@@ -18,6 +18,7 @@
         pageTitle = "Tin nhắn ";
     }
 %>
+
 
 <div class="header">
     <h2 class="header-title"><%= pageTitle %></h2>
