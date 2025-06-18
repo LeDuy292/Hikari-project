@@ -1,0 +1,276 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f7f7fa;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.active-tab {
+  background: linear-gradient(90deg, #ff9100 0%, #ffb347 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px 0 rgba(255, 145, 0, 0.15);
+  border-radius: 9999px !important;
+}
+
+.tab-btn {
+  border-radius: 9999px;
+  transition: all 0.3s cubic-bezier(.4, 0, .2, 1);
+  font-weight: 600;
+}
+
+.tab-btn:not(.active-tab):hover {
+  background: #fff7ed;
+  color: #ff9100;
+  transform: translateY(-2px) scale(1.05);
+}
+
+.card {
+  border-radius: 32px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+}
+
+.rounded-xl {
+  border-radius: 24px !important;
+}
+
+.rounded-full {
+  border-radius: 9999px !important;
+}
+
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 24px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-out;
+  position: relative;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-content h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 24px;
+  text-align: center;
+  background: linear-gradient(to right, #ff9800, #ffb347);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.modal-content .close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 24px;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.modal-content .close:hover {
+  color: #ff9800;
+}
+
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-size: 15px;
+  transition: all 0.3s cubic-bezier(.4, 0, .2, 1);
+  background: #f7f7fa;
+}
+
+.modal-content input:focus,
+.modal-content select:focus {
+  outline: none;
+  border-color: #ff9800;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+
+.modal-content button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg, #ff9800 60%, #ffb347 100%);
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(.4, 0, .2, 1);
+  font-size: 16px;
+}
+
+.modal-content button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px 0 rgba(255, 152, 0, 0.12);
+}
+
+/* Main content */
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 280px;
+}
+
+/* Custom button styles */
+.custom-active-btn {
+  background: linear-gradient(90deg, #ff9100 0%, #ffb347 100%);
+  color: #fff !important;
+  border-radius: 9999px;
+  transition: all 0.3s cubic-bezier(.4, 0, .2, 1);
+}
+
+.custom-active-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px 0 rgba(255, 145, 0, 0.15);
+}
+
+/* Price style */
+.price {
+  background: linear-gradient(90deg, #ff9100 0%, #ffb347 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+/* Pagination styles */
+.pagination-btn {
+  background: #e5e7eb;
+  color: #666;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  transition: none;
+}
+
+.pagination-btn:disabled {
+  background: #e5e7eb;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.page-number {
+  background: #e5e7eb;
+  color: #666;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  transition: none;
+}
+
+.page-number.active {
+  background: linear-gradient(90deg, #ff9100 0%, #ffb347 100%);
+  color: #fff;
+}
+
+/* Animations for course cards */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+#courseList {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1100px) {
+  .main {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+
+  .main-header {
+    padding: 24px 16px 0 0;
+  }
+
+  main {
+    margin-left: 0;
+  }
+
+  .main-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-header .logo-section {
+    margin-right: 0;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .main-header .right-section {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .main-header .login-btn {
+    margin-top: 12px;
+  }
+
+  .main-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 24px;
+  }
+}
