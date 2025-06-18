@@ -52,5 +52,3 @@ document.addEventListener('DOMContentLoaded', () => {
         // gradingForm.reset();
     });
 });
-
-});

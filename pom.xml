@@ -15,12 +15,11 @@
     </properties>
 
     <dependencies>
-        <!-- Jakarta EE API -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
             <version>${jakartaee}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
 
         <!-- HikariCP -->
@@ -46,19 +45,47 @@
 
         <!-- JSTL Implementation -->
         <dependency>
+<<<<<<< feature/authentication
             <groupId>org.glassfish.web</groupId>
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
             <version>3.0.1</version>
         </dependency>
 
         <!-- Gson (dùng để serialize JSON trong CourseController) -->
+=======
+            <groupId>org.eclipse</groupId>
+            <artifactId>yasson</artifactId>
+            <version>3.0.3</version> <!-- hoặc bản mới hơn -->
+        </dependency>
+
+
+        <!-- Servlet API -->
+>>>>>>> main
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.12.1</version>
         </dependency>
 
+<<<<<<< feature/authentication
         <!-- PayOS SDK -->
+=======
+        <!-- JSP API -->
+        <dependency>
+            <groupId>jakarta.servlet.jsp</groupId>
+            <artifactId>jakarta.servlet.jsp-api</artifactId>
+            <version>3.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- JSTL Implementation -->
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+ 
+        <!--  PayOS SDK 1.0.1 (JAR nội bộ)  -->
+>>>>>>> main
         <dependency>
             <groupId>vn.payos</groupId>
             <artifactId>payos-java</artifactId>
@@ -72,14 +99,29 @@
             <version>0.4</version>
         </dependency>
 
+<<<<<<< feature/authentication
         <!-- Jakarta Mail API -->
+=======
+     
+
+        <!-- WebSocket API -->
+>>>>>>> main
         <dependency>
             <groupId>jakarta.mail</groupId>
             <artifactId>jakarta.mail-api</artifactId>
             <version>2.1.0</version>
         </dependency>
+<<<<<<< feature/authentication
 
         <!-- Jakarta Mail Implementation -->
+=======
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.26.29</version>
+        </dependency>
+        <!-- MSSQL JDBC -->
+>>>>>>> main
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
@@ -93,6 +135,7 @@
             <version>1.2</version>
         </dependency>
 
+<<<<<<< feature/authentication
         <!-- HttpClient Components (Fluent-HC và HttpCore) -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -143,6 +186,14 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>2.0.9</version>
+=======
+        <!-- Fluent-HC -->
+
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.26.29</version>
+>>>>>>> main
         </dependency>
     </dependencies>
 
@@ -162,15 +213,21 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.3.2</version>
             </plugin>
+<<<<<<< feature/authentication
 
             <!-- Bổ sung: Plugin để chạy ứng dụng trên Tomcat trong Maven -->
+=======
+>>>>>>> main
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
                     <path>/Hikari</path>
+<<<<<<< feature/authentication
                     <port>8080</port>
+=======
+>>>>>>> main
                 </configuration>
             </plugin>
         </plugins>

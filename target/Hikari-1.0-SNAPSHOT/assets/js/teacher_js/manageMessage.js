@@ -1,192 +1,299 @@
-// Basic JavaScript for interactivity
-document.querySelectorAll('.chat-item').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.chat-item').forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
-    // Add logic to load specific chat conversation here
-         var userID = "<%= userID %>";
-      var ws;
-      var currentPartner = null;
+var ws;
+var currentPartner = null;
+var userMap = userMap || {};
 
-      function connectWebSocket() {
-        ws = new WebSocket("ws://localhost:8080/Hikari/controller.message/ChatServerEndPoint?userID=" + encodeURIComponent(userID));
+function connectWebSocket() {
+    ws = new WebSocket("ws://localhost:8080/Hikari/controller.message/ChatServerEndPoint?userID=" + encodeURIComponent(userID));
+    console.log("Current user:", userID);
 
-        ws.onopen = function() {
-          console.log("WebSocket connected");
-          getPartners();
-        };
+    ws.onopen = function () {
+        console.log("WebSocket connected");
+        getPartners();
+    };
 
-        ws.onmessage = function(event) {
-          var data = JSON.parse(event.data);
-          console.log("Received WebSocket message:", data);
-          if (data.type === "partners") {
-              console.log("Partners data:", data.data);
-              renderPartners(data.data);
-          } else if (Array.isArray(data)) {
-              renderChatHistory(data);
-          } else if (data.type === "chat") {
-              appendMessage(data);
-              if (data.sender !== currentPartner) {
-                  showNewMessageNotification(data.sender);
-              }
-          }
-        };
-
-        ws.onerror = function(event) {
-          console.error("WebSocket error:", event);
-        };
-
-        ws.onclose = function() {
-          console.log("WebSocket closed");
-        };
-      }
-
-      function showNewMessageNotification(sender) {
-        var partners = document.querySelectorAll('.partner');
-        partners.forEach(function(partnerEl) {
-            if (partnerEl.dataset.partner === sender) {
-                var newMessageSpan = partnerEl.querySelector('.new-message');
-                if (newMessageSpan) {
-                    newMessageSpan.classList.add('show');
-                }
+    ws.onmessage = function (event) {
+        var data = JSON.parse(event.data);
+        console.log("Received WebSocket message:", data);
+        if (data.type === "partners") {
+            renderPartners(data.data);
+        } else if (Array.isArray(data)) {
+            renderChatHistory(data);
+        } else if (data.type === "chat") {
+            appendMessage(data);
+            if (data.sender !== currentPartner) {
+                showNewMessageNotification(data.sender);
             }
-        });
-      }
+        }
+    };
 
-      function getPartners() {
-        var msg = {
-          type: "getPartners",
-          userID: userID
-        };
-        ws.send(JSON.stringify(msg));
-      }
+    ws.onerror = function (event) {
+        console.error("WebSocket error:", event);
+    };
 
-    function renderPartners(partners) {
-  const partnerList = document.getElementById("partnerList");
-  partnerList.innerHTML = "";
-
-  partners.forEach(function(p) {
-    if (p !== userID) {
-      const div = document.createElement("div");
-      div.classList.add("partner");
-      div.dataset.partner = p;
-
-      const avatar = document.createElement("div");
-      avatar.classList.add("avatar");
-      avatar.textContent = p.charAt(0).toUpperCase();
-
-      const nameSpan = document.createElement("span");
-      nameSpan.textContent = p;
-
-      const newMsg = document.createElement("span");
-      newMsg.classList.add("new-message");
-
-      div.appendChild(avatar);
-      div.appendChild(nameSpan);
-      div.appendChild(newMsg);
-
-      div.onclick = function () {
-        selectPartner(p, div);
-      };
-
-      partnerList.appendChild(div);
-    }
-  });
-
-  if (partnerList.children.length === 0) {
-    partnerList.innerHTML = "No conversations available.";
-  }
+    ws.onclose = function () {
+        console.log("WebSocket closed");
+        setTimeout(connectWebSocket, 5000); // Thử kết nối lại sau 5 giây
+    };
 }
 
-
-      function selectPartner(partner, divElement) {
-        if (currentPartner === partner) return;
-
-        currentPartner = partner;
-        document.querySelectorAll(".partner").forEach(function(el) {
-          el.classList.remove("selected");
-        });
-        divElement.classList.add("selected");
-
-        var msg = {
-          type: "history",
-          sender: userID,
-          receiver: partner
-        };
-        ws.send(JSON.stringify(msg));
-      }
-
-      function renderChatHistory(messages) {
-        var chatHistory = document.getElementById("chatHistory");
-        chatHistory.innerHTML = "";
-        messages.forEach(function(m) {
-          appendMessage(m);
-        });
-        chatHistory.scrollTop = chatHistory.scrollHeight;
-      }
-
-      function appendMessage(msg) {
-        var chatHistory = document.getElementById("chatHistory");
-        var div = document.createElement("div");
-        var isSender = msg.sender === userID;
-        div.classList.add("message", isSender ? "sender" : "receiver");
-        div.innerHTML = "<span class='sender'>" + msg.sender + "</span>: " + msg.content;
-        chatHistory.appendChild(div);
-        chatHistory.scrollTop = chatHistory.scrollHeight;
-      }
-
-      function sendMessage() {
-        var input = document.getElementById("messageText");
-        if (!currentPartner) {
-          alert("Vui lòng chọn một người chat!");
-          return;
+function showNewMessageNotification(sender) {
+    var chatItems = document.querySelectorAll('.chat-item');
+    chatItems.forEach(function (item) {
+        if (item.dataset.partnerId === sender) {
+            var newMessageSpan = item.querySelector('.new-message');
+            if (newMessageSpan) {
+                newMessageSpan.classList.add('show');
+            }
         }
-        if (input.value.trim() === "") return;
+    });
+}
 
+function getPartners() {
+    if (ws.readyState === WebSocket.OPEN) {
         var msg = {
-          type: "chat",
-          sender: userID,
-          receiver: currentPartner,
-          content: input.value.trim()
+            type: "getPartners",
+            userID: userID
         };
-
         ws.send(JSON.stringify(msg));
-        input.value = "";
-      }
+    } else {
+        console.error("WebSocket is not open. State:", ws.readyState);
+    }
+}
 
-      window.onload = function() {
-        connectWebSocket();
-      };
+function renderPartners(partners) {
+    const partnerList = document.getElementById("partnerList");
+    partnerList.innerHTML = "";
 
-  });
-});
+    partners.forEach(function (p) {
+        const partnerInfo = typeof p === 'string' ? p.split('|') : [p.userID, p.fullName, p.profilePicture];
+        const partnerId = partnerInfo[0];
+        const fullName = partnerInfo[1] || partnerId;
+        const profilePicture = partnerInfo[2] || "/Hikari/assets/images/profiles/default.jpg";
 
-document.querySelector('.chat-input .btn').addEventListener('click', () => {
-  const textarea = document.querySelector('.chat-input textarea');
-  const message = textarea.value.trim();
-  if (message) {
-    const chatMessages = document.querySelector('.chat-messages');
-    const newMessageContainer = document.createElement('div');
-    newMessageContainer.classList.add('message-container');
-    newMessageContainer.style.justifyContent = 'flex-end';
-    const newMessage = document.createElement('div');
-    newMessage.classList.add('message', 'sent');
-    newMessage.innerHTML = `${message}<div class="message-time">${new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}, ${new Date().toLocaleDateString('vi-VN')}</div>`;
-    const avatar = document.createElement('img');
-    avatar.src = '/assets/images/defaultLogoAdmin.png';
-    avatar.alt = 'Giáo viên';
-    avatar.classList.add('message-avatar');
-    newMessageContainer.appendChild(newMessage);
-    newMessageContainer.appendChild(avatar);
-    chatMessages.appendChild(newMessageContainer);
+        if (partnerId !== userID) {
+            const div = document.createElement("div");
+            div.classList.add("chat-item");
+            div.dataset.partnerId = partnerId;
+
+            const img = document.createElement("img");
+            img.classList.add("chat-avatar");
+            img.src = profilePicture;
+            img.alt = fullName;
+
+            const infoDiv = document.createElement("div");
+            infoDiv.classList.add("chat-info");
+
+            const nameDiv = document.createElement("div");
+            nameDiv.classList.add("chat-name");
+            nameDiv.textContent = fullName;
+
+         
+            const newMsg = document.createElement("span");
+            newMsg.classList.add("new-message");
+
+            infoDiv.appendChild(nameDiv);
+            infoDiv.appendChild(newMsg);
+            div.appendChild(img);
+            div.appendChild(infoDiv);
+
+            div.onclick = function () {
+                selectPartner(partnerId, div);
+            };
+
+            partnerList.appendChild(div);
+        }
+    });
+
+    if (partnerList.children.length === 0) {
+        partnerList.innerHTML = "<div style='padding: 15px; color: #666;'>Bạn chưa có cuộc trò chuyện nào. Hãy bắt đầu nhắn tin!</div>";
+    }
+}
+
+function selectPartner(partnerId, divElement) {
+    if (currentPartner === partnerId) return;
+
+    currentPartner = partnerId;
+    document.querySelectorAll(".chat-item").forEach(function (el) {
+        el.classList.remove("active");
+    });
+    divElement.classList.add("active");
+
+    var newMsgSpan = divElement.querySelector(".new-message");
+    if (newMsgSpan) newMsgSpan.classList.remove("show");
+
+    if (ws.readyState === WebSocket.OPEN) {
+        var msg = {
+            type: "history",
+            sender: userID,
+            receiver: partnerId // Chỉ gửi partnerId, không phải toàn bộ chuỗi
+        };
+        ws.send(JSON.stringify(msg));
+    } else {
+        console.error("WebSocket is not open. State:", ws.readyState);
+    }
+}
+
+function renderChatHistory(messages) {
+    var chatMessages = document.getElementById("chatMessages");
+    chatMessages.innerHTML = "";
+
+    messages.forEach(function (m) {
+        appendMessage(m);
+    });
     chatMessages.scrollTop = chatMessages.scrollHeight;
-    textarea.value = '';
-  }
-});
+}
 
-document.querySelector('.chat-input textarea').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    document.querySelector('.chat-input .btn').click();
-  }
-});
+function appendMessage(msg) {
+    var chatMessages = document.getElementById("chatMessages");
+    var container = document.createElement("div");
+    container.classList.add("message-container");
+    var isSender = msg.sender === userID;
+
+    if (!isSender) {
+        var avatar = document.createElement("img");
+        avatar.classList.add("message-avatar");
+        avatar.src = userMap[msg.sender]?.profilePicture || "/Hikari/assets/img/profile/default.jpg";
+        avatar.alt = userMap[msg.sender]?.fullName || msg.sender;
+        container.appendChild(avatar);
+    }
+
+    var messageDiv = document.createElement("div");
+    messageDiv.classList.add("message", isSender ? "sent" : "received");
+
+
+    var contentSpan = document.createElement("div");
+    contentSpan.classList.add("content");
+
+    if (msg.content) {
+        var textSpan = document.createElement("span");
+        textSpan.textContent = msg.content;
+        contentSpan.appendChild(textSpan);
+    }
+
+    if (msg.imageUrl) {
+        var img = document.createElement("img");
+        img.src = msg.imageUrl;
+        img.alt = "Attached image";
+        img.style.maxWidth = "200px";
+        img.style.maxHeight = "200px";
+        img.style.marginTop = "5px";
+        img.style.borderRadius = "5px";
+        contentSpan.appendChild(img);
+    }
+
+    messageDiv.appendChild(contentSpan);
+
+    if (msg.timestamp) {
+        var timeSpan = document.createElement("div");
+        timeSpan.classList.add("message-time");
+        timeSpan.textContent = new Date(msg.timestamp).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        messageDiv.appendChild(timeSpan);
+    }
+
+    container.appendChild(messageDiv);
+
+    if (isSender) {
+        var avatar = document.createElement("img");
+        avatar.classList.add("message-avatar");
+        avatar.src = userMap[msg.sender]?.profilePicture || "/Hikari/assets/img/profile/default.jpg";
+        avatar.alt = userMap[msg.sender]?.fullName || msg.sender;
+        container.appendChild(avatar);
+    }
+
+    chatMessages.appendChild(container);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+function uploadImage(file, callback) {
+    var formData = new FormData();
+    formData.append("image", file);
+
+    fetch("/Hikari/UploadImageServlet", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => {
+        console.log("Fetch response status:", response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log("Fetch response data:", data);
+        if (data.success && data.imageUrl) {
+            callback(null, data.imageUrl);
+        } else {
+            callback(new Error(data.message || "Image upload failed"));
+        }
+    })
+    .catch(error => {
+        console.error("Fetch error:", error);
+        callback(error);
+    });
+}
+
+function sendMessage() {
+    var input = document.getElementById("messageText");
+    var imageInput = document.getElementById("imageUpload");
+    var content = input.value.trim();
+
+    if (!currentPartner) {
+        alert("Vui lòng chọn một người chat!");
+        return;
+    }
+
+    if (content === "" && !imageInput.files[0]) {
+        return;
+    }
+
+    var msg = {
+        type: "chat",
+        sender: userID,
+        receiver: currentPartner,
+        content: content || "",
+        timestamp: new Date().toISOString()
+    };
+
+    if (imageInput.files[0]) {
+        uploadImage(imageInput.files[0], function (error, imageUrl) {
+            if (error) {
+                alert("Lỗi tải ảnh: " + error.message);
+                return;
+            }
+            msg.imageUrl = imageUrl;
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify(msg));
+            } else {
+                console.error("WebSocket is not open. State:", ws.readyState);
+            }
+            input.value = "";
+            imageInput.value = "";
+        });
+    } else {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify(msg));
+        } else {
+            console.error("WebSocket is not open. State:", ws.readyState);
+        }
+        input.value = "";
+    }
+}
+
+window.onload = function () {
+    connectWebSocket();
+
+    document.getElementById("imageUpload").addEventListener("change", function () {
+        if (this.files[0]) {
+            sendMessage();
+        }
+    });
+
+    // Loại bỏ event listener trùng lặp
+    document.querySelector('.chat-input .btn').addEventListener('click', function () {
+        sendMessage();
+    });
+
+    document.querySelector('.chat-input textarea').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+};

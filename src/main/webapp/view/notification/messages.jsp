@@ -3,8 +3,10 @@
 <%
     String userID = (String) session.getAttribute("userID");
     if (userID == null) {
-        response.sendRedirect("login.jsp");
-        return;
+        // response.sendRedirect("login.jsp");
+        userID = "U001";
+        
+        
     }
 %>
 <!DOCTYPE html>
@@ -29,7 +31,7 @@
                         <!-- Header -->
                         <%@ include file="/view/teacher/header.jsp" %>
                         <div class="chat-container">
-                            <div class="chat-list">
+                            <div class="chat-list" id="partnerList">
                                 <c:forEach var="conversation" items="${conversations}">
                                     <div class="chat-item ${conversation.active ? 'active' : ''}" data-conversation-id="${conversation.id}">
                                         <img src="${conversation.avatarUrl}" alt="${conversation.name}" class="chat-avatar" />
@@ -45,7 +47,11 @@
                                     <!-- Messages populated by JavaScript -->
                                 </div>
                                 <div class="chat-input">
-                                    <textarea rows="2" placeholder="Nhập tin nhắn..." id="chatInput"></textarea>
+                                    <textarea rows="2" placeholder="Nhập tin nhắn..." id="messageText"></textarea>
+                                    <label for="imageUpload" class="btn btn-secondary">
+                                        <i class="fas fa-image"></i>
+                                    </label>
+                                    <input type="file" id="imageUpload" accept="image/*" style="display: none;" />
                                     <button class="btn" id="sendMessageBtn">Gửi</button>
                                 </div>
                             </div>
@@ -54,7 +60,31 @@
                 </main>
             </div>
         </div>
+        <!-- Overlay hiển thị ảnh lớn -->
+        <div class="zoom-overlay" id="zoomOverlay" onclick="closeZoom()">
+            <img id="zoomedImage" src="" alt="zoomed image">
+        </div>
 
+        <script>
+    var userID = "<%= userID%>";
+    function zoomImage(src) {
+        const zoomed = document.getElementById('zoomedImage');
+        zoomed.src = src;
+        document.getElementById('zoomOverlay').classList.add('show');
+    }
+
+    function closeZoom() {
+        document.getElementById('zoomOverlay').classList.remove('show');
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById('chatMessages').addEventListener('click', function (e) {
+            if (e.target.tagName === 'IMG') {
+                zoomImage(e.target.src);
+            }
+        });
+    });
+        </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/teacher_js/manageMessage.js"></script>
     </body>
