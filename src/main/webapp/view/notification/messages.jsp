@@ -5,6 +5,8 @@
     if (userID == null) {
         // response.sendRedirect("login.jsp");
         userID = "U001";
+        
+        
     }
 %>
 <!DOCTYPE html>

@@ -6,6 +6,7 @@ let classList = [];
 const contextPath = window.contextPath || '';
 const userID = window.userID || '';
 
+
 function populateClassSelector(classes, selectedClassId = null) {
     const classSelect = document.getElementById('classSelect');
     if (!classSelect) {

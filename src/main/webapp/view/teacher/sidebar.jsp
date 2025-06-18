@@ -6,11 +6,12 @@
 <!-- Google Fonts for Elegant Font -->
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/teacher_css/sidebar.css" />
-
+ 
 <%
     // Get the current page name from the request
     String currentPage = request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1);
 %>
+
 
 <div class="sidebar">
     <div class="sidebar-top">
