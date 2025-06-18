@@ -1,5 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mycompany</groupId>
     <artifactId>Hikari</artifactId>
@@ -15,6 +17,7 @@
     </properties>
 
     <dependencies>
+        <!-- Jakarta EE API -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
@@ -29,47 +32,32 @@
             <version>5.1.0</version>
         </dependency>
 
-        <!-- MySQL Connector/J -->
+        <!-- MySQL Connector -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>9.3.0</version>
         </dependency>
 
-        <!-- JSTL API -->
+        <!-- JSTL API & Implementation -->
         <dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
             <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
             <version>3.0.0</version>
         </dependency>
-
-        <!-- JSTL Implementation -->
         <dependency>
-<<<<<<< feature/authentication
             <groupId>org.glassfish.web</groupId>
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
             <version>3.0.1</version>
         </dependency>
 
-        <!-- Gson (dùng để serialize JSON trong CourseController) -->
-=======
-            <groupId>org.eclipse</groupId>
-            <artifactId>yasson</artifactId>
-            <version>3.0.3</version> <!-- hoặc bản mới hơn -->
-        </dependency>
-
-
-        <!-- Servlet API -->
->>>>>>> main
+        <!-- Gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.12.1</version>
         </dependency>
 
-<<<<<<< feature/authentication
-        <!-- PayOS SDK -->
-=======
         <!-- JSP API -->
         <dependency>
             <groupId>jakarta.servlet.jsp</groupId>
@@ -77,51 +65,27 @@
             <version>3.0.0</version>
             <scope>provided</scope>
         </dependency>
-        <!-- JSTL Implementation -->
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
-            <version>3.0.1</version>
-        </dependency>
- 
-        <!--  PayOS SDK 1.0.1 (JAR nội bộ)  -->
->>>>>>> main
+
+        <!-- PayOS SDK -->
         <dependency>
             <groupId>vn.payos</groupId>
             <artifactId>payos-java</artifactId>
             <version>1.0.0</version>
         </dependency>
 
-        <!-- JBCrypt cho mã hóa mật khẩu (nếu cần xác thực nâng cao) -->
+        <!-- BCrypt for password hashing -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
 
-<<<<<<< feature/authentication
-        <!-- Jakarta Mail API -->
-=======
-     
-
-        <!-- WebSocket API -->
->>>>>>> main
+        <!-- Jakarta Mail -->
         <dependency>
             <groupId>jakarta.mail</groupId>
             <artifactId>jakarta.mail-api</artifactId>
             <version>2.1.0</version>
         </dependency>
-<<<<<<< feature/authentication
-
-        <!-- Jakarta Mail Implementation -->
-=======
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
-            <version>2.26.29</version>
-        </dependency>
-        <!-- MSSQL JDBC -->
->>>>>>> main
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
@@ -135,8 +99,7 @@
             <version>1.2</version>
         </dependency>
 
-<<<<<<< feature/authentication
-        <!-- HttpClient Components (Fluent-HC và HttpCore) -->
+        <!-- HttpClient -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>fluent-hc</artifactId>
@@ -148,7 +111,7 @@
             <version>4.4.9</version>
         </dependency>
 
-        <!-- MSSQL JDBC (nếu cần) -->
+        <!-- SQL Server JDBC -->
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
@@ -156,7 +119,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Bổ sung: Lombok (nếu muốn dùng annotation để giảm boilerplate code) -->
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -164,7 +127,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Bổ sung: Log4j (nếu muốn logging chi tiết) -->
+        <!-- Logging (SLF4J + Log4j2) -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -175,8 +138,6 @@
             <artifactId>log4j-core</artifactId>
             <version>2.20.0</version>
         </dependency>
-
-        <!-- Bổ sung: SLF4J (giao diện logging, có thể dùng với Log4j) -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -186,19 +147,19 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>2.0.9</version>
-=======
-        <!-- Fluent-HC -->
+        </dependency>
 
+        <!-- AWS SDK (S3) -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
             <version>2.26.29</version>
->>>>>>> main
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!-- Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -208,26 +169,22 @@
                     <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
+
+            <!-- WAR Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.3.2</version>
             </plugin>
-<<<<<<< feature/authentication
 
-            <!-- Bổ sung: Plugin để chạy ứng dụng trên Tomcat trong Maven -->
-=======
->>>>>>> main
+            <!-- Tomcat Plugin (dev only) -->
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
                     <path>/Hikari</path>
-<<<<<<< feature/authentication
                     <port>8080</port>
-=======
->>>>>>> main
                 </configuration>
             </plugin>
         </plugins>
