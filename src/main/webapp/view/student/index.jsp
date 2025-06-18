@@ -28,11 +28,11 @@
         <div class="modal-content">
           <span class="close" onclick="closeModal()">×</span>
           <h2>Đăng ký tài khoản</h2>
-          <form>
-            <input type="text" placeholder="Họ và tên" required>
-            <input type="email" placeholder="Email" required>
-            <input type="password" placeholder="Mật khẩu" required>
-            <select required>
+          <form action="${pageContext.request.contextPath}/register" method="post"> <!-- Thêm action cho form -->
+            <input type="text" name="fullName" placeholder="Họ và tên" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Mật khẩu" required>
+            <select name="role" required>
               <option value="" disabled selected>Chọn vai trò</option>
               <option value="student">Học viên</option>
               <option value="teacher">Giáo viên</option>
@@ -61,11 +61,9 @@
       <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-3">
         <div class="flex items-center space-x-2">
           <button class="px-5 py-2 custom-active-btn font-semibold shadow hover:shadow-lg transition">Tài liệu mới</button>
-          <div class="relative">
-            <button class="px-5 py-2 bg-gray-100 text-gray-700 rounded-full flex items-center font-semibold shadow hover:bg-orange-50 transition">
-              Tài liệu đang học <i class="fa fa-chevron-down ml-2"></i>
-            </button>
-          </div>
+          <button id="enrolledCoursesBtn" class="px-5 py-2 bg-gray-100 text-gray-700 rounded-full flex items-center font-semibold shadow hover:bg-orange-50 transition">
+            Tài liệu đang học <i class="fa fa-chevron-down ml-2"></i>
+          </button>
         </div>
         <div class="relative w-full md:w-1/3">
           <input type="text" placeholder="Tìm kiếm..." class="border border-orange-200 px-5 py-2 rounded-full w-full pl-11 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-200">
@@ -90,6 +88,9 @@
           <i class="fa fa-chevron-right"></i>
         </button>
       </div>
+
+      <!-- Error Message -->
+      <div id="errorMessage" class="text-red-500 text-center mt-4 hidden">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại!</div>
 
       <!-- Footer -->
       <jsp:include page="footer.jsp" />
