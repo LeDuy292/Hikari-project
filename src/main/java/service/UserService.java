@@ -69,7 +69,7 @@ public class UserService {
         user.setOtp(otp);
         user.setOtpExpiry(new Date(System.currentTimeMillis() + 10 * 60 * 1000));
         userDAO.updateOtp(user);
-        LOGGER.info("OTP generated for userNum: " + user.getUserNum() + ", OTP: " + otp);
+        LOGGER.info("OTP generated for userNum: " + user.getUserID()+ ", OTP: " + otp);
     }
 
     public UserAccount findByOtp(String otp) throws ClassNotFoundException, SQLException {
@@ -86,7 +86,7 @@ public class UserService {
             return false;
         }
         userDAO.updatePassword(user);
-        LOGGER.info("Password updated successfully for userNum: " + user.getUserNum());
+        LOGGER.info("Password updated successfully for userNum: " + user.getUserID());
         return true;
     }
 
@@ -101,13 +101,13 @@ public class UserService {
             throw new IllegalArgumentException("Người dùng hoặc email không được để trống");
         }
         userDAO.updateUserProfile(user);
-        LOGGER.info("User profile updated for userNum: " + user.getUserNum());
+        LOGGER.info("User profile updated for userNum: " + user.getUserID());
     }
 
-    public UserAccount findByUserNum(int userNum) throws ClassNotFoundException, SQLException {
-        UserAccount user = userDAO.findByUserNum(userNum);
+    public UserAccount findByUserNum(String UserID) throws ClassNotFoundException, SQLException {
+        UserAccount user = userDAO.findByUserNum(UserID);
         if (user == null) {
-            LOGGER.info("No user found for userNum: " + userNum);
+            LOGGER.info("No user found for userNum: " + UserID);
         }
         return user;
     }

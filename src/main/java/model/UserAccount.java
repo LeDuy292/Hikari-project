@@ -3,8 +3,6 @@ package model;
 import java.util.Date;
 
 public class UserAccount {
-
-    private int userNum;
     private String userID;
     private String username;
     private String fullName;
@@ -21,10 +19,7 @@ public class UserAccount {
     private String otp; // Thêm trường OTP
     private Date otpExpiry;
 
-    // Getters và Setters
-    public int getUserNum() {
-        return userNum;
-    }
+   
 
     public UserAccount(String username, String password) {
         this.username = username;
@@ -34,9 +29,7 @@ public class UserAccount {
     public UserAccount() {
     }
 
-    public void setUserNum(int userNum) {
-        this.userNum = userNum;
-    }
+   
 
     public String getUserID() {
         return userID;

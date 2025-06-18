@@ -10,7 +10,7 @@ public class SessionManager {
     public void updateSession(UserAccount user, HttpSession session) throws Exception {
         String currentSessionId = userDAO.getSessionIdByUsername(user.getUsername());
         user.setSessionId(session.getId());
-        userDAO.updateSessionId(user.getUserNum(), session.getId());
+        userDAO.updateSessionId(user.getUserID(), session.getId());
         System.out.println("Updated sessionId for " + user.getUsername() + " to: " + session.getId() + ", Previous: " + (currentSessionId != null ? currentSessionId : "null"));
     }
 

@@ -86,7 +86,7 @@ public class UpdateProfileServlet extends HttpServlet {
             if (email != null && !email.isEmpty()) user.setEmail(email);
 
             if (filePart != null && filePart.getSize() > 0) {
-                String fileName = user.getUserNum() + "_" + System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
+                String fileName = user.getUserID() + "_" + System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
                 String uploadPath = request.getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
                 File uploadDir = new File(uploadPath);
                 if (!uploadDir.exists()) {

@@ -33,65 +33,81 @@ public class ResetPasswordServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             HttpSession session = request.getSession();
-            String userNumStr = request.getParameter("userNum");
+            // FIX: Get the correct parameter name from JSP form
+            String userNumParam = request.getParameter("userNum");
             String newPassword = request.getParameter("newPassword");
             String confirmPassword = request.getParameter("confirmPassword");
 
-            LOGGER.info("Processing password reset for userNum: " + userNumStr);
+            LOGGER.info("Processing password reset for userNum: " + userNumParam);
 
-            if (userNumStr == null || userNumStr.isEmpty()) {
+            if (userNumParam == null || userNumParam.isEmpty()) {
                 LOGGER.warning("No userNum provided in POST request");
                 request.setAttribute("error", "Phiên đặt lại mật khẩu không hợp lệ. Vui lòng yêu cầu lại OTP.");
                 request.getRequestDispatcher("/view/reset-password.jsp").forward(request, response);
                 return;
             }
 
-            Integer sessionUserNum = (Integer) session.getAttribute("resetUserNum");
-            if (sessionUserNum == null || !userNumStr.equals(sessionUserNum.toString())) {
-                LOGGER.warning("Invalid or missing session userNum for reset");
+            // FIX: Handle both String and Integer types from session
+            Object sessionUserNumObj = session.getAttribute("resetUserNum");
+            String sessionUserNum = null;
+            
+            if (sessionUserNumObj instanceof Integer) {
+                sessionUserNum = ((Integer) sessionUserNumObj).toString();
+            } else if (sessionUserNumObj instanceof String) {
+                sessionUserNum = (String) sessionUserNumObj;
+            }
+            
+            if (sessionUserNum == null || !userNumParam.equals(sessionUserNum)) {
+                LOGGER.warning("Invalid or missing session userNum for reset. Expected: " + sessionUserNum + ", Got: " + userNumParam);
                 request.setAttribute("error", "Phiên đặt lại mật khẩu không hợp lệ. Vui lòng yêu cầu lại OTP.");
                 request.getRequestDispatcher("/view/reset-password.jsp").forward(request, response);
                 return;
             }
 
+            if (newPassword == null || newPassword.trim().isEmpty()) {
+                request.setAttribute("error", "Mật khẩu mới không được để trống.");
+                request.getRequestDispatcher("/view/reset-password.jsp").forward(request, response);
+                return;
+            }
+
+            if (confirmPassword == null || confirmPassword.trim().isEmpty()) {
+                request.setAttribute("error", "Xác nhận mật khẩu không được để trống.");
+                request.getRequestDispatcher("/view/reset-password.jsp").forward(request, response);
+                return;
+            }
+
             if (!newPassword.equals(confirmPassword)) {
-                LOGGER.warning("Password mismatch for userNum: " + userNumStr);
+                LOGGER.warning("Password mismatch for userNum: " + userNumParam);
                 request.setAttribute("error", "Mật khẩu xác nhận không khớp.");
                 request.getRequestDispatcher("/view/reset-password.jsp").forward(request, response);
                 return;
             }
 
-            int userNum;
-            try {
-                userNum = Integer.parseInt(userNumStr);
-            } catch (NumberFormatException e) {
-                LOGGER.warning("Invalid userNum format: " + userNumStr);
-                request.setAttribute("error", "Dữ liệu không hợp lệ. Vui lòng thử lại.");
-                request.getRequestDispatcher("/view/reset-password.jsp").forward(request, response);
-                return;
-            }
-
-            UserAccount user = userService.findByUserNum(userNum); // Sửa lỗi đánh máy
+            // FIX: Use userNumParam directly as userID (they should be the same)
+            String userID = userNumParam;
+            
+            UserAccount user = userService.findByUserNum(userID);
             if (user != null) {
-                user.setPassword(newPassword); // Store plaintext directly
+                user.setPassword(newPassword.trim());
                 boolean updated = userService.updatePassword(user);
-                LOGGER.info("Password update result for userNum " + user.getUserNum() + ": " + updated);
+                LOGGER.info("Password update result for userID " + user.getUserID() + ": " + updated);
                 if (updated) {
                     session.removeAttribute("resetUserNum"); // Clear session
                     request.setAttribute("success", "Mật khẩu đã được cập nhật thành công. Vui lòng đăng nhập lại!");
-                    request.getRequestDispatcher("/view/login.jsp?formType=login").forward(request, response);
+                    request.getRequestDispatcher("/view/login.jsp").forward(request, response);
                 } else {
-                    LOGGER.warning("Password update failed for userNum: " + userNumStr);
+                    LOGGER.warning("Password update failed for userID: " + userID);
                     request.setAttribute("error", "Cập nhật mật khẩu thất bại. Vui lòng thử lại.");
                     request.getRequestDispatcher("/view/reset-password.jsp").forward(request, response);
                 }
             } else {
-                LOGGER.warning("No user found for userNum: " + userNumStr);
+                LOGGER.warning("No user found for userID: " + userID);
                 request.setAttribute("error", "Tài khoản không tồn tại. Vui lòng yêu cầu lại OTP.");
                 request.getRequestDispatcher("/view/reset-password.jsp").forward(request, response);
             }
         } catch (SQLException e) {
             LOGGER.severe("Database error in reset password: " + e.getMessage());
+            e.printStackTrace();
             request.setAttribute("error", "Lỗi cơ sở dữ liệu. Vui lòng thử lại sau.");
             request.getRequestDispatcher("/view/reset-password.jsp").forward(request, response);
         } catch (Exception e) {

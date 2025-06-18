@@ -76,8 +76,10 @@ public class ForgotPasswordServlet extends HttpServlet {
                 UserAccount user = userService.findByOtp(otp.trim());
                 if (user != null && user.getOtp() != null && user.getOtp().equals(otp.trim())) {
                     if (user.getOtpExpiry() != null && user.getOtpExpiry().after(new Date())) {
-                        // OTP hợp lệ, lưu userNum vào session và chuyển đến trang reset mật khẩu
-                        session.setAttribute("resetUserNum", user.getUserNum());
+                        // OTP hợp lệ, lưu userID vào session và chuyển đến trang reset mật khẩu
+                        // FIX: Store userID as String to maintain consistency
+                        session.setAttribute("resetUserNum", user.getUserID());
+                        LOGGER.info("OTP validated successfully for user: " + user.getUserID());
                         response.sendRedirect(request.getContextPath() + "/view/reset-password.jsp");
                         return;
                     } else {

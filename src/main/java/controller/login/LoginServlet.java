@@ -11,6 +11,7 @@ import model.UserAccount;
 import service.UserService;
 import utils.ValidationUtil;
 import authentication.SessionManager;
+import dao.UserDAO;
 import java.sql.SQLException;
 
 @WebServlet("/login")
@@ -79,12 +80,25 @@ public class LoginServlet extends HttpServlet {
                 UserAccount newUser = new UserAccount();
                 newUser.setEmail(email);
                 newUser.setUsername(username);
-                newUser.setPassword(password); // Store plaintext
+                newUser.setPassword(password);
                 newUser.setFullName(username);
                 newUser.setRole("Student");
-
+                
+                // FIX: Generate userID BEFORE registering
+                try {
+                    String newUserID = new UserDAO().generateNewUserID();
+                    newUser.setUserID(newUserID);
+                    System.out.println("Generated userID: " + newUserID);
+                } catch (SQLException e) {
+                    request.setAttribute("error", "Lỗi tạo ID người dùng: " + e.getMessage());
+                    request.getRequestDispatcher("/view/login.jsp?formType=signup").forward(request, response);
+                    return;
+                }
+                
+                System.out.println("1");
                 boolean isRegistered = userService.registerUser(newUser);
                 if (isRegistered) {
+                    System.out.println("2");
                     request.setAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
                     request.getRequestDispatcher("/view/login.jsp").forward(request, response);
                 } else {
@@ -92,7 +106,7 @@ public class LoginServlet extends HttpServlet {
                     request.getRequestDispatcher("/view/login.jsp").forward(request, response);
                 }
             }
-        } catch (Exception e) {
+        } catch (ServletException | IOException | ClassNotFoundException | SQLException e) {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
             request.getRequestDispatcher("/view/login.jsp").forward(request, response);
