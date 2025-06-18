@@ -1,11 +1,5 @@
 package controller.message;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-
-
 import com.google.gson.Gson;
 import dao.MessageDAO;
 import java.io.IOException;

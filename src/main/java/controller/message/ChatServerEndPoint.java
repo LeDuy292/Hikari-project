@@ -17,12 +17,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import model.Message;
 
-@ServerEndpoint(value = "/ChatServerEndPoint", configurator = ChatServerConfigurator.class)
+@ServerEndpoint(value = "/controller.message/ChatServerEndPoint", configurator = ChatServerConfigurator.class)
 
 public class ChatServerEndPoint {
 
-    private static Map<String, Session> userSessions = new ConcurrentHashMap<>();
-    private static Gson gson = new Gson();
+    private static final Map<String, Session> userSessions = new ConcurrentHashMap<>();
+    private static final Gson gson = new Gson();
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
@@ -46,6 +46,7 @@ public class ChatServerEndPoint {
         try {
             JsonObject json = gson.fromJson(message, JsonObject.class);
             String type = json.get("type").getAsString();
+                 System.out.println("Received message type: " + type + ", content: " + message); // Ghi log
 
             switch (type) {
                 case "chat": {
