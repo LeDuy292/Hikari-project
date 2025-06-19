@@ -67,7 +67,17 @@
                 <% 
                     String error = (String) request.getAttribute("error");
                     String success = (String) request.getAttribute("success");
-                    Integer resetUserNum = (Integer) session.getAttribute("resetUserNum");
+                    
+                    // FIX: Handle both String and Integer types from session
+                    Object resetUserNumObj = session.getAttribute("resetUserNum");
+                    String resetUserNum = null;
+                    
+                    if (resetUserNumObj instanceof Integer) {
+                        resetUserNum = ((Integer) resetUserNumObj).toString();
+                    } else if (resetUserNumObj instanceof String) {
+                        resetUserNum = (String) resetUserNumObj;
+                    }
+                    
                     if (resetUserNum == null) {
                         response.sendRedirect(request.getContextPath() + "/view/forgot-password.jsp");
                         return;
@@ -88,6 +98,7 @@
                 <% } %>
                 
                 <form id="resetForm" action="${pageContext.request.contextPath}/reset-password" method="post" onsubmit="return validateResetForm()">
+                    <!-- FIX: Use consistent parameter name -->
                     <input type="hidden" name="userNum" value="<%= resetUserNum %>" />
                     <div class="form-group">
                         <label class="form-label" for="newPassword">Mật khẩu mới</label>
@@ -145,8 +156,32 @@
             const confirmPassword = document.getElementById('confirmPassword').value;
             const submitBtn = document.getElementById('submitBtn');
 
+            if (newPassword.trim() === '') {
+                alert('Vui lòng nhập mật khẩu mới.');
+                return false;
+            }
+
+            if (confirmPassword.trim() === '') {
+                alert('Vui lòng xác nhận mật khẩu.');
+                return false;
+            }
+
             if (newPassword !== confirmPassword) {
                 alert('Mật khẩu xác nhận không khớp.');
+                return false;
+            }
+
+            if (newPassword.length < 6) {
+                alert('Mật khẩu phải có ít nhất 6 ký tự.');
+                return false;
+            }
+
+            // Check if password contains both letters and numbers
+            const hasLetter = /[A-Za-z]/.test(newPassword);
+            const hasNumber = /\d/.test(newPassword);
+            
+            if (!hasLetter || !hasNumber) {
+                alert('Mật khẩu phải chứa ít nhất một chữ cái và một số.');
                 return false;
             }
 
@@ -156,12 +191,10 @@
         }
 
         window.onload = function() {
-            const errorMessage = '${error != null ? error : ""}';
             const submitBtn = document.getElementById('submitBtn');
-            if (errorMessage) {
-                submitBtn.innerHTML = 'Cập nhật mật khẩu';
-                submitBtn.disabled = false;
-            }
+            // Reset button state on page load
+            submitBtn.innerHTML = 'Cập nhật mật khẩu';
+            submitBtn.disabled = false;
         };
     </script>
 </body>
