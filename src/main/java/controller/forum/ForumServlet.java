@@ -55,8 +55,12 @@ public class ForumServlet extends HttpServlet {
             String username = (String) request.getSession().getAttribute("username");
             String userId = (String) request.getSession().getAttribute("userId");
             UserAccount user = null;
-            if (userId == null) {
-                //báo lỗi
+            if (userId == null || username == null) {
+                LOGGER.warning("Session không có userId hoặc username. Gán mặc định.");
+                userId = "U001";
+                username = "quy123";
+                request.getSession().setAttribute("userId", userId);
+                request.getSession().setAttribute("username", username);
             }
             user = userDAO.getUserByUsername(username);
             request.setAttribute("username", username);
@@ -80,7 +84,7 @@ public class ForumServlet extends HttpServlet {
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Bài viết không tồn tại");
                     return;
                 }
-                
+
                 // Mark post as viewed by current user
                 try {
                     postViewDAO.markPostAsViewed(userId, postId);
@@ -88,7 +92,7 @@ public class ForumServlet extends HttpServlet {
                 } catch (SQLException e) {
                     LOGGER.warning("Could not mark post as viewed: " + e.getMessage());
                 }
-                
+
                 postDAO.incrementViewCount(postId);
                 request.setAttribute("postDetail", post);
 

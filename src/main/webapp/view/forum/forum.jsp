@@ -326,6 +326,11 @@
                     <div style="display:flex;align-items:flex-end;justify-content:center;gap:18px;margin-bottom:18px;">
                         <%
                             List<UserActivityScore> topUsers = (List<UserActivityScore>) request.getAttribute("topUsers");
+                            if (topUsers == null) {
+                                %>
+                                    <div style="color: red;">Không có dữ liệu Leaderboard - Kiểm tra Servlet hoặc DAO</div>
+                                <%
+                            }
                             UserActivityScore first = null, second = null, third = null;
                             if (topUsers != null && topUsers.size() > 0) {
                                 first = topUsers.get(0);

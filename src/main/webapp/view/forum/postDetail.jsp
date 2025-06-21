@@ -368,14 +368,33 @@
                             <div style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff;">
                                 <img src="<%= request.getContextPath()%>/<%= request.getAttribute("user") != null && ((UserAccount) request.getAttribute("user")).getProfilePicture() != null && !((UserAccount) request.getAttribute("user")).getProfilePicture().isEmpty() ? ((UserAccount) request.getAttribute("user")).getProfilePicture() : "assets/img/avatar.png"%>" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">
                             </div>
+                            <%
+                                Object userObj = request.getAttribute("user");
+                                if (userObj != null && userObj instanceof UserAccount) {
+                                    UserAccount user = (UserAccount) userObj;
+                            %>
                             <div style="margin-top:10px;text-align:center;">
                                 <div style="color:#888;font-size:1em;">Welcome back,</div>
-                                <div style="font-weight:700;font-size:1.2em;"><%= escapeHtml(((UserAccount) request.getAttribute("user")).getUsername())%></div>
-                                <div style="color:#888;font-size:0.98em;"><%= escapeHtml(((UserAccount) request.getAttribute("user")).getRole())%></div>
-                                <% if (((UserAccount) request.getAttribute("user")).getRole() != null && ((UserAccount) request.getAttribute("user")).getRole().toLowerCase().contains("admin")) { %>
+                                <div style="font-weight:700;font-size:1.2em;">
+                                    <%= escapeHtml(user.getUsername())%>
+                                </div>
+                                <div style="color:#888;font-size:0.98em;">
+                                    <%= escapeHtml(user.getRole())%>
+                                </div>
+                                <% if (user.getRole() != null && user.getRole().toLowerCase().contains("admin")) { %>
                                 <span style="display:inline-block;margin-top:7px;padding:2px 14px;font-size:0.95em;background:linear-gradient(90deg,#a18cd1 0%,#fbc2eb 100%);color:#5a189a;border-radius:12px;font-weight:600;">Admin</span>
-                                <% }%>
+                                <% } %>
                             </div>
+                            <%
+                            } else {
+                            %>
+                            <div style="margin-top:10px;text-align:center;">
+                                <div style="color:#888;font-size:1em;">Bạn chưa đăng nhập</div>
+                            </div>
+                            <%
+                                }
+                            %>
+
                         </div>
                     </div>
                     <!-- Leaderboard -->
