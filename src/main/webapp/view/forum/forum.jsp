@@ -2,17 +2,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page import="java.util.List, java.util.Set, dao.UserDAO, model.forum.ForumPost, model.forum.ForumComment, model.forum.UserActivityScore, model.UserAccount, java.text.SimpleDateFormat, java.sql.Timestamp, dao.forum.ForumPostDAO" %>
-<%!
-    public String escapeHtml(String input) {
-        if (input == null) {
-            return "";
-        }
-        return input.replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;")
-                .replace("'", "&#39;");
-    }
-%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -87,29 +76,7 @@
         </style>
     </head>
     <body>
-        <div class="topbar">
-            <div class="logo">
-                <div class="logo-icon">
-                    <img src="<%= request.getContextPath()%>/assets/img/logo.png" alt="Logo" class="logo-img" />
-                </div>
-                Diễn Đàn HIKARI
-            </div>
-            <nav class="nav">
-                <a href="<%= request.getContextPath()%>/"><i class="fas fa-home"></i> Trang Chủ</a>
-                <a href="<%= request.getContextPath()%>/contact"><i class="fas fa-phone"></i> Liên Hệ</a>
-                <a href="<%= request.getContextPath()%>/profile?userId=<%= session.getAttribute("userId")%>" class="nav-link">
-                    <i class="fas fa-user"></i>
-                    <span>Hồ sơ</span>
-                </a>
-
-                <div class="account-dropdown">
-                    <div class="avatar">
-                        <img src="<%= request.getContextPath()%>/assets/img/avatar.png" alt="Avatar" />
-                    </div>
-
-                </div>
-            </nav>
-        </div>
+        <%@ include file="forumHeader.jsp" %>
         <div class="layout">
             <aside class="sidebar-left">
                 <div class="topics">
@@ -160,7 +127,7 @@
                             <select id="filterSelect" onchange="handleFilterChange()">
                                 <option value="all" <%= "all".equals(request.getAttribute("filter")) ? "selected" : ""%>>Tất Cả</option>
                                 <option value="with-replies" <%= "with-replies".equals(request.getAttribute("filter")) ? "selected" : ""%>>Có Phản Hồi</option>
-                                <option value="no-replies" <%= "no-replies".equals(request.getAttribute("filter")) ? "selected" : ""%>Chưa Có Phản Hồi</option>
+                                <option value="no-replies" <%= "no-replies".equals(request.getAttribute("filter")) ? "selected" : ""%>>Chưa Có Phản Hồi</option>
                             </select>
                         </div>
                     </div>
@@ -169,7 +136,7 @@
                     <%
                         List<ForumPost> posts = (List<ForumPost>) request.getAttribute("posts");
                         Set<Integer> viewedPostIds = (Set<Integer>) request.getAttribute("viewedPostIds");
-                        String userId = (String) request.getSession().getAttribute("userId");
+                        String userId = (String) request.getAttribute("userId");
                         ForumPostDAO postDAO = new ForumPostDAO();
                         if (posts == null || posts.isEmpty()) {
                     %>
@@ -470,10 +437,10 @@
                 section.style.display = section.style.display === "none" ? "block" : "none";
             }
             function toggleLike(postId, button) {
-                const userId = "<%= request.getSession().getAttribute("userId") != null ? request.getSession().getAttribute("userId") : ""%>";
+                const userId = "<%= request.getAttribute("userId") != null ? request.getAttribute("userId") : ""%>";
                 if (!userId) {
                     alert("Vui lòng đăng nhập để thích bài viết!");
-                    window.location.href = "<%= request.getContextPath()%>/login";
+                    window.location.href = "<%= request.getContextPath()%>/view/login.jsp";
                     return;
                 }
                 const isLiked = button.classList.contains("liked");

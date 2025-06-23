@@ -1,4 +1,3 @@
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <aside class="sidebar">
     <div class="logo">
@@ -9,13 +8,24 @@
         </div>
     </div>
     <div class="menu">
-        <a href="home.jsp" class="menu-item"><i class="fa fa-home"></i>Trang chủ</a>
-        <a href="index.jsp" class="menu-item sidebar-active"><i class="fa fa-book"></i>Tài liệu</a>
-        <a href="courseInfo.jsp" class="menu-item"><i class="fa fa-play-circle"></i>Khóa học online</a>
-        <a href="offlineCourses.jsp" class="menu-item"><i class="fa fa-chalkboard"></i>DIễn đàn</a>
-        <a href="test.jsp" class="menu-item"><i class="fa fa-file-alt"></i>Bài kiểm tra</a>
-        <a href="account.jsp" class="menu-item"><i class="fa fa-user"></i>Quản lý tài khoản</a>
-
+        <a href="${pageContext.request.contextPath}/view/student/home.jsp" class="menu-item">
+            <i class="fa fa-home"></i>Trang chủ
+        </a>
+        <a href="${pageContext.request.contextPath}/view/student/index.jsp" class="menu-item">
+            <i class="fa fa-book"></i>Tài liệu
+        </a>
+        <a href="${pageContext.request.contextPath}/view/student/courseInfo.jsp" class="menu-item">
+            <i class="fa fa-play-circle"></i>Khóa học online
+        </a>
+        <a href="${pageContext.request.contextPath}/forum" class="menu-item">
+            <i class="fa fa-chalkboard"></i>Diễn đàn
+        </a>
+        <a href="${pageContext.request.contextPath}/view/student/test.jsp" class="menu-item">
+            <i class="fa fa-file-alt"></i>Bài kiểm tra
+        </a>
+        <a href="${pageContext.request.contextPath}/view/student/account.jsp" class="menu-item">
+            <i class="fa fa-user"></i>Quản lý tài khoản
+        </a>
     </div>
     <div class="bottom-section">
         <div class="image-placeholder">
