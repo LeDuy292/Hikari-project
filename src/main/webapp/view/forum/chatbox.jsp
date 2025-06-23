@@ -5,7 +5,7 @@
         <div class="chatbox-header">
             <div class="chatbox-title">
                 <i class="fas fa-robot"></i>
-                <span>AI Assistant</span>
+                <span>AI HIKARI</span>
             </div>
             <button onclick="toggleChatbox()" class="chatbox-close">
                 <i class="fas fa-times"></i>
@@ -42,7 +42,11 @@
                     <i class="fas fa-robot"></i>
                 </div>
                 <h3>Xin chào! 👋</h3>
-                <p>Tôi là AI Assistant, sẵn sàng hỗ trợ bạn học tiếng Nhật. Hãy đặt câu hỏi bất kỳ!</p>
+                <p>Tôi là AI HIKARI từ hệ thống HIKARI, sẵn sàng hỗ trợ bạn học tiếng Nhật.</p>
+                <p>Hãy thử một trong những câu hỏi dưới đây:</p>
+                <ul class="suggested-questions" id="suggested-questions">
+                    <!-- Suggested questions will be populated by JavaScript -->
+                </ul>
             </div>
             <%
                 }
@@ -220,7 +224,7 @@
     }
 
     .welcome-icon {
-        font-size: 3rem;
+        font: 3rem;
         color: #3b82f6;
         margin-bottom: 1rem;
     }
@@ -236,6 +240,32 @@
         font-size: 0.875rem;
     }
 
+    .suggested-questions {
+        list-style: none;
+        padding: 0;
+        margin: 1rem 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .suggested-questions li {
+        background: #ffffff;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid #e2e8f0;
+        font-size: 0.875rem;
+        text-align: left;
+    }
+
+    .suggested-questions li:hover {
+        background: #f1f5f9;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
     .chat-message {
         display: flex;
         gap: 0.75rem;
@@ -243,7 +273,7 @@
         animation: messageSlide 0.3s ease-out;
     }
 
-    @keyframes messageSlide {
+    @keyframes bucketSlide {
         from {
             transform: translateY(20px);
             opacity: 0;
@@ -429,6 +459,37 @@
 <script>
     let isTyping = false;
 
+    // Predefined questions and answers (replace with content from your files)
+    const suggestedQAs = [
+        {
+            question: "Ngữ pháp N5 có những mẫu nào?",
+            answer: "Danh sách ngữ pháp JLPT N5 bao gồm các mẫu cơ bản như: ～ます, ～ません, ～ました, ～ませんでした (dạng lịch sự), ～て form, ～たい (muốn làm gì), ～は～です (cấu trúc mô tả), v.v. Bạn muốn tôi giải thích chi tiết mẫu nào không?"
+        },
+        {
+            question: "Cách phân biệt に và で trong tiếng Nhật?",
+            answer: "Trong tiếng Nhật, に và で có các chức năng khác nhau:\n- に: Chỉ mục đích, thời gian cụ thể, hướng di chuyển, hoặc vị trí tồn tại (với các động từ như いる, ある). Ví dụ: 学校に行く (Đi đến trường).\n- で: Chỉ địa điểm hành động diễn ra, phương tiện, hoặc nguyên nhân. Ví dụ: 図書館で勉強する (Học ở thư viện).\nBạn cần ví dụ cụ thể hơn không?"
+        },
+        {
+            question: "Tôi nên học từ vựng như thế nào?",
+            answer: "Để học từ vựng tiếng Nhật hiệu quả, bạn có thể: \n1. Sử dụng flashcard (như Anki) để ôn tập.\n2. Học từ vựng theo ngữ cảnh (câu hoặc bài văn).\n3. Luyện tập hàng ngày với ứng dụng hoặc sách như Minna no Nihongo.\n4. Kết hợp nghe và nói để ghi nhớ tốt hơn.\nBạn muốn tôi gợi ý ứng dụng cụ thể không?"
+        },
+        {
+            question: "Có lộ trình ôn thi JLPT không?",
+            answer: "Lộ trình ôn thi JLPT phụ thuộc vào cấp độ bạn nhắm tới. Ví dụ cho N5:\n1. Tháng 1-3: Học 600 từ vựng cơ bản và 100 kanji N5.\n2. Tháng 4-6: Nắm vững ngữ pháp N5 (khoảng 80 mẫu).\n3. Tháng 7-9: Luyện đề thi thử và kỹ năng đọc hiểu.\n4. Tháng 10-12: Ôn tập và thi thử.\nBạn cần lộ trình chi tiết hơn cho cấp độ nào không?"
+        }
+    ];
+
+    function populateSuggestedQuestions() {
+        const suggestedList = document.getElementById("suggested-questions");
+        suggestedList.innerHTML = "";
+        suggestedQAs.forEach(qa => {
+            const li = document.createElement("li");
+            li.textContent = qa.question;
+            li.onclick = () => sendSuggestedMessage(qa.question, qa.answer);
+            suggestedList.appendChild(li);
+        });
+    }
+
     function toggleChatbox() {
         var chatbox = document.getElementById("chatbox");
         var toggle = document.getElementById("chatbox-toggle");
@@ -437,9 +498,10 @@
             chatbox.style.display = "block";
             toggle.innerHTML = '<i class="fas fa-times"></i>';
             scrollToBottom();
-
-            // Auto-resize textarea
             autoResizeTextarea();
+            if (document.querySelector('.welcome-message')) {
+                populateSuggestedQuestions();
+            }
         } else {
             chatbox.style.display = "none";
             toggle.innerHTML = '<i class="fas fa-comments"></i><span class="toggle-text">AI Chat</span>';
@@ -451,7 +513,6 @@
             event.preventDefault();
             sendMessage();
         } else if (event.key === "Enter" && event.shiftKey) {
-            // Allow new line with Shift+Enter
             return true;
         }
     }
@@ -460,6 +521,22 @@
         var userInput = document.getElementById("userInput").value.trim();
         if (!userInput || isTyping)
             return;
+
+        // Check if the input matches a predefined question
+        const matchedQA = suggestedQAs.find(qa => qa.question.toLowerCase() === userInput.toLowerCase());
+        if (matchedQA) {
+            addMessage(userInput, 'user');
+            document.getElementById("userInput").value = "";
+            autoResizeTextarea();
+            showTypingIndicator();
+            setTimeout(() => {
+                hideTypingIndicator();
+                addMessage(matchedQA.answer, 'ai');
+                // Send to server to store in session
+                saveToSession(userInput, matchedQA.answer);
+            }, 1000); // Simulate typing delay
+            return;
+        }
 
         // Add user message
         addMessage(userInput, 'user');
@@ -492,6 +569,26 @@
             }
         };
         xhr.send("userInput=" + encodeURIComponent(userInput));
+    }
+
+    function sendSuggestedMessage(question, answer) {
+        addMessage(question, 'user');
+        document.getElementById("userInput").value = "";
+        autoResizeTextarea();
+        showTypingIndicator();
+        setTimeout(() => {
+            hideTypingIndicator();
+            addMessage(answer, 'ai');
+            // Send to server to store in session
+            saveToSession(question, answer);
+        }, 1000); // Simulate typing delay
+    }
+
+    function saveToSession(userInput, responseText) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "gemini", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send("userInput=" + encodeURIComponent(userInput) + "&responseText=" + encodeURIComponent(responseText));
     }
 
     function addMessage(text, type) {
@@ -582,6 +679,9 @@
     window.onload = function () {
         if (document.getElementById("chatbox").style.display === "block") {
             scrollToBottom();
+        }
+        if (document.querySelector('.welcome-message')) {
+            populateSuggestedQuestions();
         }
     };
 
