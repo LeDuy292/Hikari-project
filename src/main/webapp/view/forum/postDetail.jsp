@@ -1,16 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, dao.forum.UserActivityScoreDAO, dao.UserDAO, model.forum.ForumPost, model.forum.ForumComment, model.forum.UserActivityScore, model.UserAccount, java.text.SimpleDateFormat, java.sql.Timestamp, dao.forum.ForumPostDAO" %>
-<%!
-    public String escapeHtml(String input) {
-        if (input == null) {
-            return "";
-        }
-        return input.replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;")
-                .replace("'", "&#39;");
-    }
-%>
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -22,48 +11,31 @@
         <link href="${pageContext.request.contextPath}/assets/css/forum_css/postDetail.css" rel="stylesheet" />
     </head>
     <body>
-        <div class="topbar">
-            <div class="logo">
-                <div class="logo-icon">
-                    <img src="<%= request.getContextPath()%>/assets/img/logo.png" alt="Logo" class="logo-img" />
-                </div>
-                Diễn Đàn HIKARI
-            </div>
-            <nav class="nav">
-                <a href="<%= request.getContextPath()%>/"><i class="fas fa-home"></i> Trang Chủ</a>
-                <a href="<%= request.getContextPath()%>/contact"><i class="fas fa-phone"></i> Liên Hệ</a>
-                <a href="<%= request.getContextPath()%>/profile?user=" + userID() class="nav-link ">
-                    <i class="fas fa-user"></i>
-                    <span>Hồ sơ</span>
-                </a>
-                <div class="account-dropdown" id="accountDropdown">
-                    <button class="account-btn">
-                        <div class="avatar sm">
-                            <img src="<%= request.getContextPath()%>/assets/img/avatar.png" alt="Avatar" />
-                        </div>
-                    </button> 
-                </div>
-            </nav>
-        </div>
+        <%@ include file="forumHeader.jsp" %>
+
+        <%
+            ForumPost post = (ForumPost) request.getAttribute("postDetail");
+            
+            
+            UserAccount author = post != null ? new UserDAO().getUserById(post.getPostedBy()) : null;
+            UserActivityScore authorScore = null;
+            List<UserActivityScore> allScores = (List<UserActivityScore>) request.getAttribute("topUsers");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            
+            if (author != null && allScores != null) {
+                for (UserActivityScore s : allScores) {
+                    if (s.getUserId().equals(author.getUserID())) {
+                        authorScore = s;
+                        break;
+                    }
+                }
+            }
+        %>
 
         <!-- Main Container -->
         <div class="container">
             <div class="content-wrapper">
                 <!-- Left Sidebar: Author Info & Related Posts -->
-                <%
-                    ForumPost post = (ForumPost) request.getAttribute("postDetail");
-                    UserAccount author = post != null ? new UserDAO().getUserById(post.getPostedBy()) : null;
-                    UserActivityScore authorScore = null;
-                    List<UserActivityScore> allScores = (List<UserActivityScore>) request.getAttribute("topUsers");
-                    if (author != null && allScores != null) {
-                        for (UserActivityScore s : allScores) {
-                            if (s.getUserId().equals(author.getUserID())) {
-                                authorScore = s;
-                                break;
-                            }
-                        }
-                    }
-                %>
                 <aside class="sidebar-left">
                     <div class="widget user-card">
                         <div class="widget-title">
@@ -114,7 +86,6 @@
                         <div class="related-list">
                             <%
                                 List<ForumPost> relatedPosts = (List<ForumPost>) request.getAttribute("relatedPosts");
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                                 if (relatedPosts != null && !relatedPosts.isEmpty()) {
                                     for (ForumPost relatedPost : relatedPosts) {
                                         String relatedPicture = relatedPost.getPicture() != null ? relatedPost.getPicture() : "";
@@ -190,7 +161,6 @@
                         }
                     %>
                     <%
-                        String currentUserId = (String) request.getSession().getAttribute("userId");
                         if (post == null) {
                     %>
                     <div class="empty-state">
@@ -527,7 +497,7 @@
                 }
             });
             function toggleLike(postId, button) {
-                const userId = "<%= request.getSession().getAttribute("userId") != null ? request.getSession().getAttribute("userId") : ""%>";
+                const userId = "<%= currentUserId != null ? currentUserId : ""%>";
                 if (!userId) {
                     alert("Vui lòng đăng nhập để thích bài viết!");
                     window.location.href = "<%= request.getContextPath()%>/login";

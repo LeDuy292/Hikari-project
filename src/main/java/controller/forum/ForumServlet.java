@@ -6,6 +6,7 @@ import dao.UserDAO;
 import dao.forum.PostViewDAO;
 import model.forum.ForumPost;
 import model.forum.UserActivityScore;
+import authentication.UserAuthentication;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -13,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
@@ -46,25 +48,77 @@ public class ForumServlet extends HttpServlet {
         LOGGER.info("ForumServlet initialized");
     }
 
+    /**
+     * Check if user is authenticated using existing UserAuthentication utility
+     */
+    private boolean checkAuthentication(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException {
+        HttpSession session = request.getSession(false);
+        
+        // In the checkAuthentication method, replace the UserAuthentication check with:
+        // Check authentication using session attributes directly
+        String userId = (String) session.getAttribute("userId");
+        String username = (String) session.getAttribute("username");
+        UserAccount user = (UserAccount) session.getAttribute("user");
+
+        if (userId == null || username == null || user == null) {
+            LOGGER.info("User not authenticated, redirecting to login");
+            // Store the original URL they were trying to access
+            String originalUrl = request.getRequestURI();
+            if (request.getQueryString() != null) {
+                originalUrl += "?" + request.getQueryString();
+            }
+            
+            // Create session if doesn't exist to store redirect URL
+            HttpSession newSession = request.getSession(true);
+            newSession.setAttribute("redirectUrl", originalUrl);
+            
+            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            return false;
+        }
+        
+        return true;
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         LOGGER.info("ForumServlet doGet called for URL: " + request.getRequestURI());
+        
+        // Check authentication first
+        if (!checkAuthentication(request, response)) {
+            return; // User not authenticated, already redirected
+        }
+        
         try {
             String pathInfo = request.getPathInfo();
-            String username = (String) request.getSession().getAttribute("username");
-            String userId = (String) request.getSession().getAttribute("userId");
-            UserAccount user = null;
-            if (userId == null || username == null) {
-                LOGGER.warning("Session không có userId hoặc username. Gán mặc định.");
-                userId = "U001";
-                username = "quy123";
-                request.getSession().setAttribute("userId", userId);
-                request.getSession().setAttribute("username", username);
+            HttpSession session = request.getSession();
+            
+            // Get user information using existing authentication system
+            String userId = UserAuthentication.getUserID(session);
+            String userRole = UserAuthentication.getUserRole(session);
+
+            // Also get the UserAccount object stored in session for compatibility
+            UserAccount user = (UserAccount) session.getAttribute("user");
+
+            if (userId == null || user == null) {
+                LOGGER.warning("User session invalid, redirecting to login");
+                response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+                return;
             }
-            user = userDAO.getUserByUsername(username);
-            request.setAttribute("username", username);
+            
+            // Get full user information from database
+            //UserAccount user = userDAO.getUserByUserID(userId);
+            //if (user == null) {
+            //    LOGGER.warning("User not found in database: " + userId);
+            //    response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            //    return;
+            //}
+            
             request.setAttribute("user", user);
+            request.setAttribute("userId", userId);
+            request.setAttribute("userRole", userRole);
+            LOGGER.info("User authenticated: " + user.getUsername() + " (ID: " + userId + ", Role: " + userRole + ")");
 
             // Set leaderboard data for both forum and post detail pages
             int limit = 100;
@@ -96,7 +150,7 @@ public class ForumServlet extends HttpServlet {
                 postDAO.incrementViewCount(postId);
                 request.setAttribute("postDetail", post);
 
-                // Lấy bài viết liên quan
+                // Get related posts
                 List<ForumPost> relatedPosts = postDAO.getRelatedPosts(postId, post.getCategory(), 3);
                 request.setAttribute("relatedPosts", relatedPosts);
 
@@ -170,21 +224,32 @@ public class ForumServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         LOGGER.info("ForumServlet doPost called for URL: " + request.getServletPath());
+        
+        // Check authentication first
+        if (!checkAuthentication(request, response)) {
+            return; // User not authenticated, already redirected
+        }
+        
         String action = request.getServletPath();
 
         if ("/forum/createPost".equals(action)) {
             try {
-                String userId = (String) request.getSession().getAttribute("userId");
-                if (userId == null) {
-                    userId = "U001"; // Default userID
-                    request.getSession().setAttribute("userId", userId);
-                    request.getSession().setAttribute("username", "quy123");
-                    LOGGER.info("No user logged in, using default user U001");
+                HttpSession session = request.getSession();
+                String userId = UserAuthentication.getUserID(session);
+                UserAccount user = (UserAccount) session.getAttribute("user");
+
+                if (userId == null || user == null) {
+                    LOGGER.warning("User session invalid during post creation");
+                    response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+                    return;
                 }
+                
+                LOGGER.info("Creating post for user: " + user.getUsername() + " (ID: " + userId + ")");
 
                 String title = request.getParameter("postTitle");
                 String content = request.getParameter("postContent");
                 String category = request.getParameter("postCategory");
+                
                 if (title == null || title.trim().isEmpty() || content == null || content.trim().isEmpty()
                         || category == null || category.trim().isEmpty()) {
                     request.getSession().setAttribute("message", "Tiêu đề, nội dung và chủ đề không được để trống");
@@ -225,7 +290,7 @@ public class ForumServlet extends HttpServlet {
                 postDAO.createPost(post);
 
                 request.getSession().setAttribute("message", "Bài viết đã được tạo thành công!");
-                LOGGER.info("Redirecting to /forum after creating post");
+                LOGGER.info("Post created successfully by user: " + user.getUsername());
                 response.sendRedirect(request.getContextPath() + "/forum");
             } catch (SQLException e) {
                 LOGGER.severe("Database error in doPost: " + e.getMessage());
@@ -238,18 +303,37 @@ public class ForumServlet extends HttpServlet {
             }
         } else if ("/forum/deletePost".equals(action)) {
             try {
-                String userId = (String) request.getSession().getAttribute("userId");
+                HttpSession session = request.getSession();
+                String userId = UserAuthentication.getUserID(session);
+                String userRole = UserAuthentication.getUserRole(session);
+
                 if (userId == null) {
-                    userId = "U001";
-                    request.getSession().setAttribute("userId", userId);
+                    LOGGER.warning("User session invalid during post deletion");
+                    response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+                    return;
                 }
 
                 int postId = Integer.parseInt(request.getParameter("postId"));
-                boolean deleted = postDAO.deletePost(postId, userId);
-
-                if (deleted) {
-                    request.getSession().setAttribute("message", "Xóa bài viết thành công!");
-                    response.sendRedirect(request.getContextPath() + "/forum");
+                
+                // Check if user has permission to delete (owner or admin)
+                ForumPost post = postDAO.getPostById(postId);
+                boolean canDelete = false;
+                
+                if (post != null) {
+                    // User can delete if they are the owner or an admin
+                    canDelete = post.getPostedBy().equals(userId) || 
+                               (userRole != null && userRole.toLowerCase().contains("admin"));
+                }
+                
+                if (canDelete) {
+                    boolean deleted = postDAO.deletePost(postId, userId);
+                    if (deleted) {
+                        request.getSession().setAttribute("message", "Xóa bài viết thành công!");
+                        response.sendRedirect(request.getContextPath() + "/forum");
+                    } else {
+                        request.getSession().setAttribute("message", "Không thể xóa bài viết!");
+                        response.sendRedirect(request.getContextPath() + "/forum/post/" + postId);
+                    }
                 } else {
                     request.getSession().setAttribute("message", "Bạn không có quyền xóa bài viết này!");
                     response.sendRedirect(request.getContextPath() + "/forum/post/" + postId);

@@ -1,14 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, model.forum.*, model.UserAccount, java.text.SimpleDateFormat, java.sql.Timestamp" %>
-<%!
-    public String escapeHtml(String input) {
-        if (input == null) return "";
-        return input.replace("&", "&amp;")
-                    .replace("<", "&lt;")
-                    .replace(">", "&gt;")
-                    .replace("'", "&#39;");
-    }
-%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -21,35 +12,7 @@
 </head>
 <body>
     <!-- Header -->
-    <header class="header">
-        <div class="header-container">
-            <a href="<%= request.getContextPath() %>/" class="logo">
-                <div class="logo-icon">
-                    <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="Logo" />
-                </div>
-                <span>JLPT Learning</span>
-            </a>
-
-            <nav class="nav">
-                <a href="<%= request.getContextPath() %>/" class="nav-link">
-                    <i class="fas fa-home"></i>
-                    <span>Trang chủ</span>
-                </a>
-                <a href="<%= request.getContextPath() %>/courses" class="nav-link">
-                    <i class="fas fa-book"></i>
-                    <span>Khóa học</span>
-                </a>
-                <a href="<%= request.getContextPath() %>/forum" class="nav-link">
-                    <i class="fas fa-comments"></i>
-                    <span>Diễn đàn</span>
-                </a>
-                <a href="<%= request.getContextPath() %>/profile" class="nav-link active">
-                    <i class="fas fa-user"></i>
-                    <span>Hồ sơ</span>
-                </a>
-            </nav>
-        </div>
-    </header>
+    <%@ include file="forumHeader.jsp" %>
 
     <!-- Main Container -->
     <div class="container">
