@@ -41,8 +41,7 @@ public class CourseDAO {
             ResultSet resultSet = pre.executeQuery();
             while (resultSet.next()) {
                 //lấy value theo từng cột
-
-                int courseNum = resultSet.getInt("courseNum");
+                
                 String courseID = resultSet.getString("CourseID");
                 String title = resultSet.getString("title");
                 String description = resultSet.getString("description");
@@ -53,7 +52,7 @@ public class CourseDAO {
                 boolean isActive = resultSet.getBoolean("isActive");
 
                 //tạo model hứng giữ liệu
-                Course course = new Course(courseNum, courseID, title, description, fee, duration, startDate, endDate, isActive);
+                Course course = new Course(courseID, title, description, fee, duration, startDate, endDate, isActive);
 
                 //thêm vào list
                 list.add(course);
@@ -66,32 +65,32 @@ public class CourseDAO {
 
     public void addCourse(Course course) {
         String sql = "INSERT INTO Courses\n"
-                + "           (title,\n"
+                + "           (courseID,\n"
+                + "            title,\n"
                 + "            description,\n"
                 + "            fee,\n"
                 + "            duration,\n"
                 + "            startDate,\n"
                 + "            endDate,\n"
-                + "            isActive)\n"
+                + "            isActive,\n"
+                + "            imageUrl)\n"
                 + "     VALUES\n"
-                + "           (?, ?, ?, ?, ?, ?, ?)";
+                + "           (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             //Tạo khay chứa câu lệnh
             PreparedStatement pre = con.prepareStatement(sql);
             //Set gia tri cho dau ?
-
-//            pre.setInt(1, course.getCourseNum());
-//            pre.setString(2, course.getCourseID());
-            pre.setString(1, course.getTitle());
-            pre.setString(2, course.getDescription());
-            pre.setDouble(3, course.getFee());
-            pre.setInt(4, course.getDuration());
+            pre.setString(1, course.getCourseID());
+            pre.setString(2, course.getTitle());
+            pre.setString(3, course.getDescription());
+            pre.setDouble(4, course.getFee());
+            pre.setInt(5, course.getDuration());
             java.util.Date startDateSql = new java.sql.Date(course.getStartDate().getTime());
-            pre.setDate(5, (Date) startDateSql);
+            pre.setDate(6, (Date) startDateSql);
             java.util.Date endDateSql = new java.sql.Date(course.getEndDate().getTime());
-            pre.setDate(6, (Date) endDateSql);
-            pre.setBoolean(7, course.isIsActive());
-
+            pre.setDate(7, (Date) endDateSql);
+            pre.setBoolean(8, course.isIsActive());
+            pre.setString(9, course.getImageUrl());
             //Chạy câu lệnh và tạo khay chứa kết quả câu lệnh
             pre.executeUpdate();
 
@@ -100,17 +99,16 @@ public class CourseDAO {
         }
     }
 
-    public Course getCourseByID(int id) {
-        String sql = "SELECT * FROM Courses WHERE Courses.courseNum = ?";
+    public Course getCourseByID(String id) {
+        String sql = "SELECT * FROM Courses WHERE Courses.courseID = ?";
         Course course = new Course();
         try {
             //Tạo khay chứa câu lệnh
             PreparedStatement pre = con.prepareStatement(sql);
-            pre.setInt(1, id);
+            pre.setString(1, id);
             //Chạy câu lệnh và tạo khay chứa kết quả câu lệnh
             ResultSet resultSet = pre.executeQuery();
             while (resultSet.next()) {
-                int courseNum = resultSet.getInt("courseNum");
                 String courseID = resultSet.getString("CourseID");
                 String title = resultSet.getString("title");
                 String description = resultSet.getString("description");
@@ -119,9 +117,10 @@ public class CourseDAO {
                 Date startDate = resultSet.getDate("startDate");
                 Date endDate = resultSet.getDate("endDate");
                 boolean isActive = resultSet.getBoolean("isActive");
+                String imageUrl = resultSet.getString("imageUrl");
 
                 //tạo model hứng giữ liệu
-                course = new Course(courseNum, courseID, title, description, fee, duration, startDate, endDate, isActive);
+                course = new Course(courseID, title, description, fee, duration, startDate, endDate, isActive, imageUrl);
             }
         } catch (Exception e) {
             System.out.println("error: " + e);
@@ -137,8 +136,9 @@ public class CourseDAO {
                 + "       duration = ?,\n"
                 + "       startDate = ?,\n"
                 + "       endDate = ?,\n"
-                + "       isActive = ?\n"
-                + " WHERE courseNum = ?";
+                + "       isActive = ?,\n"
+                + "       imageUrl = ?\n"
+                + " WHERE courseID = ?";
         try {
             //Tạo khay chứa câu lệnh
             PreparedStatement pre = con.prepareStatement(sql);
@@ -153,7 +153,8 @@ public class CourseDAO {
             pre.setDate(6, (Date) endDateSql);
             pre.setBoolean(7, course.isIsActive());
             //Chạy câu lệnh và tạo khay chứa kết quả câu lệnh
-            pre.setInt(8, course.getCourseNum());
+            pre.setString(8, course.getImageUrl());
+            pre.setString(9, course.getCourseID());
             pre.executeUpdate();
 
         } catch (Exception e) {
@@ -203,5 +204,8 @@ public class CourseDAO {
         CourseDAO dao = new CourseDAO();
         List<Course> listCourse = dao.getAll();
         System.out.println(listCourse);
+        System.out.println("Test:");
+        Course c = dao.getCourseByID("CO001");
+        System.out.println(c);
     }
 }

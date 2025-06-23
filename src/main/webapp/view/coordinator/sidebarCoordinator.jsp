@@ -187,7 +187,7 @@
                 <span class="sidebar-subtitle">Japanese</span> 
             </div>
         </div>    
-        <a href="view/coordinator/home.jsp" class="sidebar-nav-item <%= currentPage.equals("home.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/view/coordinator/home.jsp" class="sidebar-nav-item <%= currentPage.equals("home.jsp") ? "active" : ""%>">
             <i class="fas fa-chart-line"></i>
             <span>Trang chủ</span>
         </a>
@@ -195,23 +195,23 @@
             <i class="fas fa-users"></i>
             <span>Giám sát khóa học</span>
         </a>
-        <a href="course-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("course-approval.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/view/coordinator/course-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("course-approval.jsp") ? "active" : ""%>">
             <i class="fas fa-book"></i>
             <span>Phê duyệt khóa học</span>
         </a>
-        <a href="document-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("document-approval.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/view/coordinator/document-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("document-approval.jsp") ? "active" : ""%>">
             <i class="fas fa-credit-card"></i>
             <span>Phê duyệt tài liệu</span>
         </a>
-        <a href="test-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("test-approval.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/view/coordinator/test-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("test-approval.jsp") ? "active" : ""%>">
             <i class="fas fa-star"></i>
             <span>Phê duyệt bài kiểm tra</span>
         </a>
-        <a href="${pageContext.request.contextPath}/LoadInstructor" class="sidebar-nav-item <%= currentPage.equals("instructor-assignment.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/view/coordinator/instructor-assignment.jsp" class="sidebar-nav-item <%= currentPage.equals("instructor-assignment.jsp") ? "active" : ""%>">
             <i class="fas fa-bell"></i>
             <span>Phân công giảng viên</span>
         </a>
-        <a href="teacher-cv-review.jsp" class="sidebar-nav-item <%= currentPage.equals("teacher-cv-review.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/view/coordinator/teacher-cv-review.jsp" class="sidebar-nav-item <%= currentPage.equals("teacher-cv-review.jsp") ? "active" : ""%>">
             <i class="fas fa-users"></i>
             <span>Phê Duyệt Hồ Sơ Giảng Viên</span>
         </a>
