@@ -1,6 +1,6 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ * Click nhé://xai.org/systemFileSystem/Templates/Licenses/license-default.txt to edit this license
+ * Click nhé://xai.org/systemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package controller.coordinator;
 
@@ -11,30 +11,30 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import model.Course;
 
 /**
  *
- * @author LENOVO
+ * @param author LENOVO
  */
 public class EditCourseServlet extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes request for both HTTP <code>GET</code> and <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @param throws ServletException if a servlet-specific error occurs
+     * @param throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
+            /* TODO output your page here. You may use this following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
@@ -53,45 +53,67 @@ public class EditCourseServlet extends HttpServlet {
      *
      * @param request servlet request
      * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @param throws ServletException if a servlet-specific error occurs
+     * @param throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int courseNum = Integer.parseInt(request.getParameter("courseNum"));
-        String title = request.getParameter("title");
-        String description = request.getParameter("description");
-        double fee = Double.parseDouble(request.getParameter("fee"));
-        int duration = Integer.parseInt(request.getParameter("duration"));
-
-//        Date startDate = Date.valueOf(request.getParameter("startDate"));
-        String startDateString = request.getParameter("startDate");
-        SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
-        Date startDate = new Date();
         try {
-            startDate = formatDate.parse(startDateString);
+            // Lấy các tham số từ request
+            int courseNum = Integer.parseInt(request.getParameter("courseNum"));
+            String courseID = request.getParameter("courseID");
+            String title = request.getParameter("title");
+            String description = request.getParameter("description");
+            BigDecimal fee = new BigDecimal(request.getParameter("fee"));
+            int duration = Integer.parseInt(request.getParameter("duration"));
+
+            // Phân tích startDate
+            String startDateString = request.getParameter("startDate");
+            SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
+            java.sql.Date startDate;
+            try {
+                java.util.Date parsedStartDate = formatDate.parse(startDateString);
+                startDate = new java.sql.Date(parsedStartDate.getTime());
+            } catch (Exception e) {
+                response.getWriter().print("error parsing startDate: " + e);
+                return;
+            }
+
+            // Phân tích endDate
+            String endDateString = request.getParameter("endDate"); // Sửa lỗi từ "startDate" thành "endDate"
+            java.sql.Date endDate;
+            try {
+                java.util.Date parsedEndDate = formatDate.parse(endDateString);
+                endDate = new java.sql.Date(parsedEndDate.getTime());
+            } catch (Exception e) {
+                response.getWriter().print("error parsing endDate: " + e);
+                return;
+            }
+
+            boolean isActive = Boolean.parseBoolean(request.getParameter("isActive"));
+
+            // Lấy các trường mới (imageUrl, progress, classCount)
+            String imageUrl = request.getParameter("imageUrl");
+            BigDecimal progress = request.getParameter("progress") != null ? new BigDecimal(request.getParameter("progress")) : null;
+            int classCount = request.getParameter("classCount") != null ? Integer.parseInt(request.getParameter("classCount")) : 0;
+
+            // Tạo đối tượng Course
+            Course course = new Course(courseNum, courseID, title, description, fee, duration, startDate, endDate, isActive, imageUrl);
+            course.setProgress(progress);
+            course.setClassCount(classCount);
+
+            // Gọi DAO để chỉnh sửa khóa học
+            CourseDAO dao = new CourseDAO();
+            dao.editCourse(course);
+
+            // Chuyển hướng đến LoadCourse
+            response.sendRedirect("LoadCourse");
+        } catch (NumberFormatException e) {
+            response.getWriter().print("error parsing number: " + e);
         } catch (Exception e) {
             response.getWriter().print("error: " + e);
-            return;
         }
-//        Date endDate = Date.valueOf(request.getParameter("endDate"));
-        String endDateString = request.getParameter("startDate");
-        Date endDate = new Date();
-        try {
-            endDate = formatDate.parse(startDateString);
-        } catch (Exception e) {
-            response.getWriter().print("error: " + e);
-            return;
-        }
-
-        boolean isActive = Boolean.parseBoolean(request.getParameter("isActive"));
-
-        Course course = new Course(courseNum, null, title, description, fee, duration, startDate, endDate, isActive);
-        CourseDAO dao = new CourseDAO();
-        dao.editCourse(course);
-
-        response.sendRedirect("LoadCourse");
     }
 
     /**
@@ -99,8 +121,8 @@ public class EditCourseServlet extends HttpServlet {
      *
      * @param request servlet request
      * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @param throws ServletException if a servlet-specific error occurs
+     * @param throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -117,5 +139,4 @@ public class EditCourseServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

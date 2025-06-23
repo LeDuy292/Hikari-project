@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/footer.css?v=1"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/student_css/shopping.css?v=1"/>
     <script src="${pageContext.request.contextPath}/assets/js/student_js/shopping.js?v=1"></script>
+    <script>
+        window.contextPath = '${pageContext.request.contextPath}';
+    </script>
 </head>
 <body class="bg-[#f7f7fa] font-sans">
     <div class="flex min-h-screen">
@@ -26,11 +29,11 @@
                 <div class="modal-content">
                     <span class="close" onclick="closeModal()">×</span>
                     <h2>Đăng ký tài khoản</h2>
-                    <form>
-                        <input type="text" placeholder="Họ và tên" required>
-                        <input type="email" placeholder="Email" required>
-                        <input type="password" placeholder="Mật khẩu" required>
-                        <select required>
+                    <form action="${pageContext.request.contextPath}/register" method="post">
+                        <input type="text" name="fullName" placeholder="Họ và tên" required>
+                        <input type="email" name="email" placeholder="Email" required>
+                        <input type="password" name="password" placeholder="Mật khẩu" required>
+                        <select name="role" required>
                             <option value="" disabled selected>Chọn vai trò</option>
                             <option value="student">Học viên</option>
                             <option value="teacher">Giáo viên</option>
@@ -59,10 +62,14 @@
                 <div id="cartList" class="divide-y divide-gray-200">
                     <!-- Cart items will be dynamically loaded here -->
                 </div>
+                <div id="cartLoading" class="text-center py-10">
+                    <i class="fa fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-500 text-lg">Đang tải giỏ hàng...</p>
+                </div>
                 <div id="cartEmpty" class="hidden text-center py-10">
                     <i class="fa fa-shopping-cart text-4xl text-gray-400 mb-4"></i>
                     <p class="text-gray-500 text-lg">Giỏ hàng của bạn đang trống</p>
-                    <a href="index.jsp" class="text-orange-500 font-semibold hover:underline">Quay lại mua sắm</a>
+                    <a href="${pageContext.request.contextPath}/courses" class="text-orange-500 font-semibold hover:underline">Quay lại mua sắm</a>
                 </div>
                 <div class="mt-6">
                     <div class="flex flex-col sm:flex-row gap-4 mb-6">
@@ -75,7 +82,7 @@
                     <div id="discountMessage" class="text-sm text-gray-500 mb-4 hidden"></div>
                     <div class="flex justify-between items-center">
                         <div class="text-lg font-semibold text-gray-800">
-                            Tổng cộng: <span id="cartTotal">$0</span>
+                            Tổng cộng: <span id="cartTotal">0 VNĐ</span>
                         </div>
                         <button id="checkoutBtn" class="bg-orange-500 text-white font-bold py-2 px-6 rounded-full hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
                             Thanh toán

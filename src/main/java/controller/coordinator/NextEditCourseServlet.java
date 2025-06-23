@@ -60,7 +60,7 @@ public class NextEditCourseServlet extends HttpServlet {
            int id = Integer.parseInt(request.getParameter("id"));
         //find student by id qua DAO
         CourseDAO dao = new CourseDAO();
-        Course course = dao.getCourseByID(id);
+        Course course = dao.getCourseById(id);
         
         request.setAttribute("course", course);
         request.getRequestDispatcher("view/coordinator/EditCourse.jsp").forward(request, response);
