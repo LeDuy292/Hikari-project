@@ -11,6 +11,7 @@ import model.UserAccount;
 import service.UserService;
 import utils.ValidationUtil;
 import authentication.SessionManager;
+import authentication.UserAuthentication;
 import dao.UserDAO;
 import java.sql.SQLException;
 
@@ -32,9 +33,26 @@ public class LoginServlet extends HttpServlet {
                 if (user != null) {
                     HttpSession session = request.getSession();
                     try {
-                        sessionManager.updateSession(user, session);
+                        // Set user session using existing UserAuthentication utility
+                        UserAuthentication.setUserSession(session, user.getUserID(), user.getRole());
+
+                        // Also store the full user object for compatibility with existing code
                         session.setAttribute("user", user);
-                        response.sendRedirect(request.getContextPath() + "/view/student/home.jsp");
+                        session.setAttribute("userId", user.getUserID());
+                        session.setAttribute("username", user.getUsername());
+
+                        // Update session using existing SessionManager
+                        sessionManager.updateSession(user, session);
+                        
+                        // Check if there's a redirect URL stored in session
+                        String redirectUrl = (String) session.getAttribute("redirectUrl");
+                        if (redirectUrl != null) {
+                            session.removeAttribute("redirectUrl");
+                            System.out.println("Redirecting user to original URL: " + redirectUrl);
+                            response.sendRedirect(redirectUrl);
+                        } else {
+                            response.sendRedirect(request.getContextPath() + "/view/student/home.jsp");
+                        }
                     } catch (Exception e) {
                         session.invalidate();
                         request.setAttribute("error", "Lỗi đăng nhập: " + e.getMessage());
@@ -84,7 +102,7 @@ public class LoginServlet extends HttpServlet {
                 newUser.setFullName(username);
                 newUser.setRole("Student");
                 
-                // FIX: Generate userID BEFORE registering
+                // Generate userID BEFORE registering
                 try {
                     String newUserID = new UserDAO().generateNewUserID();
                     newUser.setUserID(newUserID);
@@ -95,10 +113,8 @@ public class LoginServlet extends HttpServlet {
                     return;
                 }
                 
-                System.out.println("1");
                 boolean isRegistered = userService.registerUser(newUser);
                 if (isRegistered) {
-                    System.out.println("2");
                     request.setAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
                     request.getRequestDispatcher("/view/login.jsp").forward(request, response);
                 } else {
