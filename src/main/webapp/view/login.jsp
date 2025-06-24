@@ -1,3 +1,5 @@
+<%@page import="constant.Constant"%>
+<%@page import="constant.Constant"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="vi">
@@ -164,7 +166,7 @@
                             <%= isSignUp ? "Đăng ký" : "Đăng nhập" %>
                         </button>
                         <div class="divider"><span>hoặc</span></div>
-                        <button type="button" class="google-btn" onclick="window.location.href = '<%= request.getContextPath() %>/auth/google'">
+                        <button type="button" class="google-btn" onclick="window.location.href = 'https://accounts.google.com/o/oauth2/auth?client_id=<%= Constant.GOOGLE_CLIENT_ID%>&redirect_uri=<%= Constant.GOOGLE_REDIRECT_URI%>&response_type=code&scope=email%20profile'">
                             <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                             <path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
                             <path fill="#34A853" d="M46.98 24.55c0-1.7-.15-3.34-.43-4.91H24v9.28h12.84c-.56 2.98-2.24 5.51-4.78 7.2l7.73 6.01c4.5-4.15 7.19-10.28 7.19-17.58z"/>
