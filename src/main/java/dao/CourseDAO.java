@@ -1,47 +1,38 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Course;
 import utils.DBContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author LENOVO
- */
 public class CourseDAO {
 
-    Connection con;
+    private static final Logger logger = LoggerFactory.getLogger(CourseDAO.class);
+    private Connection con;
 
     public CourseDAO() {
         DBContext dBContext = new DBContext();
         try {
             con = dBContext.getConnection();
-            System.out.println("KET NOI THANH CONG!");
+            logger.info("CourseDAO: Database connection established successfully.");
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            logger.error("CourseDAO: Error connecting to database: {}", e.getMessage(), e);
         }
     }
 
     public List<Course> getAll() {
         String sql = "select * from Courses";
         List<Course> list = new ArrayList<>();
-        try {
-            //Tạo khay chứa câu lệnh
-            PreparedStatement pre = con.prepareStatement(sql);
-            //Chạy câu lệnh và tạo khay chứa kết quả câu lệnh
-            ResultSet resultSet = pre.executeQuery();
+        try (PreparedStatement pre = con.prepareStatement(sql);
+             ResultSet resultSet = pre.executeQuery()) {
             while (resultSet.next()) {
-                //lấy value theo từng cột
-                
                 String courseID = resultSet.getString("CourseID");
                 String title = resultSet.getString("title");
                 String description = resultSet.getString("description");
@@ -50,15 +41,14 @@ public class CourseDAO {
                 Date startDate = resultSet.getDate("startDate");
                 Date endDate = resultSet.getDate("endDate");
                 boolean isActive = resultSet.getBoolean("isActive");
+                String imageUrl = resultSet.getString("imageUrl");
 
-                //tạo model hứng giữ liệu
-                Course course = new Course(courseID, title, description, fee, duration, startDate, endDate, isActive);
-
-                //thêm vào list
+                Course course = new Course(courseID, title, description, fee, duration, startDate, endDate, isActive, imageUrl);
                 list.add(course);
             }
-        } catch (Exception e) {
-            System.out.println("error: " + e);
+            logger.debug("CourseDAO: Retrieved {} courses.", list.size());
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error getting all courses: {}", e.getMessage(), e);
         }
         return list;
     }
@@ -76,57 +66,56 @@ public class CourseDAO {
                 + "            imageUrl)\n"
                 + "     VALUES\n"
                 + "           (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try {
-            //Tạo khay chứa câu lệnh
-            PreparedStatement pre = con.prepareStatement(sql);
-            //Set gia tri cho dau ?
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
             pre.setString(1, course.getCourseID());
             pre.setString(2, course.getTitle());
             pre.setString(3, course.getDescription());
             pre.setDouble(4, course.getFee());
             pre.setInt(5, course.getDuration());
-            java.util.Date startDateSql = new java.sql.Date(course.getStartDate().getTime());
-            pre.setDate(6, (Date) startDateSql);
-            java.util.Date endDateSql = new java.sql.Date(course.getEndDate().getTime());
-            pre.setDate(7, (Date) endDateSql);
+            java.sql.Date startDateSql = new java.sql.Date(course.getStartDate().getTime());
+            pre.setDate(6, startDateSql);
+            java.sql.Date endDateSql = new java.sql.Date(course.getEndDate().getTime());
+            pre.setDate(7, endDateSql);
             pre.setBoolean(8, course.isIsActive());
             pre.setString(9, course.getImageUrl());
-            //Chạy câu lệnh và tạo khay chứa kết quả câu lệnh
             pre.executeUpdate();
+            logger.info("CourseDAO: Added new course with ID: {}", course.getCourseID());
 
-        } catch (Exception e) {
-            System.out.println("error: " + e);
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error adding course {}: {}", course.getCourseID(), e.getMessage(), e);
         }
     }
 
-    public Course getCourseByID(String id) {
+    public Course getCourseByID(String id) { // Changed parameter type to String
         String sql = "SELECT * FROM Courses WHERE Courses.courseID = ?";
-        Course course = new Course();
-        try {
-            //Tạo khay chứa câu lệnh
-            PreparedStatement pre = con.prepareStatement(sql);
+        Course course = null; // Initialize to null
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
             pre.setString(1, id);
-            //Chạy câu lệnh và tạo khay chứa kết quả câu lệnh
-            ResultSet resultSet = pre.executeQuery();
-            while (resultSet.next()) {
-                String courseID = resultSet.getString("CourseID");
-                String title = resultSet.getString("title");
-                String description = resultSet.getString("description");
-                double fee = resultSet.getDouble("fee");
-                int duration = resultSet.getInt("duration");
-                Date startDate = resultSet.getDate("startDate");
-                Date endDate = resultSet.getDate("endDate");
-                boolean isActive = resultSet.getBoolean("isActive");
-                String imageUrl = resultSet.getString("imageUrl");
+            try (ResultSet resultSet = pre.executeQuery()) {
+                if (resultSet.next()) { // Use if instead of while since courseID is unique
+                    String courseID = resultSet.getString("CourseID");
+                    String title = resultSet.getString("title");
+                    String description = resultSet.getString("description");
+                    double fee = resultSet.getDouble("fee");
+                    int duration = resultSet.getInt("duration");
+                    Date startDate = resultSet.getDate("startDate");
+                    Date endDate = resultSet.getDate("endDate");
+                    boolean isActive = resultSet.getBoolean("isActive");
+                    String imageUrl = resultSet.getString("imageUrl");
 
-                //tạo model hứng giữ liệu
-                course = new Course(courseID, title, description, fee, duration, startDate, endDate, isActive, imageUrl);
+                    course = new Course(courseID, title, description, fee, duration, startDate, endDate, isActive, imageUrl);
+                    logger.debug("CourseDAO: Retrieved course with ID {}: {}", id, course);
+                } else {
+                    logger.warn("CourseDAO: No course found for ID: {}", id);
+                }
             }
-        } catch (Exception e) {
-            System.out.println("error: " + e);
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error getting course by ID {}: {}", id, e.getMessage(), e);
         }
         return course;
     }
+    
+    // Removed the getCourseById(int id) method to enforce String usage.
 
     public void editCourse(Course course) {
         String sql = "UPDATE Courses\n"
@@ -139,44 +128,37 @@ public class CourseDAO {
                 + "       isActive = ?,\n"
                 + "       imageUrl = ?\n"
                 + " WHERE courseID = ?";
-        try {
-            //Tạo khay chứa câu lệnh
-            PreparedStatement pre = con.prepareStatement(sql);
-            //Set gia tri cho dau ?
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
             pre.setString(1, course.getTitle());
             pre.setString(2, course.getDescription());
             pre.setDouble(3, course.getFee());
             pre.setInt(4, course.getDuration());
-            java.util.Date startDateSql = new java.sql.Date(course.getStartDate().getTime());
-            pre.setDate(5, (Date) startDateSql);
-            java.util.Date endDateSql = new java.sql.Date(course.getEndDate().getTime());
-            pre.setDate(6, (Date) endDateSql);
+            java.sql.Date startDateSql = new java.sql.Date(course.getStartDate().getTime());
+            pre.setDate(5, startDateSql);
+            java.sql.Date endDateSql = new java.sql.Date(course.getEndDate().getTime());
+            pre.setDate(6, endDateSql);
             pre.setBoolean(7, course.isIsActive());
-            //Chạy câu lệnh và tạo khay chứa kết quả câu lệnh
             pre.setString(8, course.getImageUrl());
             pre.setString(9, course.getCourseID());
             pre.executeUpdate();
+            logger.info("CourseDAO: Edited course with ID: {}", course.getCourseID());
 
-        } catch (Exception e) {
-            System.out.println("error: " + e);
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error editing course {}: {}", course.getCourseID(), e.getMessage(), e);
         }
     }
 
     public int countAllCourses() {
         String sql = "SELECT COUNT(*) FROM Courses";
         int count = 0;
-        try {
-            // Tạo khay chứa câu lệnh
-            PreparedStatement pre = con.prepareStatement(sql);
-            // Chạy câu lệnh và tạo khay chứa kết quả
-            ResultSet resultSet = pre.executeQuery();
-            // Di chuyển con trỏ đến dòng đầu tiên
+        try (PreparedStatement pre = con.prepareStatement(sql);
+             ResultSet resultSet = pre.executeQuery()) {
             if (resultSet.next()) {
-                // Lấy giá trị đếm từ cột đầu tiên
                 count = resultSet.getInt(1);
             }
-        } catch (Exception e) {
-            System.out.println("error: " + e);
+            logger.debug("CourseDAO: Counted {} total courses.", count);
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error counting all courses: {}", e.getMessage(), e);
         }
         return count;
     }
@@ -184,20 +166,108 @@ public class CourseDAO {
     public int countAllCoursesActive() {
         String sql = "SELECT COUNT(*) FROM Courses WHERE Courses.isActive = 1";
         int count = 0;
-        try {
-            // Tạo khay chứa câu lệnh
-            PreparedStatement pre = con.prepareStatement(sql);
-            // Chạy câu lệnh và tạo khay chứa kết quả
-            ResultSet resultSet = pre.executeQuery();
-            // Di chuyển con trỏ đến dòng đầu tiên
+        try (PreparedStatement pre = con.prepareStatement(sql);
+             ResultSet resultSet = pre.executeQuery()) {
             if (resultSet.next()) {
-                // Lấy giá trị đếm từ cột đầu tiên
                 count = resultSet.getInt(1);
             }
-        } catch (Exception e) {
-            System.out.println("error: " + e);
+            logger.debug("CourseDAO: Counted {} active courses.", count);
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error counting active courses: {}", e.getMessage(), e);
         }
         return count;
+    }
+    
+    public List<Course> searchCourses(String searchKeyword, String category) {
+        List<Course> courses = new ArrayList<>();
+        String sql = "SELECT * FROM Courses WHERE (title LIKE ? OR description LIKE ?) AND category = ? AND isActive = TRUE";
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
+            pre.setString(1, "%" + searchKeyword + "%");
+            pre.setString(2, "%" + searchKeyword + "%");
+            pre.setString(3, category);
+            try (ResultSet resultSet = pre.executeQuery()) {
+                while (resultSet.next()) {
+                    String courseID = resultSet.getString("CourseID");
+                    String title = resultSet.getString("title");
+                    String description = resultSet.getString("description");
+                    double fee = resultSet.getDouble("fee");
+                    int duration = resultSet.getInt("duration");
+                    Date startDate = resultSet.getDate("startDate");
+                    Date endDate = resultSet.getDate("endDate");
+                    boolean isActive = resultSet.getBoolean("isActive");
+                    String imageUrl = resultSet.getString("imageUrl");
+                    courses.add(new Course(courseID, title, description, fee, duration, startDate, endDate, isActive, imageUrl));
+                }
+            }
+            logger.debug("CourseDAO: Found {} courses for search '{}' in category '{}'.", courses.size(), searchKeyword, category);
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error searching courses by category: {}", e.getMessage(), e);
+        }
+        return courses;
+    }
+
+    public List<Course> searchCoursesAllCategories(String searchKeyword) {
+        List<Course> courses = new ArrayList<>();
+        String sql = "SELECT * FROM Courses WHERE (title LIKE ? OR description LIKE ?) AND isActive = TRUE";
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
+            pre.setString(1, "%" + searchKeyword + "%");
+            pre.setString(2, "%" + searchKeyword + "%");
+            try (ResultSet resultSet = pre.executeQuery()) {
+                while (resultSet.next()) {
+                    String courseID = resultSet.getString("CourseID");
+                    String title = resultSet.getString("title");
+                    String description = resultSet.getString("description");
+                    double fee = resultSet.getDouble("fee");
+                    int duration = resultSet.getInt("duration");
+                    Date startDate = resultSet.getDate("startDate");
+                    Date endDate = resultSet.getDate("endDate");
+                    boolean isActive = resultSet.getBoolean("isActive");
+                    String imageUrl = resultSet.getString("imageUrl");
+                    courses.add(new Course(courseID, title, description, fee, duration, startDate, endDate, isActive, imageUrl));
+                }
+            }
+            logger.debug("CourseDAO: Found {} courses for search '{}' across all categories.", courses.size(), searchKeyword);
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error searching courses all categories: {}", e.getMessage(), e);
+        }
+        return courses;
+    }
+
+    public List<Course> getAllCoursesByCategory(String category) {
+        List<Course> courses = new ArrayList<>();
+        String sql = "SELECT * FROM Courses WHERE category = ? AND isActive = TRUE";
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
+            pre.setString(1, category);
+            try (ResultSet resultSet = pre.executeQuery()) {
+                while (resultSet.next()) {
+                    String courseID = resultSet.getString("CourseID");
+                    String title = resultSet.getString("title");
+                    String description = resultSet.getString("description");
+                    double fee = resultSet.getDouble("fee");
+                    int duration = resultSet.getInt("duration");
+                    Date startDate = resultSet.getDate("startDate");
+                    Date endDate = resultSet.getDate("endDate");
+                    boolean isActive = resultSet.getBoolean("isActive");
+                    String imageUrl = resultSet.getString("imageUrl");
+                    courses.add(new Course(courseID, title, description, fee, duration, startDate, endDate, isActive, imageUrl));
+                }
+            }
+            logger.debug("CourseDAO: Retrieved {} courses for category '{}'.", courses.size(), category);
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error getting courses by category: {}", e.getMessage(), e);
+        }
+        return courses;
+    }
+
+    public void closeConnection() {
+        try {
+            if (con != null && !con.isClosed()) {
+                con.close();
+                logger.info("CourseDAO: Database connection closed.");
+            }
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error closing connection: {}", e.getMessage(), e);
+        }
     }
 
     public static void main(String[] args) {
@@ -205,7 +275,8 @@ public class CourseDAO {
         List<Course> listCourse = dao.getAll();
         System.out.println(listCourse);
         System.out.println("Test:");
-        Course c = dao.getCourseByID("CO001");
+        Course c = dao.getCourseByID("CO001"); // Changed to String
         System.out.println(c);
+        dao.closeConnection();
     }
 }

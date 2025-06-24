@@ -5,7 +5,7 @@
         <span style="font-size:26px; font-weight:bold; color:#000000; letter-spacing:1px; transition: color 0.3s ease;"></span>
     </div>
     <div style="display:flex; align-items:center; gap:12px;">
-        <button class="icon-btn" onclick="window.location.href='shopping_cart.jsp'" style="transition: transform 0.3s ease;"><i class="fa fa-shopping-cart"></i></button>
+        <button class="icon-btn" onclick="window.location.href='${pageContext.request.contextPath}/view/student/shopping_cart.jsp'" style="transition: transform 0.3s ease;"><i class="fa fa-shopping-cart"></i></button>
         <button class="icon-btn" style="transition: transform 0.3s ease;"><i class="fa fa-bell"></i></button>
         <% 
             UserAccount user = (UserAccount) session.getAttribute("user");
