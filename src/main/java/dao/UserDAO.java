@@ -16,11 +16,6 @@ import java.util.logging.Logger;
 public class UserDAO {
 
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
-    private final DBContext dbContext;
-
-    public UserDAO() {
-        this.dbContext = new DBContext();
-    }
 
     private Connection con;
 
