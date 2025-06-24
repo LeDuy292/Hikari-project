@@ -17,10 +17,13 @@ public class UserDAO {
 
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
 
+    private final DBContext dbContext;
+        
     private Connection con;
 
     public UserDAO() {
-        DBContext dbContext = new DBContext();
+        // DBContext dbContext = new DBContext();
+         this.dbContext = new DBContext();
         try {
             con = dbContext.getConnection();
             System.out.println("Database connection successful!");
