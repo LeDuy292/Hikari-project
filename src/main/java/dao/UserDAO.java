@@ -13,7 +13,79 @@ import utils.DBContext;
 import java.util.logging.Logger;
 
 public class UserDAO {
+
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
+
+    private Connection con;
+
+    public UserDAO() {
+        DBContext dbContext = new DBContext();
+        try {
+            con = dbContext.getConnection();
+            System.out.println("Database connection successful!");
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+    }
+
+    public UserAccount getUserByEmail(String email) {
+        String sql = "SELECT * FROM UserAccount WHERE email = ?";
+        try {
+            PreparedStatement pre = con.prepareStatement(sql);
+            pre.setString(1, email);
+            ResultSet rs = pre.executeQuery();
+            if (rs.next()) {
+                UserAccount user = new UserAccount();
+                user.setUserID(rs.getString("userID"));
+                user.setFullName(rs.getString("fullName"));
+                user.setUsername(rs.getString("username"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setRole(rs.getString("role"));
+                user.setProfilePicture(rs.getString("profilePicture"));
+                user.setPhone(rs.getString("phone"));
+                user.setBirthDate(rs.getDate("birthDate"));
+                return user;
+            }
+        } catch (Exception e) {
+            System.out.println("Error in getUserByEmail: " + e);
+        }
+        return null;
+    }
+
+    public void addUser(UserAccount user) {
+    String sql = "INSERT INTO UserAccount (userID, fullName, username, email, password, role, profilePicture) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    try {
+        PreparedStatement pre = con.prepareStatement(sql);
+        pre.setString(1, user.getUserID());
+        pre.setString(2, user.getFullName());
+        pre.setString(3, user.getUsername()); // Added username
+        pre.setString(4, user.getEmail());
+        pre.setString(5, user.getPassword()); // Added password
+        pre.setString(6, user.getRole());
+        pre.setString(7, user.getProfilePicture());
+        pre.executeUpdate();
+    } catch (Exception e) {
+        System.out.println("Error in addUser: " + e);
+    }
+}
+
+    public void updateUserProfileGG(UserAccount user) {
+        String sql = "UPDATE UserAccount SET fullName = ?, username = ?, phone = ?, birthDate = ?, password = ? WHERE userID = ?";
+        try {
+            PreparedStatement pre = con.prepareStatement(sql);
+            pre.setString(1, user.getFullName());
+            pre.setString(2, user.getUsername());
+            pre.setString(3, user.getPhone());
+            java.util.Date birthDay = new java.sql.Date(user.getBirthDate().getTime());
+            pre.setDate(4, (Date) birthDay);
+            pre.setString(5, user.getPassword()); // Added passwordpre.setString(5, user.getPassword()); // Added password
+            pre.setString(6, user.getUserID());
+            pre.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("Error in updateUserProfile: " + e);
+        }
+    }
 
     public UserAccount authenticateUser(String username, String password) throws ClassNotFoundException, SQLException {
         String sql = "SELECT userID, role FROM UserAccount WHERE username = ? AND password = ?";
@@ -112,9 +184,7 @@ public class UserDAO {
     // FIX: Updated generateNewUserID method to use correct table name
     public String generateNewUserID() throws SQLException, ClassNotFoundException {
         String query = "SELECT userID FROM UserAccount WHERE userID LIKE 'U%' ORDER BY userID DESC LIMIT 1";
-        try (Connection conn = new DBContext().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = new DBContext().getConnection(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             if (rs.next()) {
                 String lastID = rs.getString("userID"); // ví dụ: U007
