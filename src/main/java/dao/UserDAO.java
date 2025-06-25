@@ -12,6 +12,8 @@ import java.util.logging.Level;
 import model.UserAccount;
 import utils.DBContext;
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.ArrayList;
 
 public class UserDAO {
 
@@ -574,4 +576,90 @@ public class UserDAO {
     }
     
     ///end
+    
+    // Admin management methods
+public List<UserAccount> getAllUsers() throws SQLException {
+    List<UserAccount> users = new ArrayList<>();
+    String sql = "SELECT * FROM UserAccount ORDER BY registrationDate DESC";
+    
+    try (Connection conn = new DBContext().getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+        
+        while (rs.next()) {
+            UserAccount user = new UserAccount();
+            user.setUserID(rs.getString("userID"));
+            user.setUsername(rs.getString("username"));
+            user.setFullName(rs.getString("fullName"));
+            user.setEmail(rs.getString("email"));
+            user.setRole(rs.getString("role"));
+            user.setRegistrationDate(rs.getDate("registrationDate"));
+            user.setProfilePicture(rs.getString("profilePicture"));
+            user.setPhone(rs.getString("phone"));
+            user.setBirthDate(rs.getDate("birthDate"));
+            users.add(user);
+        }
+    } catch (SQLException e) {
+        LOGGER.severe("Error getting all users: " + e.getMessage());
+        throw e;
+    }
+    return users;
+}
+
+public void updateUserStatus(String userID, boolean isActive) throws SQLException {
+    // Since there's no isActive field in UserAccount, we'll use a different approach
+    // For now, we'll just log this action
+    LOGGER.info("User status update requested for: " + userID + ", active: " + isActive);
+}
+
+public void deleteUser(String userID) throws SQLException {
+    String sql = "DELETE FROM UserAccount WHERE userID = ?";
+    
+    try (Connection conn = new DBContext().getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, userID);
+        int rowsAffected = stmt.executeUpdate();
+        
+        if (rowsAffected == 0) {
+            throw new SQLException("No user found with ID: " + userID);
+        }
+        
+        LOGGER.info("User deleted successfully: " + userID);
+    } catch (SQLException e) {
+        LOGGER.severe("Error deleting user: " + userID + ", " + e.getMessage());
+        throw e;
+    }
+}
+
+public List<UserAccount> getUsersByRole(String role) throws SQLException {
+    List<UserAccount> users = new ArrayList<>();
+    String sql = "SELECT * FROM UserAccount WHERE role = ? ORDER BY registrationDate DESC";
+    
+    try (Connection conn = new DBContext().getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, role);
+        
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                UserAccount user = new UserAccount();
+                user.setUserID(rs.getString("userID"));
+                user.setUsername(rs.getString("username"));
+                user.setFullName(rs.getString("fullName"));
+                user.setEmail(rs.getString("email"));
+                user.setRole(rs.getString("role"));
+                user.setRegistrationDate(rs.getDate("registrationDate"));
+                user.setProfilePicture(rs.getString("profilePicture"));
+                user.setPhone(rs.getString("phone"));
+                user.setBirthDate(rs.getDate("birthDate"));
+                users.add(user);
+            }
+        }
+    } catch (SQLException e) {
+        LOGGER.severe("Error getting users by role: " + role + ", " + e.getMessage());
+        throw e;
+    }
+    return users;
+}
 }

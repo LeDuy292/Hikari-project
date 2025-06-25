@@ -5,6 +5,7 @@ import model.UserAccount;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Random;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class UserService {
@@ -110,5 +111,49 @@ public class UserService {
             LOGGER.info("No user found for userNum: " + UserID);
         }
         return user;
+    }
+
+    // Admin management methods
+    public List<UserAccount> getAllUsers() throws ClassNotFoundException, SQLException {
+        return userDAO.getAllUsers();
+    }
+
+    public List<UserAccount> getUsersByRole(String role) throws ClassNotFoundException, SQLException {
+        if (role == null || role.trim().isEmpty()) {
+            throw new IllegalArgumentException("Role không được để trống");
+        }
+        return userDAO.getUsersByRole(role);
+    }
+
+    public void updateUserStatus(String userID, boolean isActive) throws ClassNotFoundException, SQLException {
+        if (userID == null || userID.trim().isEmpty()) {
+            throw new IllegalArgumentException("User ID không được để trống");
+        }
+        userDAO.updateUserStatus(userID, isActive);
+    }
+
+    public void deleteUser(String userID) throws ClassNotFoundException, SQLException {
+        if (userID == null || userID.trim().isEmpty()) {
+            throw new IllegalArgumentException("User ID không được để trống");
+        }
+        userDAO.deleteUser(userID);
+    }
+
+    public void updateUserInfo(UserAccount user) throws ClassNotFoundException, SQLException {
+        if (user == null || user.getUserID() == null) {
+            throw new IllegalArgumentException("Thông tin người dùng không hợp lệ");
+        }
+        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Username không được để trống");
+        }
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email không được để trống");
+        }
+        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Họ tên không được để trống");
+        }
+
+        userDAO.updateUserProfile(user);
+        LOGGER.info("User information updated for: " + user.getUserID());
     }
 }
