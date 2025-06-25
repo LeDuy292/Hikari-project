@@ -34,7 +34,13 @@ public class LoginServlet extends HttpServlet {
                     try {
                         sessionManager.updateSession(user, session);
                         session.setAttribute("user", user);
-                        response.sendRedirect(request.getContextPath() + "/view/student/home.jsp");
+                        session.setAttribute("role", user.getRole());
+                        if((user.getRole()).equals("Student")){
+                            response.sendRedirect(request.getContextPath() + "/view/student/home.jsp");
+                        } 
+                        else if((user.getRole()).equals("Coordinator")){
+                            response.sendRedirect(request.getContextPath() + "/view/coordinator/home.jsp");
+                        }
                     } catch (Exception e) {
                         session.invalidate();
                         request.setAttribute("error", "Lỗi đăng nhập: " + e.getMessage());
