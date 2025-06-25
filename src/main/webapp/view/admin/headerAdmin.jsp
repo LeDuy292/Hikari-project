@@ -30,7 +30,7 @@
             <img src="${pageContext.request.contextPath}/<%= userAvatar %>" alt="Ảnh Đại Diện Quản Trị" class="avatar" />
             <div class="user-info">
                 <span class="user-name">Xin Chào, <%= userName %></span>
-                <a href="${pageContext.request.contextPath}/LogoutServlet" class="logout-btn">
+                <a href="${pageContext.request.contextPath}/logout" class="logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
                     Đăng Xuất
                 </a>

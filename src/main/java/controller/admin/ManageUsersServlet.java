@@ -49,8 +49,7 @@ public class ManageUsersServlet extends HttpServlet {
         try {
             if ("add".equals(action)) {
                 UserAccount user = new UserAccount();
-                //user.setUserID(userService.generateNewUserID());
-                user.setUserID(null);
+                user.setUserID(userService.generateNewUserID());
                 user.setFullName(req.getParameter("fullName"));
                 user.setUsername(req.getParameter("username"));
                 user.setEmail(req.getParameter("email"));

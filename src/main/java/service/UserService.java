@@ -70,7 +70,7 @@ public class UserService {
         user.setOtp(otp);
         user.setOtpExpiry(new Date(System.currentTimeMillis() + 10 * 60 * 1000));
         userDAO.updateOtp(user);
-        LOGGER.info("OTP generated for userNum: " + user.getUserID()+ ", OTP: " + otp);
+        LOGGER.info("OTP generated for userNum: " + user.getUserID() + ", OTP: " + otp);
     }
 
     public UserAccount findByOtp(String otp) throws ClassNotFoundException, SQLException {
@@ -105,10 +105,10 @@ public class UserService {
         LOGGER.info("User profile updated for userNum: " + user.getUserID());
     }
 
-    public UserAccount findByUserNum(String UserID) throws ClassNotFoundException, SQLException {
-        UserAccount user = userDAO.findByUserNum(UserID);
+    public UserAccount findByUserNum(String userID) throws ClassNotFoundException, SQLException {
+        UserAccount user = userDAO.findByUserNum(userID);
         if (user == null) {
-            LOGGER.info("No user found for userNum: " + UserID);
+            LOGGER.info("No user found for userNum: " + userID);
         }
         return user;
     }
@@ -155,5 +155,23 @@ public class UserService {
 
         userDAO.updateUserProfile(user);
         LOGGER.info("User information updated for: " + user.getUserID());
+    }
+
+    public String generateNewUserID() throws ClassNotFoundException, SQLException {
+        String prefix = "U";
+        int maxNumber = 0;
+        List<UserAccount> users = userDAO.getAllUsers();
+        for (UserAccount user : users) {
+            String userID = user.getUserID();
+            if (userID != null && userID.startsWith(prefix)) {
+                try {
+                    int number = Integer.parseInt(userID.substring(prefix.length()));
+                    maxNumber = Math.max(maxNumber, number);
+                } catch (NumberFormatException ignored) {
+                    // Ignore invalid IDs
+                }
+            }
+        }
+        return String.format("%s%03d", prefix, maxNumber + 1);
     }
 }
