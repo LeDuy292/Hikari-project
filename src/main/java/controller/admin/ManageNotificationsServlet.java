@@ -3,7 +3,7 @@ package controller.admin;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import model.Notification;
+import model.admin.Notification;
 import model.UserAccount;
 import service.NotificationService;
 import java.io.IOException;

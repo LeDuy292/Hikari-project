@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -25,21 +26,12 @@
                 <!-- Main Content -->
                 <div class="main-content">
                     <div class="content-wrapper">
-                        <div class="header">
-                            <h2 class="header-title">Dashboard</h2>
-                            <div class="header-actions">
-                                <div class="user-profile">
-                                    <img src="${pageContext.request.contextPath}/img/dashborad/defaultAvatar.jpg" alt="Ảnh Đại Diện Quản Trị" class="avatar" />
-                                    <div class="user-info">
-                                        <span class="user-name">Xin Chào, Quản Trị</span>
-                                        <a href="/LogoutServlet" class="logout-btn">
-                                            <i class="fas fa-sign-out-alt"></i>
-                                            Đăng Xuất
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <c:set var="pageTitle" value="Dashboard" scope="request"/>
+						<jsp:include page="headerAdmin.jsp">
+						    <jsp:param name="pageTitle" value="Dashboard"/>
+						    <jsp:param name="showAddButton" value="false"/>
+						    <jsp:param name="showNotification" value="false"/>
+						</jsp:include>
 
                         <!-- Statistics Cards -->
                         <div class="row mb-4">

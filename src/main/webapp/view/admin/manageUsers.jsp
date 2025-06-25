@@ -1,4 +1,6 @@
-    <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
     <!DOCTYPE html>
     <html lang="en">
       <head>
@@ -16,30 +18,13 @@
         <%@ include file="sidebar.jsp" %>
             <div class="main-content">
               <div class="content-wrapper">
-                <div class="header">
-                  <h2 class="header-title">Quản Lý Tài Khoản</h2>
-                  <div class="header-actions">
-                    <button class="btn-add-user" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                      <i class="fas fa-plus"></i> Thêm
-                    </button>
-                    <div class="notification">
-                      <button class="btn-notification" data-bs-toggle="modal" data-bs-target="#notificationModal">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-count" id="notificationCount">2</span>
-                      </button>
-                    </div>
-                    <div class="user-profile">
-                      <img src="img/dashborad/defaultLogoAdmin.png" alt="Ảnh Đại Diện Quản Trị" class="avatar" />
-                      <div class="user-info">
-                        <span class="user-name">Xin Chào, Quản Trị</span>
-                        <a href="/LogoutServlet" class="logout-btn">
-                          <i class="fas fa-sign-out-alt"></i>
-                          Đăng Xuất
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <jsp:include page="headerAdmin.jsp">
+                    <jsp:param name="pageTitle" value="Quản Lý Tài Khoản"/>
+                    <jsp:param name="showAddButton" value="true"/>
+                    <jsp:param name="addButtonText" value="Thêm Tài Khoản"/>
+                    <jsp:param name="addModalTarget" value="addUserModal"/>
+                    <jsp:param name="showNotification" value="true"/>
+                </jsp:include>
                 <!-- Filter Section -->
                 <div class="filter-section">
                   <label for="roleFilter">Vai Trò:</label>
@@ -80,229 +65,37 @@
                       </tr>
                     </thead>
                     <tbody id="userTableBody">
-                      <tr>
-                        <td>USR001</td>
-                        <td><img src="img/dashborad/defaultAvatar.jpg" alt="Avatar" /></td>
-                        <td>Nguyễn Văn A</td>
-                        <td>nguyenvana</td>
-                        <td>nguyenvana@example.com</td>
-                        <td>Học Viên</td>
-                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                        <td>3</td>
-                        <td>2025-05-01</td>
-                        <td>
-                          <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewUserModal" 
-                                  data-user-id="USR001" data-full-name="Nguyễn Văn A" data-username="nguyenvana" 
-                                  data-email="nguyenvana@example.com" data-role="Học Viên" data-status="Hoạt Động" 
-                                  data-courses="3" data-created-date="2025-05-01"><i class="fas fa-eye"></i></button>
-                          <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editUserModal" 
-                                  data-user-id="USR001" data-full-name="Nguyễn Văn A" data-username="nguyenvana" 
-                                  data-email="nguyenvana@example.com" data-role="Học Viên" data-status="Hoạt Động"><i class="fas fa-edit"></i></button>
-                          <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockUserModal" 
-                                  data-user-id="USR001" data-full-name="Nguyễn Văn A" data-status="Hoạt Động"><i class="fas fa-lock"></i></button>
-                        </td>
-                      </tr>
-                      <!-- Repeat similar updates for other table rows -->
-                      <tr>
-                        <td>USR002</td>
-                        <td><img src="img/dashborad/defaultAvatar.jpg" alt="Avatar" /></td>
-                        <td>Trần Thị B</td>
-                        <td>tranb</td>
-                        <td>tranb@example.com</td>
-                        <td>Giảng Viên</td>
-                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                        <td>2</td>
-                        <td>2025-05-02</td>
-                        <td>
-                          <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewUserModal" 
-                                  data-user-id="USR002" data-full-name="Trần Thị B" data-username="tranb" 
-                                  data-email="tranb@example.com" data-role="Giảng Viên" data-status="Hoạt Động" 
-                                  data-courses="2" data-created-date="2025-05-02"><i class="fas fa-eye"></i></button>
-                          <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editUserModal" 
-                                  data-user-id="USR002" data-full-name="Trần Thị B" data-username="tranb" 
-                                  data-email="tranb@example.com" data-role="Giảng Viên" data-status="Hoạt Động"><i class="fas fa-edit"></i></button>
-                          <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockUserModal" 
-                                  data-user-id="USR002" data-full-name="Trần Thị B" data-status="Hoạt Động"><i class="fas fa-lock"></i></button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>USR003</td>
-                        <td><img src="img/dashborad/defaultAvatar.jpg" alt="Avatar" /></td>
-                        <td>Lê Văn C</td>
-                        <td>levanc</td>
-                        <td>levanc@example.com</td>
-                        <td>Học Viên</td>
-                        <td><span class="badge badge-inactive">Khóa</span></td>
-                        <td>1</td>
-                        <td>2025-05-03</td>
-                        <td>
-                          <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewUserModal" 
-                                  data-user-id="USR003" data-full-name="Lê Văn C" data-username="levanc" 
-                                  data-email="levanc@example.com" data-role="Học Viên" data-status="Khóa" 
-                                  data-courses="1" data-created-date="2025-05-03"><i class="fas fa-eye"></i></button>
-                          <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editUserModal" 
-                                  data-user-id="USR003" data-full-name="Lê Văn C" data-username="levanc" 
-                                  data-email="levanc@example.com" data-role="Học Viên" data-status="Khóa"><i class="fas fa-edit"></i></button>
-                          <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockUserModal" 
-                                  data-user-id="USR003" data-full-name="Lê Văn C" data-status="Khóa"><i class="fas fa-unlock"></i></button>
-                        </td>
-                      </tr>
-                      <!-- Add similar updates for remaining rows -->
-                      <tr>
-                        <td>USR004</td>
-                        <td><img src="img/dashborad/defaultAvatar.jpg" alt="Avatar" /></td>
-                        <td>Phạm Thị D</td>
-                        <td>phamd</td>
-                        <td>phamd@example.com</td>
-                        <td>Quản Trị</td>
-                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                        <td>0</td>
-                        <td>2025-05-04</td>
-                        <td>
-                          <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewUserModal" 
-                                  data-user-id="USR004" data-full-name="Phạm Thị D" data-username="phamd" 
-                                  data-email="phamd@example.com" data-role="Quản Trị" data-status="Hoạt Động" 
-                                  data-courses="0" data-created-date="2025-05-04"><i class="fas fa-eye"></i></button>
-                          <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editUserModal" 
-                                  data-user-id="USR004" data-full-name="Phạm Thị D" data-username="phamd" 
-                                  data-email="phamd@example.com" data-role="Quản Trị" data-status="Hoạt Động"><i class="fas fa-edit"></i></button>
-                          <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockUserModal" 
-                                  data-user-id="USR004" data-full-name="Phạm Thị D" data-status="Hoạt Động"><i class="fas fa-lock"></i></button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>USR005</td>
-                        <td><img src="img/dashborad/defaultAvatar.jpg" alt="Avatar" /></td>
-                        <td>Hoàng Văn E</td>
-                        <td>hoange</td>
-                        <td>hoange@example.com</td>
-                        <td>Học Viên</td>
-                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                        <td>4</td>
-                        <td>2025-05-05</td>
-                        <td>
-                          <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewUserModal" 
-                                  data-user-id="USR005" data-full-name="Hoàng Văn E" data-username="hoange" 
-                                  data-email="hoange@example.com" data-role="Học Viên" data-status="Hoạt Động" 
-                                  data-courses="4" data-created-date="2025-05-05"><i class="fas fa-eye"></i></button>
-                          <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editUserModal" 
-                                  data-user-id="USR005" data-full-name="Hoàng Văn E" data-username="hoange" 
-                                  data-email="hoange@example.com" data-role="Học Viên" data-status="Hoạt Động"><i class="fas fa-edit"></i></button>
-                          <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockUserModal" 
-                                  data-user-id="USR005" data-full-name="Hoàng Văn E" data-status="Hoạt Động"><i class="fas fa-lock"></i></button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>USR006</td>
-                        <td><img src="img/dashborad/defaultAvatar.jpg" alt="Avatar" /></td>
-                        <td>Đỗ Thị F</td>
-                        <td>dof1</td>
-                        <td>dof1@example.com</td>
-                        <td>Giảng Viên</td>
-                        <td><span class="badge badge-inactive">Khóa</span></td>
-                        <td>1</td>
-                        <td>2025-05-06</td>
-                        <td>
-                          <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewUserModal" 
-                                  data-user-id="USR006" data-full-name="Đỗ Thị F" data-username="dof1" 
-                                  data-email="dof1@example.com" data-role="Giảng Viên" data-status="Khóa" 
-                                  data-courses="1" data-created-date="2025-05-06"><i class="fas fa-eye"></i></button>
-                          <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editUserModal" 
-                                  data-user-id="USR006" data-full-name="Đỗ Thị F" data-username="dof1" 
-                                  data-email="dof1@example.com" data-role="Giảng Viên" data-status="Khóa"><i class="fas fa-edit"></i></button>
-                          <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockUserModal" 
-                                  data-user-id="USR006" data-full-name="Đỗ Thị F" data-status="Khóa"><i class="fas fa-unlock"></i></button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>USR007</td>
-                        <td><img src="img/dashborad/defaultAvatar.jpg" alt="Avatar" /></td>
-                        <td>Ngô Văn G</td>
-                        <td>ngog</td>
-                        <td>ngog@example.com</td>
-                        <td>Học Viên</td>
-                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                        <td>5</td>
-                        <td>2025-05-07</td>
-                        <td>
-                          <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewUserModal" 
-                                  data-user-id="USR007" data-full-name="Ngô Văn G" data-username="ngog" 
-                                  data-email="ngog@example.com" data-role="Học Viên" data-status="Hoạt Động" 
-                                  data-courses="5" data-created-date="2025-05-07"><i class="fas fa-eye"></i></button>
-                          <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editUserModal" 
-                                  data-user-id="USR007" data-full-name="Ngô Văn G" data-username="ngog" 
-                                  data-email="ngog@example.com" data-role="Học Viên" data-status="Hoạt Động"><i class="fas fa-edit"></i></button>
-                          <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockUserModal" 
-                                  data-user-id="USR007" data-full-name="Ngô Văn G" data-status="Hoạt Động"><i class="fas fa-lock"></i></button>
-                            
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>USR008</td>
-                        <td><img src="img/dashborad/defaultAvatar.jpg" alt="Avatar" /></td>
-                        <td>Vũ Thị H</td>
-                        <td>vuh</td>
-                        <td>vuh@example.com</td>
-                        <td>Giảng Viên</td>
-                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                        <td>2</td>
-                        <td>2025-05-08</td>
-                        <td>
-                          <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewUserModal" 
-                                  data-user-id="USR008" data-full-name="Vũ Thị H" data-username="vuh" 
-                                  data-email="vuh@example.com" data-role="Giảng Viên" data-status="Hoạt Động" 
-                                  data-courses="2" data-created-date="2025-05-08"><i class="fas fa-eye"></i></button>
-                          <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editUserModal" 
-                                  data-user-id="USR008" data-full-name="Vũ Thị H" data-username="vuh" 
-                                  data-email="vuh@example.com" data-role="Giảng Viên" data-status="Hoạt Động"><i class="fas fa-edit"></i></button>
-                          <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockUserModal" 
-                                  data-user-id="USR008" data-full-name="Vũ Thị H" data-status="Hoạt Động"><i class="fas fa-lock"></i></button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>USR009</td>
-                        <td><img src="img/dashborad/defaultAvatar.jpg" alt="Avatar" /></td>
-                        <td>Bùi Văn I</td>
-                        <td>buii</td>
-                        <td>buii@example.com</td>
-                        <td>Học Viên</td>
-                        <td><span class="badge badge-inactive">Khóa</span></td>
-                        <td>1</td>
-                        <td>2025-05-09</td>
-                        <td>
-                          <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewUserModal" 
-                                  data-user-id="USR009" data-full-name="Bùi Văn I" data-username="buii" 
-                                  data-email="buii@example.com" data-role="Học Viên" data-status="Khóa" 
-                                  data-courses="1" data-created-date="2025-05-09"><i class="fas fa-eye"></i></button>
-                          <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editUserModal" 
-                                  data-user-id="USR009" data-full-name="Bùi Văn I" data-username="buii" 
-                                  data-email="buii@example.com" data-role="Học Viên" data-status="Khóa"><i class="fas fa-edit"></i></button>
-                          <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockUserModal" 
-                                  data-user-id="USR009" data-full-name="Bùi Văn I" data-status="Khóa"><i class="fas fa-unlock"></i></button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>USR010</td>
-                        <td><img src="img/dashborad/defaultAvatar.jpg" alt="Avatar" /></td>
-                        <td>Lý Thị K</td>
-                        <td>lyk</td>
-                        <td>lyk@example.com</td>
-                        <td>Quản Trị</td>
-                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                        <td>0</td>
-                        <td>2025-05-10</td>
-                        <td>
-                          <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewUserModal" 
-                                  data-user-id="USR010" data-full-name="Lý Thị K" data-username="lyk" 
-                                  data-email="lyk@example.com" data-role="Quản Trị" data-status="Hoạt Động" 
-                                  data-courses="0" data-created-date="2025-05-10"><i class="fas fa-eye"></i></button>
-                          <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editUserModal" 
-                                  data-user-id="USR010" data-full-name="Lý Thị K" data-username="lyk" 
-                                  data-email="lyk@example.com" data-role="Quản Trị" data-status="Hoạt Động"><i class="fas fa-edit"></i></button>
-                          <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockUserModal" 
-                                  data-user-id="USR010" data-full-name="Lý Thị K" data-status="Hoạt Động"><i class="fas fa-lock"></i></button>
-                        </td>
-                      </tr>
+                        <c:forEach var="user" items="${users}">
+                            <tr>
+                                <td>${user.userID}</td>
+                                <td>
+                                    <img src="${pageContext.request.contextPath}/img/dashborad/defaultAvatar.jpg" alt="Avatar" />
+                                </td>
+                                <td>${user.fullName}</td>
+                                <td>${user.username}</td>
+                                <td>${user.email}</td>
+                                <td>${user.role}</td>
+                                <td>
+                                    <span class="badge badge-active">Hoạt Động</span>
+                                </td>
+                                <td>0</td> <!-- Course count - needs to be calculated -->
+                                <td><fmt:formatDate value="${user.registrationDate}" pattern="yyyy-MM-dd"/></td>
+                                <td>
+                                    <button class="btn btn-view btn-sm btn-action" 
+                                            onclick="viewUser('${user.userID}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-edit btn-sm btn-action" 
+                                            onclick="editUser('${user.userID}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-delete btn-sm btn-action" 
+                                            onclick="blockUser('${user.userID}')">
+                                        <i class="fas fa-lock"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </c:forEach>
                     </tbody>
                   </table>
                 </div>
@@ -320,7 +113,8 @@
                         <h5 class="modal-title" id="addUserModalLabel"><i class="fas fa-plus-circle"></i> Thêm Tài Khoản</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
-                      <form action="/AddUserServlet" method="POST">
+                      <form action="${pageContext.request.contextPath}/admin/users" method="POST">
+                        <input type="hidden" name="action" value="add">
                         <div class="modal-body">
                           <div class="section">
                             <h6 class="section-title"><i class="fas fa-user"></i> Thông Tin Cá Nhân</h6>

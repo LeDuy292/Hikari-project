@@ -19,7 +19,7 @@
         <div class="main-content">
           <div class="content-wrapper">
             <div class="header">
-              <h2 class="header-title">Quản Lý Tài Khoản</h2>
+              <h2 class="header-title">Quản Lý Thanh Toán</h2>
               <div class="header-actions">
                 <div class="user-profile">
                   <img src="img/dashborad/defaultLogoAdmin.png" alt="Ảnh Đại Diện Quản Trị" class="avatar" />

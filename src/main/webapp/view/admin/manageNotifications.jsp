@@ -1,4 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -17,24 +20,14 @@
                 <%@ include file="sidebar.jsp" %>
                 <div class="main-content">
                     <div class="content-wrapper">
-                        <div class="header">
-                            <h2 class="header-title">Quản Lý Thông Báo</h2>
-                            <div class="header-actions">
-                                <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#createNotificationModal">
-                                    <i class="fas fa-plus"></i> Thêm Thông Báo
-                                </button>
-                                <div class="user-profile">
-                                    <img src="img/dashborad/defaultLogoAdmin.png" alt="Ảnh đại diện" class="avatar" />
-                                    <div class="user-info">
-                                        <span class="user-name">Xin chào, Quản lý</span>
-                                        <a href="/LogoutServlet" class="logout-btn">
-                                            <i class="fas fa-sign-out-alt"></i>
-                                            Đăng xuất
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Replace the header section with: -->
+                        <jsp:include page="headerAdmin.jsp">
+                            <jsp:param name="pageTitle" value="Quản Lý Thông Báo"/>
+                            <jsp:param name="showAddButton" value="true"/>
+                            <jsp:param name="addButtonText" value="Thêm Thông Báo"/>
+                            <jsp:param name="addModalTarget" value="createNotificationModal"/>
+                            <jsp:param name="showNotification" value="false"/>
+                        </jsp:include>
                         <!-- Filter Section -->
                         <div class="filter-section">
                             <div class="filter-row">
@@ -64,127 +57,40 @@
                                         <th>HÀNH ĐỘNG</th>
                                     </tr>
                                 </thead>
+                                <!-- Update table to use JSTL -->
                                 <tbody id="notificationTableBody">
-                                    <tr data-notification-id="NOT001">
-                                        <td>NOT001</td>
-                                        <td>Khóa học N5 mới</td>
-                                        <td>Cập nhật khóa học</td>
-                                        <td>Khóa học Tiếng Nhật Sơ cấp N5 mới sẽ bắt đầu vào 01/06/2025...</td>
-                                        <td>2025-05-01</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT001"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT001"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT001" data-title="Khóa học N5 mới"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT002">
-                                        <td>NOT002</td>
-                                        <td>Đăng ký JLPT N3</td>
-                                        <td>Sự kiện</td>
-                                        <td>Hạn đăng ký thi JLPT N3 là 30/06/2025. Đăng ký ngay tại J-Learning...</td>
-                                        <td>2025-05-02</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT002"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT002"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT002" data-title="Đăng ký JLPT N3"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT003">
-                                        <td>NOT003</td>
-                                        <td>Lễ hội Hanami 2025</td>
-                                        <td>Sự kiện</td>
-                                        <td>Tham gia lớp học làm bánh Mochi tại lễ hội Hanami vào 15/06/2025...</td>
-                                        <td>2025-05-03</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT003"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT003"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT003" data-title="Lễ hội Hanami 2025"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT004">
-                                        <td>NOT004</td>
-                                        <td>Bảo trì hệ thống</td>
-                                        <td>Thông báo hệ thống</td>
-                                        <td>Hệ thống J-Learning sẽ bảo trì từ 00:00 đến 02:00 ngày 10/05/2025...</td>
-                                        <td>2025-05-04</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT004"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT004"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT004" data-title="Bảo trì hệ thống"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT005">
-                                        <td>NOT005</td>
-                                        <td>Lớp học Trà đạo</td>
-                                        <td>Sự kiện</td>
-                                        <td>Tham gia lớp học Trà đạo Nhật Bản vào 20/06/2025 tại HIKARI...</td>
-                                        <td>2025-05-05</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT005"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT005"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT005" data-title="Lớp học Trà đạo"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT006">
-                                        <td>NOT006</td>
-                                        <td>Khóa học Kanji N4</td>
-                                        <td>Cập nhật khóa học</td>
-                                        <td>Khóa học Kanji N4 mới đã được cập nhật với tài liệu mới...</td>
-                                        <td>2025-05-06</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT006"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT006"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT006" data-title="Khóa học Kanji N4"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT007">
-                                        <td>NOT007</td>
-                                        <td>Hội thảo JLPT N2</td>
-                                        <td>Sự kiện</td>
-                                        <td>Hội thảo ôn thi JLPT N2 sẽ diễn ra vào 25/06/2025...</td>
-                                        <td>2025-05-07</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT007"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT007"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT007" data-title="Hội thảo JLPT N2"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT008">
-                                        <td>NOT008</td>
-                                        <td>Cập nhật ứng dụng</td>
-                                        <td>Thông báo hệ thống</td>
-                                        <td>Ứng dụng J-Learning đã được cập nhật phiên bản 2.1.0...</td>
-                                        <td>2025-05-08</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT008"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT008"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT008" data-title="Cập nhật ứng dụng"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT009">
-                                        <td>NOT009</td>
-                                        <td>Lớp hội thoại N3</td>
-                                        <td>Cập nhật khóa học</td>
-                                        <td>Lớp hội thoại N3 mới sẽ khai giảng vào 01/07/2025...</td>
-                                        <td>2025-05-09</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT009"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT009"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT009" data-title="Lớp hội thoại N3"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT010">
-                                        <td>NOT010</td>
-                                        <td>Cuộc thi Kanji 2025</td>
-                                        <td>Sự kiện</td>
-                                        <td>Đăng ký cuộc thi Kanji toàn quốc 2025 tại HIKARI...</td>
-                                        <td>2025-05-10</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT010"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT010"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT010" data-title="Cuộc thi Kanji 2025"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
+                                    <c:forEach var="notification" items="${notifications}">
+                                        <tr data-notification-id="${notification.id}">
+                                            <td>NOT${String.format("%03d", notification.id)}</td>
+                                            <td>${notification.title}</td>
+                                            <td>${notification.type}</td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${fn:length(notification.content) > 50}">
+                                                        ${fn:substring(notification.content, 0, 50)}...
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        ${notification.content}
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td><fmt:formatDate value="${notification.createdDate}" pattern="yyyy-MM-dd"/></td>
+                                            <td>
+                                                <button class="btn btn-view btn-sm btn-action" 
+                                                        onclick="viewNotification(${notification.id})">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-edit btn-sm btn-action" 
+                                                        onclick="editNotification(${notification.id})">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-delete btn-sm btn-action" 
+                                                        onclick="deleteNotification(${notification.id})">
+                                                    <i class="fas fa-lock"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
                                 </tbody>
                             </table>
                         </div>
@@ -245,7 +151,9 @@
                                         <h5 class="modal-title" id="createNotificationModalLabel"><i class="fas fa-plus"></i> Tạo thông báo mới</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form id="createNotificationForm">
+                                    <!-- Update form actions -->
+                                    <form id="createNotificationForm" action="${pageContext.request.contextPath}/admin/notifications" method="POST">
+                                        <input type="hidden" name="action" value="add">
                                         <div class="modal-body">
                                             <div class="form-group">
                                                 <label for="createTitle">Tiêu đề <span class="text-danger">*</span></label>

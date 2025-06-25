@@ -270,4 +270,3 @@
 
       // Initial pagination setup
       updatePagination();
- 

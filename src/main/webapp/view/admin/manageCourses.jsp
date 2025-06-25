@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -19,22 +21,14 @@
                 <div class="main-content">
                     <div class="content-wrapper">
                         <!-- Include Header -->
+                        <jsp:include page="headerAdmin.jsp">
+                            <jsp:param name="pageTitle" value="Quản Lý Khóa Học"/>
+                            <jsp:param name="showAddButton" value="true"/>
+                            <jsp:param name="addButtonText" value="Thêm Khóa Học"/>
+                            <jsp:param name="addModalTarget" value="addCourseModal"/>
+                            <jsp:param name="showNotification" value="false"/>
+                        </jsp:include>
 
-                        <div class="header">
-                            <h2 class="header-title">Quản Lý Khóa Học</h2>
-                            <div class="header-actions">
-                                <div class="user-profile">
-                                    <img src="img/dashborad/defaultLogoAdmin.png" alt="Ảnh Đại Diện Quản Trị" class="avatar" />
-                                    <div class="user-info">
-                                        <span class="user-name">Xin Chào, Quản Trị</span>
-                                        <a href="/LogoutServlet" class="logout-btn">
-                                            <i class="fas fa-sign-out-alt"></i>
-                                            Đăng Xuất
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="filter-section">
                             <label for="teacherFilter">Giáo Viên:</label>
                             <select class="form-select" id="teacherFilter">
@@ -78,242 +72,36 @@
                                     </tr>
                                 </thead>
                                 <tbody id="courseTableBody">
-                                    <tr>
-                                        <td>CRS001</td>
-                                        <td>Tiếng Nhật Sơ Cấp N5</td>
-                                        <td>Trần Thị B</td>
-                                        <td>25</td>
-                                        <td>Sơ Cấp</td>
-                                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                                        <td>2025-05-01</td>
-                                        <td><span class="badge badge-active">N5DISC10</span> (10%)</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewCourseModal" 
-                                                    data-course-id="CRS001" data-course-name="Tiếng Nhật Sơ Cấp N5" data-teacher="Trần Thị B" 
-                                                    data-students="25" data-level="Sơ Cấp" data-status="Hoạt Động" data-created-date="2025-05-01" 
-                                                    data-discount-code="N5DISC10" data-discount-percent="10" data-description="Khóa học nhập môn tiếng Nhật N5" 
-                                                    data-duration="3 tháng" data-price="3000000"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editCourseModal" 
-                                                    data-course-id="CRS001" data-course-name="Tiếng Nhật Sơ Cấp N5" data-teacher="Trần Thị B" 
-                                                    data-level="Sơ Cấp" data-status="Hoạt Động" data-discount-code="N5DISC10" 
-                                                    data-discount-percent="10" data-description="Khóa học nhập môn tiếng Nhật N5" 
-                                                    data-duration="3 tháng" data-price="3000000"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockCourseModal" 
-                                                    data-course-id="CRS001" data-course-name="Tiếng Nhật Sơ Cấp N5"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>CRS002</td>
-                                        <td>Tiếng Nhật Trung Cấp N3</td>
-                                        <td>Đỗ Thị F</td>
-                                        <td>15</td>
-                                        <td>Trung Cấp</td>
-                                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                                        <td>2025-05-02</td>
-                                        <td><span class="badge badge-inactive">Không có</span></td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewCourseModal" 
-                                                    data-course-id="CRS002" data-course-name="Tiếng Nhật Trung Cấp N3" data-teacher="Đỗ Thị F" 
-                                                    data-students="15" data-level="Trung Cấp" data-status="Hoạt Động" data-created-date="2025-05-02" 
-                                                    data-discount-code="" data-discount-percent="0" data-description="Khóa học tiếng Nhật trình độ trung cấp N3" 
-                                                    data-duration="4 tháng" data-price="4500000"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editCourseModal" 
-                                                    data-course-id="CRS002" data-course-name="Tiếng Nhật Trung Cấp N3" data-teacher="Đỗ Thị F" 
-                                                    data-level="Trung Cấp" data-status="Hoạt Động" data-discount-code="" data-discount-percent="0" 
-                                                    data-description="Khóa học tiếng Nhật trình độ trung cấp N3" data-duration="4 tháng" 
-                                                    data-price="4500000"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockCourseModal" 
-                                                    data-course-id="CRS002" data-course-name="Tiếng Nhật Trung Cấp N3"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>CRS003</td>
-                                        <td>Tiếng Nhật Cao Cấp N1</td>
-                                        <td>Vũ Thị H</td>
-                                        <td>10</td>
-                                        <td>Cao Cấp</td>
-                                        <td><span class="badge badge-inactive">Khóa</span></td>
-                                        <td>2025-05-03</td>
-                                        <td><span class="badge badge-active">N1DISC20</span> (20%)</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewCourseModal" 
-                                                    data-course-id="CRS003" data-course-name="Tiếng Nhật Cao Cấp N1" data-teacher="Vũ Thị H" 
-                                                    data-students="10" data-level="Cao Cấp" data-status="Khóa" data-created-date="2025-05-03" 
-                                                    data-discount-code="N1DISC20" data-discount-percent="20" data-description="Khóa học tiếng Nhật trình độ cao cấp N1" 
-                                                    data-duration="6 tháng" data-price="6000000"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editCourseModal" 
-                                                    data-course-id="CRS003" data-course-name="Tiếng Nhật Cao Cấp N1" data-teacher="Vũ Thị H" 
-                                                    data-level="Cao Cấp" data-status="Khóa" data-discount-code="N1DISC20" data-discount-percent="20" 
-                                                    data-description="Khóa học tiếng Nhật trình độ cao cấp N1" data-duration="6 tháng" 
-                                                    data-price="6000000"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockCourseModal" 
-                                                    data-course-id="CRS003" data-course-name="Tiếng Nhật Cao Cấp N1"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>CRS004</td>
-                                        <td>Kanji Sơ Cấp</td>
-                                        <td>Trần Thị B</td>
-                                        <td>30</td>
-                                        <td>Sơ Cấp</td>
-                                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                                        <td>2025-05-04</td>
-                                        <td><span class="badge badge-inactive">Không có</span></td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewCourseModal" 
-                                                    data-course-id="CRS004" data-course-name="Kanji Sơ Cấp" data-teacher="Trần Thị B" 
-                                                    data-students="30" data-level="Sơ Cấp" data-status="Hoạt Động" data-created-date="2025-05-04" 
-                                                    data-discount-code="" data-discount-percent="0" data-description="Khóa học Kanji cơ bản" 
-                                                    data-duration="2 tháng" data-price="2000000"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editCourseModal" 
-                                                    data-course-id="CRS004" data-course-name="Kanji Sơ Cấp" data-teacher="Trần Thị B" 
-                                                    data-level="Sơ Cấp" data-status="Hoạt Động" data-discount-code="" data-discount-percent="0" 
-                                                    data-description="Khóa học Kanji cơ bản" data-duration="2 tháng" data-price="2000000"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockCourseModal" 
-                                                    data-course-id="CRS004" data-course-name="Kanji Sơ Cấp"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>CRS005</td>
-                                        <td>Luyện Thi JLPT N4</td>
-                                        <td>Đỗ Thị F</td>
-                                        <td>20</td>
-                                        <td>Trung Cấp</td>
-                                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                                        <td>2025-05-05</td>
-                                        <td><span class="badge badge-active">N4DISC15</span> (15%)</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewCourseModal" 
-                                                    data-course-id="CRS005" data-course-name="Luyện Thi JLPT N4" data-teacher="Đỗ Thị F" 
-                                                    data-students="20" data-level="Trung Cấp" data-status="Hoạt Động" data-created-date="2025-05-05" 
-                                                    data-discount-code="N4DISC15" data-discount-percent="15" data-description="Khóa luyện thi JLPT N4" 
-                                                    data-duration="3 tháng" data-price="3500000"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editCourseModal" 
-                                                    data-course-id="CRS005" data-course-name="Luyện Thi JLPT N4" data-teacher="Đỗ Thị F" 
-                                                    data-level="Trung Cấp" data-status="Hoạt Động" data-discount-code="N4DISC15" 
-                                                    data-discount-percent="15" data-description="Khóa luyện thi JLPT N4" data-duration="3 tháng" 
-                                                    data-price="3500000"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockCourseModal" 
-                                                    data-course-id="CRS005" data-course-name="Luyện Thi JLPT N4"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>CRS006</td>
-                                        <td>Hội Thoại Tiếng Nhật</td>
-                                        <td>Vũ Thị H</td>
-                                        <td>18</td>
-                                        <td>Trung Cấp</td>
-                                        <td><span class="badge badge-inactive">Khóa</span></td>
-                                        <td>2025-05-06</td>
-                                        <td><span class="badge badge-inactive">Không có</span></td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewCourseModal" 
-                                                    data-course-id="CRS006" data-course-name="Hội Thoại Tiếng Nhật" data-teacher="Vũ Thị H" 
-                                                    data-students="18" data-level="Trung Cấp" data-status="Khóa" data-created-date="2025-05-06" 
-                                                    data-discount-code="" data-discount-percent="0" data-description="Khóa học hội thoại thực hành" 
-                                                    data-duration="2 tháng" data-price="2500000"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editCourseModal" 
-                                                    data-course-id="CRS006" data-course-name="Hội Thoại Tiếng Nhật" data-teacher="Vũ Thị H" 
-                                                    data-level="Trung Cấp" data-status="Khóa" data-discount-code="" data-discount-percent="0" 
-                                                    data-description="Khóa học hội thoại thực hành" data-duration="2 tháng" data-price="2500000"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockCourseModal" 
-                                                    data-course-id="CRS006" data-course-name="Hội Thoại Tiếng Nhật"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>CRS007</td>
-                                        <td>Tiếng Nhật Doanh Nghiệp</td>
-                                        <td>Trần Thị B</td>
-                                        <td>12</td>
-                                        <td>Cao Cấp</td>
-                                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                                        <td>2025-05-07</td>
-                                        <td><span class="badge badge-active">BIZDISC25</span> (25%)</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewCourseModal" 
-                                                    data-course-id="CRS007" data-course-name="Tiếng Nhật Doanh Nghiệp" data-teacher="Trần Thị B" 
-                                                    data-students="12" data-level="Cao Cấp" data-status="Hoạt Động" data-created-date="2025-05-07" 
-                                                    data-discount-code="BIZDISC25" data-discount-percent="25" data-description="Khóa học tiếng Nhật cho doanh nghiệp" 
-                                                    data-duration="5 tháng" data-price="5500000"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editCourseModal" 
-                                                    data-course-id="CRS007" data-course-name="Tiếng Nhật Doanh Nghiệp" data-teacher="Trần Thị B" 
-                                                    data-level="Cao Cấp" data-status="Hoạt Động" data-discount-code="BIZDISC25" 
-                                                    data-discount-percent="25" data-description="Khóa học tiếng Nhật cho doanh nghiệp" 
-                                                    data-duration="5 tháng" data-price="5500000"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockCourseModal" 
-                                                    data-course-id="CRS007" data-course-name="Tiếng Nhật Doanh Nghiệp"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>CRS008</td>
-                                        <td>Ngữ Pháp N3</td>
-                                        <td>Đỗ Thị F</td>
-                                        <td>22</td>
-                                        <td>Trung Cấp</td>
-                                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                                        <td>2025-05-08</td>
-                                        <td><span class="badge badge-inactive">Không có</span></td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewCourseModal" 
-                                                    data-course-id="CRS008" data-course-name="Ngữ Pháp N3" data-teacher="Đỗ Thị F" 
-                                                    data-students="22" data-level="Trung Cấp" data-status="Hoạt Động" data-created-date="2025-05-08" 
-                                                    data-discount-code="" data-discount-percent="0" data-description="Khóa học ngữ pháp N3 chuyên sâu" 
-                                                    data-duration="3 tháng" data-price="3200000"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editCourseModal" 
-                                                    data-course-id="CRS008" data-course-name="Ngữ Pháp N3" data-teacher="Đỗ Thị F" 
-                                                    data-level="Trung Cấp" data-status="Hoạt Động" data-discount-code="" data-discount-percent="0" 
-                                                    data-description="Khóa học ngữ pháp N3 chuyên sâu" data-duration="3 tháng" data-price="3200000"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockCourseModal" 
-                                                    data-course-id="CRS008" data-course-name="Ngữ Pháp N3"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>CRS009</td>
-                                        <td>Kanji Cao Cấp</td>
-                                        <td>Vũ Thị H</td>
-                                        <td>8</td>
-                                        <td>Cao Cấp</td>
-                                        <td><span class="badge badge-inactive">Khóa</span></td>
-                                        <td>2025-05-09</td>
-                                        <td><span class="badge badge-active">KANJIDISC30</span> (30%)</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewCourseModal" 
-                                                    data-course-id="CRS009" data-course-name="Kanji Cao Cấp" data-teacher="Vũ Thị H" 
-                                                    data-students="8" data-level="Cao Cấp" data-status="Khóa" data-created-date="2025-05-09" 
-                                                    data-discount-code="KANJIDISC30" data-discount-percent="30" data-description="Khóa học Kanji trình độ cao cấp" 
-                                                    data-duration="4 tháng" data-price="5000000"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editCourseModal" 
-                                                    data-course-id="CRS009" data-course-name="Kanji Cao Cấp" data-teacher="Vũ Thị H" 
-                                                    data-level="Cao Cấp" data-status="Khóa" data-discount-code="KANJIDISC30" 
-                                                    data-discount-percent="30" data-description="Khóa học Kanji trình độ cao cấp" 
-                                                    data-duration="4 tháng" data-price="5000000"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockCourseModal" 
-                                                    data-course-id="CRS009" data-course-name="Kanji Cao Cấp"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>CRS010</td>
-                                        <td>Luyện Thi JLPT N2</td>
-                                        <td>Trần Thị B</td>
-                                        <td>14</td>
-                                        <td>Cao Cấp</td>
-                                        <td><span class="badge badge-active">Hoạt Động</span></td>
-                                        <td>2025-05-10</td>
-                                        <td><span class="badge badge-inactive">Không có</span></td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewCourseModal" 
-                                                    data-course-id="CRS010" data-course-name="Luyện Thi JLPT N2" data-teacher="Trần Thị B" 
-                                                    data-students="14" data-level="Cao Cấp" data-status="Hoạt Động" data-created-date="2025-05-10" 
-                                                    data-discount-code="" data-discount-percent="0" data-description="Khóa luyện thi JLPT N2" 
-                                                    data-duration="5 tháng" data-price="5200000"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editCourseModal" 
-                                                    data-course-id="CRS010" data-course-name="Luyện Thi JLPT N2" data-teacher="Trần Thị B" 
-                                                    data-level="Cao Cấp" data-status="Hoạt Động" data-discount-code="" data-discount-percent="0" 
-                                                    data-description="Khóa luyện thi JLPT N2" data-duration="5 tháng" data-price="5200000"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockCourseModal" 
-                                                    data-course-id="CRS010" data-course-name="Luyện Thi JLPT N2"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
+                                    <c:forEach var="course" items="${courses}">
+                                        <tr>
+                                            <td>${course.courseID}</td>
+                                            <td>${course.title}</td>
+                                            <td><!-- Teacher name from course --></td>
+                                            <td><!-- Student count --></td>
+                                            <td><!-- Level --></td>
+                                            <td>
+                                                <span class="badge ${course.active ? 'badge-active' : 'badge-inactive'}">
+                                                    ${course.active ? 'Hoạt Động' : 'Khóa'}
+                                                </span>
+                                            </td>
+                                            <td><fmt:formatDate value="${course.startDate}" pattern="yyyy-MM-dd"/></td>
+                                            <td><!-- Discount info --></td>
+                                            <td>
+                                                <button class="btn btn-view btn-sm btn-action" 
+                                                        onclick="viewCourse('${course.courseID}')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-edit btn-sm btn-action" 
+                                                        onclick="editCourse('${course.courseID}')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-delete btn-sm btn-action" 
+                                                        onclick="deleteCourse('${course.courseID}')">
+                                                    <i class="fas fa-lock"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
                                 </tbody>
                             </table>
                         </div>
@@ -331,7 +119,8 @@
                                         <h5 class="modal-title" id="addCourseModalLabel"><i class="fas fa-plus-circle"></i> Thêm Khóa Học</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form action="/AddCourseServlet" method="POST">
+                                    <form action="${pageContext.request.contextPath}/admin/courses" method="POST">
+                                        <input type="hidden" name="action" value="add">
                                         <div class="modal-body">
                                             <div class="section">
                                                 <h6 class="section-title"><i class="fas fa-info-circle"></i> Thông Tin Khóa Học</h6>
