@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.logging.Level;
 import model.UserAccount;
 import utils.DBContext;
 import java.util.logging.Logger;
@@ -16,10 +17,13 @@ public class UserDAO {
 
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
 
+    private final DBContext dbContext;
+        
     private Connection con;
 
     public UserDAO() {
-        DBContext dbContext = new DBContext();
+        // DBContext dbContext = new DBContext();
+         this.dbContext = new DBContext();
         try {
             con = dbContext.getConnection();
             System.out.println("Database connection successful!");
@@ -486,4 +490,88 @@ public class UserDAO {
         }
         return user;
     }
+    
+    
+    // forum///
+     public UserAccount getUserByUsername(String username) throws SQLException {
+        UserAccount user = null;
+        String query = "SELECT userID, username, fullName, email, password, role, registrationDate, "
+                + "profilePicture, phone, birthDate FROM UserAccount WHERE username = ?";
+
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    user = new UserAccount();
+                    user.setUserID(rs.getString("userID"));
+                    user.setUsername(rs.getString("username"));
+                    user.setFullName(rs.getString("fullName"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPassword(rs.getString("password"));
+                    user.setRole(rs.getString("role"));
+                    user.setRegistrationDate(rs.getDate("registrationDate"));
+                    user.setProfilePicture(rs.getString("profilePicture"));
+                    user.setPhone(rs.getString("phone"));
+                    user.setBirthDate(rs.getDate("birthDate"));
+                }
+                LOGGER.info("Retrieved user: " + (user != null ? user.getUsername() : "null"));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving user: " + e.getMessage(), e);
+            throw e;
+        } finally {
+            dbContext.closeConnection();
+        }
+        return user;
+    }
+
+    public String getUsernameByUserID(String userID) throws SQLException {
+        String username = "Unknown";
+        String query = "SELECT username FROM UserAccount WHERE userID = ?";
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, userID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    username = rs.getString("username");
+                }
+            }
+        } finally {
+            dbContext.closeConnection();
+        }
+        return username;
+    }
+
+    public UserAccount getUserById(String userID) throws SQLException {
+        UserAccount user = null;
+        String query = "SELECT userID, username, fullName, email, password, role, registrationDate, "
+                + "profilePicture, phone, birthDate FROM UserAccount WHERE userID = ?";
+
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, userID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    user = new UserAccount();
+                    user.setUserID(rs.getString("userID"));
+                    user.setUsername(rs.getString("username"));
+                    user.setFullName(rs.getString("fullName"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPassword(rs.getString("password"));
+                    user.setRole(rs.getString("role"));
+                    user.setRegistrationDate(rs.getDate("registrationDate"));
+                    user.setProfilePicture(rs.getString("profilePicture"));
+                    user.setPhone(rs.getString("phone"));
+                    user.setBirthDate(rs.getDate("birthDate"));
+                }
+                LOGGER.info("Retrieved user by ID: " + (user != null ? user.getUserID() : "null"));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving user by ID: " + e.getMessage(), e);
+            throw e;
+        } finally {
+            dbContext.closeConnection();
+        }
+        return user;
+    }
+    
+    ///end
 }

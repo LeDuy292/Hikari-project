@@ -1,0 +1,75 @@
+.filter-orange {
+  filter: hue-rotate(30deg) saturate(2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+#contentArea {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.sidebar {
+  box-shadow: 2px 0 16px rgba(255,152,0,0.07);
+  border-top-right-radius: 32px;
+  border-bottom-right-radius: 32px;
+}
+
+.sidebar .menu-item.active, .sidebar .menu-item:hover {
+  background: linear-gradient(90deg, #ff9800 60%, #ffb347 100%);
+  color: #fff;
+}
+
+.sidebar .menu-item img {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+}
+
+.sidebar .bottom-menu .menu-item {
+  padding: 10px 0;
+  font-size: 15px;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+  main {
+    padding-left: 2rem !important;
+    padding-right: 2rem;
+  }
+}
+
+.modal {
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.modal.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.modal-content {
+  transform: translateY(-20px);
+  transition: transform 0.3s ease-in-out;
+}
+
+.modal:not(.hidden) .modal-content {
+  transform: translateY(0);
+}
+
+.achievement-badge {
+  transition: transform 0.2s ease-in-out;
+}
+
+.achievement-badge:hover {
+  transform: scale(1.1);
+}
