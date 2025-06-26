@@ -13,24 +13,27 @@ public class UserAccount {
     private String profilePicture;
     private String phone;
     private Date birthDate;
-    private String resetToken; 
-    private String sessionId;
-    private Date resetTokenExpiry;
-    private String otp; // Thêm trường OTP
+    private String otp;
     private Date otpExpiry;
+    private String resetToken;
+    private Date resetTokenExpiry;
+    private String sessionId;
+    private int courseCount; // For admin management
+    private boolean isActive = true; // For user status
 
-   
+    // Default constructor
+    public UserAccount() {}
 
-    public UserAccount(String username, String password) {
+    // Constructor with basic fields
+    public UserAccount(String userID, String username, String fullName, String email, String role) {
+        this.userID = userID;
         this.username = username;
-        this.password = password;
+        this.fullName = fullName;
+        this.email = email;
+        this.role = role;
     }
 
-    public UserAccount() {
-    }
-
-   
-
+    // Getters and Setters
     public String getUserID() {
         return userID;
     }
@@ -111,30 +114,6 @@ public class UserAccount {
         this.birthDate = birthDate;
     }
 
-    public String getResetToken() {
-        return resetToken;
-    }
-
-    public void setResetToken(String resetToken) {
-        this.resetToken = resetToken;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public Date getResetTokenExpiry() {
-        return resetTokenExpiry;
-    }
-
-    public void setResetTokenExpiry(Date resetTokenExpiry) {
-        this.resetTokenExpiry = resetTokenExpiry;
-    }
-
     public String getOtp() {
         return otp;
     }
@@ -150,5 +129,59 @@ public class UserAccount {
     public void setOtpExpiry(Date otpExpiry) {
         this.otpExpiry = otpExpiry;
     }
-    
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public Date getResetTokenExpiry() {
+        return resetTokenExpiry;
+    }
+
+    public void setResetTokenExpiry(Date resetTokenExpiry) {
+        this.resetTokenExpiry = resetTokenExpiry;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public int getCourseCount() {
+        return courseCount;
+    }
+
+    public void setCourseCount(int courseCount) {
+        this.courseCount = courseCount;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    @Override
+    public String toString() {
+        return "UserAccount{" +
+                "userID='" + userID + '\'' +
+                ", username='" + username + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", email='" + email + '\'' +
+                ", role='" + role + '\'' +
+                ", registrationDate=" + registrationDate +
+                ", phone='" + phone + '\'' +
+                ", courseCount=" + courseCount +
+                ", isActive=" + isActive +
+                '}';
+    }
 }
