@@ -48,16 +48,34 @@ public class ManageCoursesServlet extends HttpServlet {
             } else if ("detail".equals(action)) {
                 String id = req.getParameter("id");
                 if (id == null || id.trim().isEmpty()) {
-                    resp.sendRedirect(req.getContextPath() + "/admin/courses?error=ID khóa học không hợp lệ");
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     return;
                 }
                 Course c = courseService.getCourseById(id);
                 if (c == null) {
-                    resp.sendRedirect(req.getContextPath() + "/admin/courses?error=Không tìm thấy khóa học");
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     return;
                 }
-                req.setAttribute("course", c);
-                req.getRequestDispatcher("/view/admin/courseDetail.jsp").forward(req, resp);
+            
+                // Return JSON response for AJAX
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+            
+                StringBuilder json = new StringBuilder();
+                json.append("{");
+                json.append("\"courseID\":\"").append(c.getCourseID()).append("\",");
+                json.append("\"title\":\"").append(c.getTitle()).append("\",");
+                json.append("\"description\":\"").append(c.getDescription() != null ? c.getDescription() : "").append("\",");
+                json.append("\"fee\":").append(c.getFee()).append(",");
+                json.append("\"duration\":").append(c.getDuration()).append(",");
+                json.append("\"startDate\":\"").append(c.getStartDate()).append("\",");
+                json.append("\"endDate\":\"").append(c.getEndDate()).append("\",");
+                json.append("\"isActive\":").append(c.isIsActive()).append(",");
+                json.append("\"imageUrl\":\"").append(c.getImageUrl() != null ? c.getImageUrl() : "").append("\"");
+                json.append("}");
+            
+                resp.getWriter().write(json.toString());
+                return;
             } else {
                 // List courses with search, pagination, filter
                 String keyword = req.getParameter("keyword");

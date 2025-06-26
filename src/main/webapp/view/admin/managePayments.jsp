@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -9,7 +11,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
     <link href="${pageContext.request.contextPath}/assets/css/admin/manaPayments.css" rel="stylesheet" />
-    
   </head>
   <body>
     <div class="container-fluid">
@@ -18,70 +19,41 @@
         <%@ include file="sidebar.jsp" %>
         <div class="main-content">
           <div class="content-wrapper">
-            <div class="header">
-              <h2 class="header-title">Quản Lý Thanh Toán</h2>
-              <div class="header-actions">
-                <div class="user-profile">
-                  <img src="img/dashborad/defaultLogoAdmin.png" alt="Ảnh Đại Diện Quản Trị" class="avatar" />
-                  <div class="user-info">
-                    <span class="user-name">Xin Chào, Quản Trị</span>
-                    <a href="/LogoutServlet" class="logout-btn">
-                      <i class="fas fa-sign-out-alt"></i>
-                      Đăng Xuất
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <!-- Include Header -->
+            <jsp:include page="headerAdmin.jsp">
+                <jsp:param name="pageTitle" value="Quản Lý Thanh Toán"/>
+                <jsp:param name="showAddButton" value="false"/>
+                <jsp:param name="showNotification" value="false"/>
+            </jsp:include>
+
             <!-- Filter Section -->
             <div class="filter-section">
               <div class="filter-row">
-                <label for="payerFilter">Người Thanh Toán:</label>
-                <select class="form-select" id="payerFilter">
-                  <option value="">Tất cả</option>
-                  <option value="Nguyễn Văn A">Nguyễn Văn A</option>
-                  <option value="Lê Văn C">Lê Văn C</option>
-                  <option value="Hoàng Văn E">Hoàng Văn E</option>
-                </select>
-                <label for="courseFilter">Khóa Học:</label>
-                <select class="form-select" id="courseFilter">
-                  <option value="">Tất cả</option>
-                  <option value="Tiếng Nhật Sơ Cấp N5">Tiếng Nhật Sơ Cấp N5</option>
-                  <option value="Tiếng Nhật Trung Cấp N3">Tiếng Nhật Trung Cấp N3</option>
-                  <option value="Tiếng Nhật Cao Cấp N1">Tiếng Nhật Cao Cấp N1</option>
-                  <option value="Kanji Sơ Cấp">Kanji Sơ Cấp</option>
-                  <option value="Luyện Thi JLPT N4">Luyện Thi JLPT N4</option>
-                  <option value="Hội Thoại Tiếng Nhật">Hội Thoại Tiếng Nhật</option>
-                  <option value="Tiếng Nhật Doanh Nghiệp">Tiếng Nhật Doanh Nghiệp</option>
-                  <option value="Ngữ Pháp N3">Ngữ Pháp N3</option>
-                  <option value="Kanji Cao Cấp">Kanji Cao Cấp</option>
-                  <option value="Luyện Thi JLPT N2">Luyện Thi JLPT N2</option>
-                </select>
                 <label for="statusFilter">Trạng Thái:</label>
-                <select class="form-select" id="statusFilter">
+                <select class="form-select" id="statusFilter" onchange="filterPayments()">
                   <option value="">Tất cả</option>
-                  <option value="Thành Công">Thành Công</option>
-                  <option value="Thất Bại">Thất Bại</option>
-                  <option value="Đang Chờ">Đang Chờ</option>
+                  <option value="Completed">Thành Công</option>
+                  <option value="Failed">Thất Bại</option>
+                  <option value="Pending">Đang Chờ</option>
                 </select>
                 <label for="paymentDateFilter">Ngày Thanh Toán:</label>
-                <input type="date" class="form-control" id="paymentDateFilter" />
+                <input type="date" class="form-control" id="paymentDateFilter" onchange="filterPayments()" />
                 <label for="minAmountFilter">Khoảng Tiền (VND):</label>
-                <input type="number" class="form-control" id="minAmountFilter" placeholder="Tối thiểu" min="0" />
-                <input type="number" class="form-control" id="maxAmountFilter" placeholder="Tối đa" min="0" />
+                <input type="number" class="form-control" id="minAmountFilter" placeholder="Tối thiểu" min="0" onchange="filterPayments()" />
+                <input type="number" class="form-control" id="maxAmountFilter" placeholder="Tối đa" min="0" onchange="filterPayments()" />
               </div>
               <div class="search-row">
                 <label for="search">Tìm Kiếm:</label>
-                <input type="text" class="form-control" id="search" placeholder="Tìm theo ID hoặc người thanh toán..." />
+                <input type="text" class="form-control" id="search" placeholder="Tìm theo ID hoặc người thanh toán..." onkeyup="filterPayments()" />
               </div>
             </div>
+
             <!-- Payments Table -->
             <div class="table-responsive">
               <table class="table table-hover">
                 <thead>
                   <tr>
                     <th>ID</th>
-                    <th>AVATAR</th>
                     <th>NGƯỜI THANH TOÁN</th>
                     <th>KHÓA HỌC</th>
                     <th>SỐ TIỀN</th>
@@ -91,165 +63,48 @@
                   </tr>
                 </thead>
                 <tbody id="paymentTableBody">
-                  <tr>
-                    <td>PAY001</td>
-                    <td><img src="img/dashborad/defaultAvatar.png" alt="Avatar" class="table-avatar" /></td>
-                    <td>Nguyễn Văn A</td>
-                    <td>Tiếng Nhật Sơ Cấp N5</td>
-                    <td>1,500,000</td>
-                    <td><span class="badge badge-success">Thành Công</span></td>
-                    <td>2025-05-01</td>
-                    <td class="actions">
-                      <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewPaymentModal" 
-                              data-payment-id="PAY001" data-payer="Nguyễn Văn A" data-course="Tiếng Nhật Sơ Cấp N5" 
-                              data-amount="1500000" data-status="Thành Công" data-payment-date="2025-05-01" 
-                              data-payment-method="Credit Card"><i class="fas fa-eye"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>PAY002</td>
-                    <td><img src="img/dashborad/defaultAvatar.png" alt="Avatar" class="table-avatar" /></td>
-                    <td>Lê Văn C</td>
-                    <td>Tiếng Nhật Trung Cấp N3</td>
-                    <td>2,000,000</td>
-                    <td><span class="badge badge-success">Thành Công</span></td>
-                    <td>2025-05-02</td>
-                    <td class="actions">
-                      <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewPaymentModal" 
-                              data-payment-id="PAY002" data-payer="Lê Văn C" data-course="Tiếng Nhật Trung Cấp N3" 
-                              data-amount="2000000" data-status="Thành Công" data-payment-date="2025-05-02" 
-                              data-payment-method="Bank Transfer"><i class="fas fa-eye"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>PAY003</td>
-                    <td><img src="img/dashborad/defaultAvatar.png" alt="Avatar" class="table-avatar" /></td>
-                    <td>Hoàng Văn E</td>
-                    <td>Tiếng Nhật Cao Cấp N1</td>
-                    <td>2,500,000</td>
-                    <td><span class="badge badge-failed">Thất Bại</span></td>
-                    <td>2025-05-03</td>
-                    <td class="actions">
-                      <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewPaymentModal" 
-                              data-payment-id="PAY003" data-payer="Hoàng Văn E" data-course="Tiếng Nhật Cao Cấp N1" 
-                              data-amount="2500000" data-status="Thất Bại" data-payment-date="2025-05-03" 
-                              data-payment-method="Credit Card"><i class="fas fa-eye"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>PAY004</td>
-                    <td><img src="img/dashborad/defaultAvatar.png" alt="Avatar" class="table-avatar" /></td>
-                    <td>Nguyễn Văn A</td>
-                    <td>Kanji Sơ Cấp</td>
-                    <td>1,200,000</td>
-                    <td><span class="badge badge-success">Thành Công</span></td>
-                    <td>2025-05-04</td>
-                    <td class="actions">
-                      <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewPaymentModal" 
-                              data-payment-id="PAY004" data-payer="Nguyễn Văn A" data-course="Kanji Sơ Cấp" 
-                              data-amount="1200000" data-status="Thành Công" data-payment-date="2025-05-04" 
-                              data-payment-method="Bank Transfer"><i class="fas fa-eye"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>PAY005</td>
-                    <td><img src="img/dashborad/defaultAvatar.png" alt="Avatar" class="table-avatar" /></td>
-                    <td>Lê Văn C</td>
-                    <td>Luyện Thi JLPT N4</td>
-                    <td>1,800,000</td>
-                    <td><span class="badge badge-pending">Đang Chờ</span></td>
-                    <td>2025-05-05</td>
-                    <td class="actions">
-                      <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewPaymentModal" 
-                              data-payment-id="PAY005" data-payer="Lê Văn C" data-course="Luyện Thi JLPT N4" 
-                              data-amount="1800000" data-status="Đang Chờ" data-payment-date="2025-05-05" 
-                              data-payment-method="Credit Card"><i class="fas fa-eye"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>PAY006</td>
-                    <td><img src="img/dashborad/defaultAvatar.png" alt="Avatar" class="table-avatar" /></td>
-                    <td>Hoàng Văn E</td>
-                    <td>Hội Thoại Tiếng Nhật</td>
-                    <td>1,600,000</td>
-                    <td><span class="badge badge-success">Thành Công</span></td>
-                    <td>2025-05-06</td>
-                    <td class="actions">
-                      <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewPaymentModal" 
-                              data-payment-id="PAY006" data-payer="Hoàng Văn E" data-course="Hội Thoại Tiếng Nhật" 
-                              data-amount="1600000" data-status="Thành Công" data-payment-date="2025-05-06" 
-                              data-payment-method="Bank Transfer"><i class="fas fa-eye"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>PAY007</td>
-                    <td><img src="img/dashborad/defaultAvatar.png" alt="Avatar" class="table-avatar" /></td>
-                    <td>Nguyễn Văn A</td>
-                    <td>Tiếng Nhật Doanh Nghiệp</td>
-                    <td>2,200,000</td>
-                    <td><span class="badge badge-success">Thành Công</span></td>
-                    <td>2025-05-07</td>
-                    <td class="actions">
-                      <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewPaymentModal" 
-                              data-payment-id="PAY007" data-payer="Nguyễn Văn A" data-course="Tiếng Nhật Doanh Nghiệp" 
-                              data-amount="2200000" data-status="Thành Công" data-payment-date="2025-05-07" 
-                              data-payment-method="Credit Card"><i class="fas fa-eye"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>PAY008</td>
-                    <td><img src="img/dashborad/defaultAvatar.png" alt="Avatar" class="table-avatar" /></td>
-                    <td>Lê Văn C</td>
-                    <td>Ngữ Pháp N3</td>
-                    <td>1,900,000</td>
-                    <td><span class="badge badge-failed">Thất Bại</span></td>
-                    <td>2025-05-08</td>
-                    <td class="actions">
-                      <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewPaymentModal" 
-                              data-payment-id="PAY008" data-payer="Lê Văn C" data-course="Ngữ Pháp N3" 
-                              data-amount="1900000" data-status="Thất Bại" data-payment-date="2025-05-08" 
-                              data-payment-method="Bank Transfer"><i class="fas fa-eye"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>PAY009</td>
-                    <td><img src="img/dashborad/defaultAvatar.png" alt="Avatar" class="table-avatar" /></td>
-                    <td>Hoàng Văn E</td>
-                    <td>Kanji Cao Cấp</td>
-                    <td>2,300,000</td>
-                    <td><span class="badge badge-success">Thành Công</span></td>
-                    <td>2025-05-09</td>
-                    <td class="actions">
-                      <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewPaymentModal" 
-                              data-payment-id="PAY009" data-payer="Hoàng Văn E" data-course="Kanji Cao Cấp" 
-                              data-amount="2300000" data-status="Thành Công" data-payment-date="2025-05-09" 
-                              data-payment-method="Credit Card"><i class="fas fa-eye"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>PAY010</td>
-                    <td><img src="img/dashborad/defaultAvatar.png" alt="Avatar" class="table-avatar" /></td>
-                    <td>Nguyễn Văn A</td>
-                    <td>Luyện Thi JLPT N2</td>
-                    <td>2,400,000</td>
-                    <td><span class="badge badge-pending">Đang Chờ</span></td>
-                    <td>2025-05-10</td>
-                    <td class="actions">
-                      <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewPaymentModal" 
-                              data-payment-id="PAY010" data-payer="Nguyễn Văn A" data-course="Luyện Thi JLPT N2" 
-                              data-amount="2400000" data-status="Đang Chờ" data-payment-date="2025-05-10" 
-                              data-payment-method="Bank Transfer"><i class="fas fa-eye"></i></button>
-                    </td>
-                  </tr>
+                  <c:forEach var="payment" items="${payments}">
+                    <tr>
+                      <td>PAY${String.format("%03d", payment.id)}</td>
+                      <td>${payment.studentName}</td>
+                      <td>${payment.courseName}</td>
+                      <td><fmt:formatNumber value="${payment.amount}" type="currency" currencySymbol="₫"/></td>
+                      <td>
+                        <span class="badge badge-${payment.paymentStatus.toLowerCase() == 'completed' ? 'success' : (payment.paymentStatus.toLowerCase() == 'failed' ? 'failed' : 'pending')}">
+                          ${payment.paymentStatus}
+                        </span>
+                      </td>
+                      <td><fmt:formatDate value="${payment.paymentDate}" pattern="dd/MM/yyyy"/></td>
+                      <td class="actions">
+                        <button class="btn btn-view btn-sm btn-action" onclick="viewPayment(${payment.id})">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <c:if test="${payment.paymentStatus == 'Pending'}">
+                          <button class="btn btn-edit btn-sm btn-action" onclick="updatePaymentStatus(${payment.id}, 'Completed')">
+                            <i class="fas fa-check"></i>
+                          </button>
+                          <button class="btn btn-delete btn-sm btn-action" onclick="updatePaymentStatus(${payment.id}, 'Failed')">
+                            <i class="fas fa-times"></i>
+                          </button>
+                        </c:if>
+                      </td>
+                    </tr>
+                  </c:forEach>
                 </tbody>
               </table>
             </div>
+
             <!-- Pagination -->
             <div class="pagination" id="pagination">
-              <button id="prevPage" disabled>Trước</button>
-              <span id="pageInfo"></span>
-              <button id="nextPage">Sau</button>
+              <c:if test="${currentPage > 1}">
+                <a href="?page=${currentPage - 1}" class="btn btn-outline-primary">Trước</a>
+              </c:if>
+              <span>Trang ${currentPage} / ${totalPages}</span>
+              <c:if test="${currentPage < totalPages}">
+                <a href="?page=${currentPage + 1}" class="btn btn-outline-primary">Sau</a>
+              </c:if>
             </div>
+
             <!-- View Payment Modal -->
             <div class="modal fade view-payment-modal" id="viewPaymentModal" tabindex="-1" aria-labelledby="viewPaymentModalLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered">
@@ -267,7 +122,7 @@
                       </div>
                       <div class="info-item">
                         <span class="info-label">Người Thanh Toán:</span>
-                        <span class="info-value" id="viewPayer"></span>
+                        <span class="info-value" id="viewStudentName"></span>
                       </div>
                       <div class="info-item">
                         <span class="info-label">Số Tiền:</span>
@@ -285,12 +140,16 @@
                         <span class="info-label">Ngày Thanh Toán:</span>
                         <span class="info-value" id="viewPaymentDate"></span>
                       </div>
+                      <div class="info-item">
+                        <span class="info-label">Mã Giao Dịch:</span>
+                        <span class="info-value" id="viewTransactionID"></span>
+                      </div>
                     </div>
                     <div class="section">
                       <h6 class="section-title"><i class="fas fa-book"></i> Thông Tin Khóa Học</h6>
                       <div class="info-item">
                         <span class="info-label">Khóa Học:</span>
-                        <span class="info-value" id="viewCourse"></span>
+                        <span class="info-value" id="viewCourseName"></span>
                       </div>
                     </div>
                   </div>
@@ -304,8 +163,74 @@
         </div>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="${pageContext.request.contextPath}/js/dashboard/admin/manaPayments.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function viewPayment(paymentId) {
+        fetch('${pageContext.request.contextPath}/admin/payments?action=view&id=' + paymentId)
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('viewPaymentId').textContent = 'PAY' + String(data.id).padStart(3, '0');
+            document.getElementById('viewStudentName').textContent = data.studentName;
+            document.getElementById('viewAmount').textContent = new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(data.amount);
+            document.getElementById('viewStatus').innerHTML = '<span class="badge badge-' + data.paymentStatus.toLowerCase() + '">' + data.paymentStatus + '</span>';
+            document.getElementById('viewPaymentMethod').textContent = data.paymentMethod;
+            document.getElementById('viewPaymentDate').textContent = new Date(data.paymentDate).toLocaleDateString('vi-VN');
+            document.getElementById('viewTransactionID').textContent = data.transactionID || 'N/A';
+            document.getElementById('viewCourseName').textContent = data.courseName;
+            
+            var modal = new bootstrap.Modal(document.getElementById('viewPaymentModal'));
+            modal.show();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tải thông tin thanh toán');
+          });
+      }
+
+      function updatePaymentStatus(paymentId, status) {
+        if (confirm('Bạn có chắc chắn muốn cập nhật trạng thái thanh toán?')) {
+          const formData = new FormData();
+          formData.append('action', 'updateStatus');
+          formData.append('paymentId', paymentId);
+          formData.append('status', status);
+
+          fetch('${pageContext.request.contextPath}/admin/payments', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => {
+            if (response.ok) {
+              location.reload();
+            } else {
+              alert('Có lỗi xảy ra khi cập nhật trạng thái');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi cập nhật trạng thái');
+          });
+        }
+      }
+
+      function filterPayments() {
+        // Client-side filtering logic can be implemented here
+        // For now, we'll reload the page with filter parameters
+        const status = document.getElementById('statusFilter').value;
+        const date = document.getElementById('paymentDateFilter').value;
+        const minAmount = document.getElementById('minAmountFilter').value;
+        const maxAmount = document.getElementById('maxAmountFilter').value;
+        const search = document.getElementById('search').value;
+
+        let url = '${pageContext.request.contextPath}/admin/payments?';
+        if (status) url += 'status=' + encodeURIComponent(status) + '&';
+        if (date) url += 'date=' + encodeURIComponent(date) + '&';
+        if (minAmount) url += 'minAmount=' + encodeURIComponent(minAmount) + '&';
+        if (maxAmount) url += 'maxAmount=' + encodeURIComponent(maxAmount) + '&';
+        if (search) url += 'search=' + encodeURIComponent(search) + '&';
+
+        window.location.href = url;
+      }
+    </script>
   </body>
 </html>

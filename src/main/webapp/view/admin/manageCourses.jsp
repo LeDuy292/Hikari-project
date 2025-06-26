@@ -80,11 +80,11 @@
                                             <td><!-- Student count --></td>
                                             <td><!-- Level --></td>
                                             <td>
-                                                <span class="badge ${course.active ? 'badge-active' : 'badge-inactive'}">
-                                                    ${course.active ? 'Hoạt Động' : 'Khóa'}
+                                                <span class="badge ${course.isActive ? 'badge-active' : 'badge-inactive'}">
+                                                    ${course.isActive ? 'Hoạt Động' : 'Không Hoạt Động'}
                                                 </span>
                                             </td>
-                                            <td><fmt:formatDate value="${course.startDate}" pattern="yyyy-MM-dd"/></td>
+                                            <td><fmt:formatDate value="${course.startDate}" pattern="dd/MM/yyyy"/></td>
                                             <td><!-- Discount info --></td>
                                             <td>
                                                 <button class="btn btn-view btn-sm btn-action" 
@@ -97,7 +97,7 @@
                                                 </button>
                                                 <button class="btn btn-delete btn-sm btn-action" 
                                                         onclick="deleteCourse('${course.courseID}')">
-                                                    <i class="fas fa-lock"></i>
+                                                    <i class="fas fa-trash"></i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -125,60 +125,43 @@
                                             <div class="section">
                                                 <h6 class="section-title"><i class="fas fa-info-circle"></i> Thông Tin Khóa Học</h6>
                                                 <div class="form-group">
-                                                    <label for="courseName">Tên Khóa Học <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="courseName" name="courseName" placeholder="Nhập tên khóa học" required />
+                                                    <label for="courseID">ID Khóa Học <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="courseID" name="courseID" placeholder="Nhập ID khóa học" required />
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="teacher">Giảng Viên <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="teacher" name="teacher" required>
-                                                        <option value="" disabled selected>Chọn giảng viên</option>
-                                                        <option value="Trần Thị B">Trần Thị B</option>
-                                                        <option value="Đỗ Thị F">Đỗ Thị F</option>
-                                                        <option value="Vũ Thị H">Vũ Thị H</option>
-                                                    </select>
+                                                    <label for="title">Tên Khóa Học <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="title" name="title" placeholder="Nhập tên khóa học" required />
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="level">Cấp Độ <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="level" name="level" required>
-                                                        <option value="" disabled selected>Chọn cấp độ</option>
-                                                        <option value="Sơ Cấp">Sơ Cấp</option>
-                                                        <option value="Trung Cấp">Trung Cấp</option>
-                                                        <option value="Cao Cấp">Cao Cấp</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="status">Trạng Thái <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="status" name="status" required>
-                                                        <option value="" disabled selected>Chọn trạng thái</option>
-                                                        <option value="Hoạt Động">Hoạt Động</option>
-                                                        <option value="Khóa">Khóa</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="section">
-                                                <h6 class="section-title"><i class="fas fa-file-alt"></i> Mô Tả & Thời Lượng</h6>
-                                                <div class="form-group">
-                                                    <label for="description">Mô Tả <span class="optional-label">(Tùy chọn)</span></label>
+                                                    <label for="description">Mô Tả</label>
                                                     <textarea class="form-control" id="description" name="description" placeholder="Nhập mô tả khóa học"></textarea>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="duration">Thời Lượng <span class="optional-label">(Tùy chọn)</span></label>
-                                                    <input type="text" class="form-control" id="duration" name="duration" placeholder="Ví dụ: 3 tháng" />
-                                                </div>
-                                            </div>
-                                            <div class="section">
-                                                <h6 class="section-title"><i class="fas fa-money-bill-wave"></i> Giá & Giảm Giá</h6>
-                                                <div class="form-group">
-                                                    <label for="price">Giá (VND) <span class="optional-label">(Tùy chọn)</span></label>
-                                                    <input type="number" class="form-control" id="price" name="price" min="0" placeholder="Nhập giá khóa học" />
+                                                    <label for="fee">Học Phí (VND)</label>
+                                                    <input type="number" class="form-control" id="fee" name="fee" min="0" placeholder="Nhập học phí" />
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="discountCode">Mã Giảm Giá <span class="optional-label">(Tùy chọn)</span></label>
-                                                    <input type="text" class="form-control" id="discountCode" name="discountCode" placeholder="Ví dụ: DISCOUNT10" />
+                                                    <label for="duration">Thời Lượng (tuần)</label>
+                                                    <input type="number" class="form-control" id="duration" name="duration" min="1" placeholder="Nhập thời lượng" />
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="discountPercent">Phần Trăm Giảm Giá (%) <span class="optional-label">(Tùy chọn)</span></label>
-                                                    <input type="number" class="form-control" id="discountPercent" name="discountPercent" min="0" max="100" placeholder="0-100" />
+                                                    <label for="startDate">Ngày Bắt Đầu</label>
+                                                    <input type="date" class="form-control" id="startDate" name="startDate" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="endDate">Ngày Kết Thúc</label>
+                                                    <input type="date" class="form-control" id="endDate" name="endDate" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="isActive">Trạng Thái</label>
+                                                    <select class="form-select" id="isActive" name="isActive">
+                                                        <option value="true">Hoạt động</option>
+                                                        <option value="false">Không hoạt động</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="imageUrl">URL Hình Ảnh</label>
+                                                    <input type="url" class="form-control" id="imageUrl" name="imageUrl" placeholder="Nhập URL hình ảnh" />
                                                 </div>
                                             </div>
                                         </div>
@@ -198,66 +181,46 @@
                                         <h5 class="modal-title" id="editCourseModalLabel"><i class="fas fa-edit"></i> Chỉnh Sửa Khóa Học</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form action="/EditCourseServlet" method="POST">
+                                    <form action="${pageContext.request.contextPath}/admin/courses" method="POST">
+                                        <input type="hidden" name="action" value="edit">
+                                        <input type="hidden" id="editCourseID" name="courseID">
                                         <div class="modal-body">
-                                            <input type="hidden" id="editCourseId" name="courseId" />
                                             <div class="section">
                                                 <h6 class="section-title"><i class="fas fa-info-circle"></i> Thông Tin Khóa Học</h6>
                                                 <div class="form-group">
-                                                    <label for="editCourseName">Tên Khóa Học <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="editCourseName" name="courseName" placeholder="Nhập tên khóa học" required />
+                                                    <label for="editTitle">Tên Khóa Học <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="editTitle" name="title" required />
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="editTeacher">Giảng Viên <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="editTeacher" name="teacher" required>
-                                                        <option value="" disabled selected>Chọn giảng viên</option>
-                                                        <option value="Trần Thị B">Trần Thị B</option>
-                                                        <option value="Đỗ Thị F">Đỗ Thị F</option>
-                                                        <option value="Vũ Thị H">Vũ Thị H</option>
+                                                    <label for="editDescription">Mô Tả</label>
+                                                    <textarea class="form-control" id="editDescription" name="description"></textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editFee">Học Phí (VND)</label>
+                                                    <input type="number" class="form-control" id="editFee" name="fee" min="0" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editDuration">Thời Lượng (tuần)</label>
+                                                    <input type="number" class="form-control" id="editDuration" name="duration" min="1" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editStartDate">Ngày Bắt Đầu</label>
+                                                    <input type="date" class="form-control" id="editStartDate" name="startDate" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editEndDate">Ngày Kết Thúc</label>
+                                                    <input type="date" class="form-control" id="editEndDate" name="endDate" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editIsActive">Trạng Thái</label>
+                                                    <select class="form-select" id="editIsActive" name="isActive">
+                                                        <option value="true">Hoạt động</option>
+                                                        <option value="false">Không hoạt động</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="editLevel">Cấp Độ <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="editLevel" name="level" required>
-                                                        <option value="" disabled selected>Chọn cấp độ</option>
-                                                        <option value="Sơ Cấp">Sơ Cấp</option>
-                                                        <option value="Trung Cấp">Trung Cấp</option>
-                                                        <option value="Cao Cấp">Cao Cấp</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="editStatus">Trạng Thái <span class="text-danger">*</span></label>
-                                                    <select class="form-select" id="editStatus" name="status" required>
-                                                        <option value="" disabled selected>Chọn trạng thái</option>
-                                                        <option value="Hoạt Động">Hoạt Động</option>
-                                                        <option value="Khóa">Khóa</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="section">
-                                                <h6 class="section-title"><i class="fas fa-file-alt"></i> Mô Tả & Thời Lượng</h6>
-                                                <div class="form-group">
-                                                    <label for="editDescription">Mô Tả <span class="optional-label">(Tùy chọn)</span></label>
-                                                    <textarea class="form-control" id="editDescription" name="description" placeholder="Nhập mô tả khóa học"></textarea>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="editDuration">Thời Lượng <span class="optional-label">(Tùy chọn)</span></label>
-                                                    <input type="text" class="form-control" id="editDuration" name="duration" placeholder="Ví dụ: 3 tháng" />
-                                                </div>
-                                            </div>
-                                            <div class="section">
-                                                <h6 class="section-title"><i class="fas fa-money-bill-wave"></i> Giá & Giảm Giá</h6>
-                                                <div class="form-group">
-                                                    <label for="editPrice">Giá (VND) <span class="optional-label">(Tùy chọn)</span></label>
-                                                    <input type="number" class="form-control" id="editPrice" name="price" min="0" placeholder="Nhập giá khóa học" />
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="editDiscountCode">Mã Giảm Giá <span class="optional-label">(Tùy chọn)</span></label>
-                                                    <input type="text" class="form-control" id="editDiscountCode" name="discountCode" placeholder="Ví dụ: DISCOUNT10" />
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="editDiscountPercent">Phần Trăm Giảm Giá (%) <span class="optional-label">(Tùy chọn)</span></label>
-                                                    <input type="number" class="form-control" id="editDiscountPercent" name="discountPercent" min="0" max="100" placeholder="0-100" />
+                                                    <label for="editImageUrl">URL Hình Ảnh</label>
+                                                    <input type="url" class="form-control" id="editImageUrl" name="imageUrl" />
                                                 </div>
                                             </div>
                                         </div>
@@ -269,6 +232,37 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Delete Course Modal -->
+                        <div class="modal fade delete-course-modal" id="deleteCourseModal" tabindex="-1" aria-labelledby="deleteCourseModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteCourseModalLabel"><i class="fas fa-trash"></i> Xác Nhận Xóa Khóa Học</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="warning-section">
+                                            <h6 class="warning-title"><i class="fas fa-exclamation-triangle"></i> Cảnh Báo</h6>
+                                            <div class="info-item">
+                                                Bạn có chắc chắn muốn xóa khóa học <span id="deleteCourseTitle"></span> (ID: <span id="deleteCourseID"></span>)?
+                                            </div>
+                                            <div class="warning-text">
+                                                Hành động này không thể hoàn tác. Vui lòng xác nhận.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Hủy</button>
+                                        <form action="${pageContext.request.contextPath}/admin/courses" method="POST" style="display: inline;">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" id="deleteConfirmCourseID" name="id">
+                                            <button type="submit" class="btn btn-confirm-delete">Xóa</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- View Course Details Modal -->
                         <div class="modal fade view-course-modal" id="viewCourseModal" tabindex="-1" aria-labelledby="viewCourseModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -282,57 +276,35 @@
                                             <h6 class="section-title"><i class="fas fa-info-circle"></i> Thông Tin Khóa Học</h6>
                                             <div class="info-item">
                                                 <span class="info-label">ID Khóa Học:</span>
-                                                <span class="info-value" id="viewCourseId"></span>
+                                                <span class="info-value" id="viewCourseID"></span>
                                             </div>
                                             <div class="info-item">
                                                 <span class="info-label">Tên Khóa Học:</span>
-                                                <span class="info-value" id="viewCourseName"></span>
+                                                <span class="info-value" id="viewCourseTitle"></span>
                                             </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Giảng Viên:</span>
-                                                <span class="info-value" id="viewTeacher"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Số Học Viên:</span>
-                                                <span class="info-value" id="viewStudents"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Cấp Độ:</span>
-                                                <span class="info-value" id="viewLevel"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Trạng Thái:</span>
-                                                <span class="info-value" id="viewStatus"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Ngày Tạo:</span>
-                                                <span class="info-value" id="viewCreatedDate"></span>
-                                            </div>
-                                        </div>
-                                        <div class="section">
-                                            <h6 class="section-title"><i class="fas fa-file-alt"></i> Mô Tả & Thời Lượng</h6>
                                             <div class="info-item">
                                                 <span class="info-label">Mô Tả:</span>
-                                                <span class="info-value" id="viewDescription"></span>
+                                                <span class="info-value" id="viewCourseDescription"></span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Học Phí:</span>
+                                                <span class="info-value" id="viewCourseFee"></span>
                                             </div>
                                             <div class="info-item">
                                                 <span class="info-label">Thời Lượng:</span>
-                                                <span class="info-value" id="viewDuration"></span>
-                                            </div>
-                                        </div>
-                                        <div class="section">
-                                            <h6 class="section-title"><i class="fas fa-money-bill-wave"></i> Giá & Giảm Giá</h6>
-                                            <div class="info-item">
-                                                <span class="info-label">Giá (VND):</span>
-                                                <span class="info-value" id="viewPrice"></span>
+                                                <span class="info-value" id="viewCourseDuration"></span>
                                             </div>
                                             <div class="info-item">
-                                                <span class="info-label">Mã Giảm Giá:</span>
-                                                <span class="info-value" id="viewDiscountCode"></span>
+                                                <span class="info-label">Ngày Bắt Đầu:</span>
+                                                <span class="info-value" id="viewCourseStartDate"></span>
                                             </div>
                                             <div class="info-item">
-                                                <span class="info-label">Phần Trăm Giảm Giá:</span>
-                                                <span class="info-value" id="viewDiscountPercent"></span>
+                                                <span class="info-label">Ngày Kết Thúc:</span>
+                                                <span class="info-value" id="viewCourseEndDate"></span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Trạng Thái:</span>
+                                                <span class="info-value" id="viewCourseStatus"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -378,6 +350,73 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/admin/manaCourses.js"></script>
+        <script>
+// JavaScript functions for modal handling
+function viewCourse(courseId) {
+    // Send AJAX request to get course details
+    fetch('${pageContext.request.contextPath}/admin/courses?action=detail&id=' + courseId)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('viewCourseID').textContent = data.courseID;
+            document.getElementById('viewCourseTitle').textContent = data.title;
+            document.getElementById('viewCourseDescription').textContent = data.description || 'Không có mô tả';
+            document.getElementById('viewCourseFee').textContent = new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(data.fee);
+            document.getElementById('viewCourseDuration').textContent = data.duration + ' tuần';
+            document.getElementById('viewCourseStartDate').textContent = new Date(data.startDate).toLocaleDateString('vi-VN');
+            document.getElementById('viewCourseEndDate').textContent = new Date(data.endDate).toLocaleDateString('vi-VN');
+            document.getElementById('viewCourseStatus').innerHTML = data.isActive ? '<span class="badge badge-active">Hoạt động</span>' : '<span class="badge badge-inactive">Không hoạt động</span>';
+            
+            var modal = new bootstrap.Modal(document.getElementById('viewCourseModal'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tải thông tin khóa học');
+        });
+}
+
+function editCourse(courseId) {
+    // Send AJAX request to get course details for editing
+    fetch('${pageContext.request.contextPath}/admin/courses?action=detail&id=' + courseId)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('editCourseID').value = data.courseID;
+            document.getElementById('editTitle').value = data.title;
+            document.getElementById('editDescription').value = data.description || '';
+            document.getElementById('editFee').value = data.fee;
+            document.getElementById('editDuration').value = data.duration;
+            document.getElementById('editStartDate').value = data.startDate;
+            document.getElementById('editEndDate').value = data.endDate;
+            document.getElementById('editIsActive').value = data.isActive.toString();
+            document.getElementById('editImageUrl').value = data.imageUrl || '';
+            
+            var modal = new bootstrap.Modal(document.getElementById('editCourseModal'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tải thông tin khóa học');
+        });
+}
+
+function deleteCourse(courseId) {
+    // Send AJAX request to get course details for deletion confirmation
+    fetch('${pageContext.request.contextPath}/admin/courses?action=detail&id=' + courseId)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('deleteCourseTitle').textContent = data.title;
+            document.getElementById('deleteCourseID').textContent = data.courseID;
+            document.getElementById('deleteConfirmCourseID').value = data.courseID;
+            
+            var modal = new bootstrap.Modal(document.getElementById('deleteCourseModal'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tải thông tin khóa học');
+        });
+}
+</script>
 
     </body>
 </html>

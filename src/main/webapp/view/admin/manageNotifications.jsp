@@ -74,7 +74,7 @@
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
-                                            <td><fmt:formatDate value="${notification.createdDate}" pattern="yyyy-MM-dd"/></td>
+                                            <td><fmt:formatDate value="${notification.sendDate}" pattern="dd/MM/yyyy"/></td>
                                             <td>
                                                 <button class="btn btn-view btn-sm btn-action" 
                                                         onclick="viewNotification(${notification.id})">
@@ -86,7 +86,7 @@
                                                 </button>
                                                 <button class="btn btn-delete btn-sm btn-action" 
                                                         onclick="deleteNotification(${notification.id})">
-                                                    <i class="fas fa-lock"></i>
+                                                    <i class="fas fa-trash"></i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -206,9 +206,10 @@
                                         <h5 class="modal-title" id="editNotificationModalLabel"><i class="fas fa-edit"></i> Chỉnh sửa thông báo</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form action="/EditNotificationServlet" method="POST">
+                                    <form id="editNotificationForm" action="${pageContext.request.contextPath}/admin/notifications" method="POST">
+                                        <input type="hidden" name="action" value="edit">
+                                        <input type="hidden" id="editNotificationId" name="notificationId">
                                         <div class="modal-body">
-                                            <input type="hidden" id="editNotificationId" name="notificationId"></input>
                                             <div class="form-group">
                                                 <label for="editTitle">Tiêu đề <span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="editTitle" name="title" placeholder="Nhập tiêu đề thông báo..." required></input>
@@ -273,9 +274,10 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Hủy</button>
-                                        <form action="/BlockNotificationServlet" method="POST">
-                                            <input type="hidden" id="blockNotificationIdInput" name="notificationId"></input>
-                                            <button type="submit" class="btn btn-confirm-block">Khóa</button>
+                                        <form action="${pageContext.request.contextPath}/admin/notifications" method="POST">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" id="deleteNotificationIdInput" name="notificationId">
+                                            <button type="submit" class="btn btn-confirm-delete">Xóa</button>
                                         </form>
                                     </div>
                                 </div>
@@ -286,6 +288,64 @@
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+// JavaScript functions for modal handling
+function viewNotification(notificationId) {
+    fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + notificationId)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('modalNotificationId').textContent = 'NOT' + String(data.id).padStart(3, '0');
+            document.getElementById('modalTitle').textContent = data.title;
+            document.getElementById('modalType').textContent = data.type;
+            document.getElementById('modalContent').textContent = data.content;
+            document.getElementById('modalSendDate').textContent = new Date(data.sendDate).toLocaleDateString('vi-VN');
+            document.getElementById('modalRecipient').textContent = data.recipient;
+            
+            var modal = new bootstrap.Modal(document.getElementById('viewNotificationModal'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tải thông tin thông báo');
+        });
+}
+
+function editNotification(notificationId) {
+    fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + notificationId)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('editNotificationId').value = data.id;
+            document.getElementById('editTitle').value = data.title;
+            document.getElementById('editType').value = data.type;
+            document.getElementById('editContent').value = data.content;
+            document.getElementById('editRecipient').value = data.recipient;
+            
+            var modal = new bootstrap.Modal(document.getElementById('editNotificationModal'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tải thông tin thông báo');
+        });
+}
+
+function deleteNotification(notificationId) {
+    fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + notificationId)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('blockNotificationId').textContent = 'NOT' + String(data.id).padStart(3, '0');
+            document.getElementById('blockTitle').textContent = data.title;
+            document.getElementById('deleteNotificationIdInput').value = data.id;
+            
+            var modal = new bootstrap.Modal(document.getElementById('blockNotificationModal'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tải thông tin thông báo');
+        });
+}
+</script>
         <script src="${pageContext.request.contextPath}/assets/js/admin/manaNotifications.js"></script>
     </body>
 </html>
