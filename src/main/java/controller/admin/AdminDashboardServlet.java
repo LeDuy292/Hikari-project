@@ -38,6 +38,7 @@ public class AdminDashboardServlet extends HttpServlet {
             req.setAttribute("recentCourses", dashboardData.get("recentCourses"));
             req.setAttribute("recentPayments", dashboardData.get("recentPayments"));
             req.setAttribute("recentReviews", dashboardData.get("recentReviews"));
+            req.setAttribute("recentNotifications", dashboardData.get("recentNotifications"));
             
             // Serialize Map objects to JSON strings
             req.setAttribute("monthlyStats", gson.toJson(dashboardData.get("monthlyStats")));

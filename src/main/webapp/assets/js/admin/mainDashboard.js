@@ -12,7 +12,6 @@ class AdminDashboard {
   }
 
   bindEvents() {
-    // Add click handlers for stat cards
     const statCards = document.querySelectorAll(".stat-card");
     statCards.forEach((card) => {
       card.addEventListener("click", () => {
@@ -21,7 +20,6 @@ class AdminDashboard {
       });
     });
 
-    // Add hover effects for recent items
     const recentItems = document.querySelectorAll(".recent-item");
     recentItems.forEach((item) => {
       item.addEventListener("mouseenter", () => {
@@ -51,6 +49,7 @@ class AdminDashboard {
     try {
       this.createUserGrowthChart();
       this.createRevenueChart();
+      this.createOverviewChart();
     } catch (error) {
       console.error("Error initializing charts:", error);
     }
@@ -58,252 +57,199 @@ class AdminDashboard {
 
   createUserGrowthChart() {
     const ctx = document.getElementById("userGrowthChart");
-    if (!ctx) {
-      console.error("User Growth Chart canvas not found");
-      return;
-    }
+    if (!ctx) return;
 
     const monthlyStats = this.dashboardData.monthlyStats || {};
     const months = ["Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"];
-    
-    // Fallback data if monthlyStats is empty
     const data = new Array(12).fill(0);
-    try {
-      if (Object.keys(monthlyStats).length > 0) {
-        Object.entries(monthlyStats).forEach(([month, value]) => {
-          const monthIndex = parseInt(month) - 1;
-          if (monthIndex >= 0 && monthIndex < 12 && !isNaN(value)) {
-            data[monthIndex] = Number(value);
-          }
-        });
-      } else {
-        console.warn("No monthlyStats data available, using fallback data");
-      }
-    } catch (error) {
-      console.error("Error processing user growth data:", error);
-    }
-
-    console.log("User Growth Chart Data:", data);
 
     try {
-      this.charts.userGrowth = new Chart(ctx.getContext('2d'), {
-        type: "line",
-        data: {
-          labels: months,
-          datasets: [
-            {
-              label: "Người Dùng Mới",
-              data: data,
-              borderColor: "#F39C12",
-              backgroundColor: "rgba(243, 156, 18, 0.2)",
-              borderWidth: 3,
-              fill: true,
-              tension: 0.4,
-              pointBackgroundColor: "#F39C12",
-              pointBorderColor: "#fff",
-              pointBorderWidth: 2,
-              pointRadius: 5,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: true,
-              position: "top",
-              labels: {
-                color: "#333333",
-                font: {
-                  size: 12,
-                },
-              },
-            },
-            tooltip: {
-              backgroundColor: "rgba(0,0,0,0.8)",
-              titleColor: "#fff",
-              bodyColor: "#fff",
-              borderColor: "#F39C12",
-              borderWidth: 1,
-            },
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              title: {
-                display: true,
-                text: "Số Người Dùng",
-                color: "#333333",
-                font: {
-                  size: 12,
-                  weight: "bold",
-                },
-              },
-              ticks: {
-                color: "#333333",
-                stepSize: 1,
-              },
-              grid: {
-                color: "rgba(0, 0, 0, 0.1)",
-              },
-            },
-            x: {
-              title: {
-                display: true,
-                text: "Tháng",
-                color: "#333333",
-                font: {
-                  size: 12,
-                  weight: "bold",
-                },
-              },
-              ticks: {
-                color: "#333333",
-              },
-              grid: {
-                color: "rgba(0, 0, 0, 0.1)",
-              },
-            },
-          },
-        },
+      Object.entries(monthlyStats).forEach(([month, value]) => {
+        const monthIndex = parseInt(month) - 1;
+        if (monthIndex >= 0 && monthIndex < 12) {
+          data[monthIndex] = Number(value);
+        }
       });
     } catch (error) {
-      console.error("Error creating User Growth Chart:", error);
+      console.warn("Fallback used for userGrowthChart");
     }
+
+    this.charts.userGrowth = new Chart(ctx.getContext("2d"), {
+      type: "line",
+      data: {
+        labels: months,
+        datasets: [{
+          label: "Người Dùng Mới",
+          data,
+          borderColor: "#F39C12",
+          backgroundColor: "rgba(243, 156, 18, 0.2)",
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: "#F39C12",
+          pointBorderColor: "#fff",
+          pointBorderWidth: 2,
+          pointRadius: 5,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true },
+          tooltip: {
+            backgroundColor: "rgba(0,0,0,0.8)",
+            titleColor: "#fff",
+            bodyColor: "#fff",
+            borderColor: "#F39C12",
+            borderWidth: 1,
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: "Số Người Dùng",
+              font: { size: 12, weight: "bold" },
+            },
+            ticks: { stepSize: 1 },
+          },
+          x: {
+            title: {
+              display: true,
+              text: "Tháng",
+              font: { size: 12, weight: "bold" },
+            },
+          },
+        },
+      },
+    });
   }
 
   createRevenueChart() {
     const ctx = document.getElementById("revenueChart");
-    if (!ctx) {
-      console.error("Revenue Chart canvas not found");
-      return;
-    }
+    if (!ctx) return;
 
     const paymentStats = this.dashboardData.paymentStats || {};
     const months = ["Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"];
-    
-    // Fallback data if paymentStats is empty
     const data = new Array(12).fill(0);
-    try {
-      if (Object.keys(paymentStats).length > 0) {
-        Object.entries(paymentStats).forEach(([month, value]) => {
-          const monthIndex = parseInt(month) - 1;
-          if (monthIndex >= 0 && monthIndex < 12 && !isNaN(value)) {
-            data[monthIndex] = Number(value);
-          }
-        });
-      } else {
-        console.warn("No paymentStats data available, using fallback data");
-      }
-    } catch (error) {
-      console.error("Error processing revenue data:", error);
-    }
-
-    console.log("Revenue Chart Data:", data);
 
     try {
-      this.charts.revenue = new Chart(ctx.getContext('2d'), {
-        type: "bar",
-        data: {
-          labels: months,
-          datasets: [
-            {
-              label: "Doanh Thu (VNĐ)",
-              data: data,
-              backgroundColor: "#4A90E2",
-              borderColor: "#4A90E2",
-              borderWidth: 1,
-              borderRadius: 8,
-              borderSkipped: false,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: true,
-              position: "top",
-              labels: {
-                color: "#333333",
-                font: {
-                  size: 12,
-                },
-              },
-            },
-            tooltip: {
-              backgroundColor: "rgba(0,0,0,0.8)",
-              titleColor: "#fff",
-              bodyColor: "#fff",
-              borderColor: "#4A90E2",
-              borderWidth: 1,
-              callbacks: {
-                label: (context) => {
-                  let label = context.dataset.label || "";
-                  if (label) {
-                    label += ": ";
-                  }
-                  if (context.parsed.y !== null) {
-                    label += new Intl.NumberFormat("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }).format(context.parsed.y);
-                  }
-                  return label;
-                },
-              },
-            },
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              title: {
-                display: true,
-                text: "Doanh Thu (VNĐ)",
-                color: "#333333",
-                font: {
-                  size: 12,
-                  weight: "bold",
-                },
-              },
-              ticks: {
-                color: "#333333",
-                callback: (value) =>
-                  new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                    notation: "compact",
-                  }).format(value),
-              },
-              grid: {
-                color: "rgba(0, 0, 0, 0.1)",
-              },
-            },
-            x: {
-              title: {
-                display: true,
-                text: "Tháng",
-                color: "#333333",
-                font: {
-                  size: 12,
-                  weight: "bold",
-                },
-              },
-              ticks: {
-                color: "#333333",
-              },
-              grid: {
-                display: false,
-              },
-            },
-          },
-        },
+      Object.entries(paymentStats).forEach(([month, value]) => {
+        const monthIndex = parseInt(month) - 1;
+        if (monthIndex >= 0 && monthIndex < 12) {
+          data[monthIndex] = Number(value);
+        }
       });
     } catch (error) {
-      console.error("Error creating Revenue Chart:", error);
+      console.warn("Fallback used for revenueChart");
     }
+
+    this.charts.revenue = new Chart(ctx.getContext("2d"), {
+      type: "bar",
+      data: {
+        labels: months,
+        datasets: [{
+          label: "Doanh Thu (VNĐ)",
+          data,
+          backgroundColor: "#4A90E2",
+          borderColor: "#4A90E2",
+          borderWidth: 1,
+          borderRadius: 8,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true },
+          tooltip: {
+            backgroundColor: "rgba(0,0,0,0.8)",
+            titleColor: "#fff",
+            bodyColor: "#fff",
+            borderColor: "#4A90E2",
+            borderWidth: 1,
+            callbacks: {
+              label: (context) => {
+                const value = context.parsed.y;
+                return `Doanh Thu: ${new Intl.NumberFormat("vi-VN", {
+                  style: "currency", currency: "VND"
+                }).format(value)}`;
+              },
+            },
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: "Doanh Thu (VNĐ)",
+              font: { size: 12, weight: "bold" },
+            },
+            ticks: {
+              callback: (value) =>
+                new Intl.NumberFormat("vi-VN", {
+                  style: "currency", currency: "VND", notation: "compact"
+                }).format(value),
+            },
+          },
+          x: {
+            title: {
+              display: true,
+              text: "Tháng",
+              font: { size: 12, weight: "bold" },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  createOverviewChart() {
+    const ctx = document.getElementById("overviewChart");
+    if (!ctx) {
+      console.error("overviewChart canvas not found");
+      return;
+    }
+
+    const overview = this.dashboardData?.overviewData || {};
+    const users = Number(overview.totalUsers || 0);
+    const courses = Number(overview.totalCourses || 0);
+    const payments = Number(overview.totalPayments || 0);
+    const reviews = Number(overview.totalReviews || 0);
+
+    console.log("Overview Chart Data:", { users, courses, payments, reviews });
+
+    this.charts.overview = new Chart(ctx.getContext("2d"), {
+      type: "doughnut",
+      data: {
+        labels: ["Người Dùng", "Khóa Học", "Thanh Toán", "Đánh Giá"],
+        datasets: [{
+          data: [users, courses, payments, reviews],
+          backgroundColor: ["#3498db", "#27ae60", "#f39c12", "#e74c3c"],
+          borderWidth: 0
+        }],
+      },
+      options: {
+        cutout: "70%",
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed || 0;
+                return `${label}: ${value.toLocaleString("vi-VN")}`;
+              }
+            }
+          }
+        },
+      },
+    });
   }
 
   animateStatCards() {
@@ -338,15 +284,13 @@ class AdminDashboard {
 
   destroyCharts() {
     Object.values(this.charts).forEach((chart) => {
-      if (chart) {
-        chart.destroy();
-      }
+      if (chart) chart.destroy();
     });
     this.charts = {};
   }
 }
 
-// Initialize dashboard when DOM is fully loaded
+// Khởi tạo dashboard sau khi DOM đã sẵn sàng
 document.addEventListener("DOMContentLoaded", () => {
   try {
     const dashboard = new AdminDashboard();
@@ -354,23 +298,19 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("Error initializing AdminDashboard:", error);
   }
 
-  // Auto refresh every 5 minutes (optional)
+  // Refresh sau 5 phút (tùy chọn)
   setInterval(() => {
     console.log("Auto refreshing dashboard...");
-    // dashboard.refreshDashboard(); // Uncomment if you want auto refresh
-  }, 300000); // 5 minutes
+    // dashboard.refreshDashboard(); // Bỏ comment nếu cần
+  }, 300000);
 });
 
-// Handle responsive sidebar toggle
-function toggleSidebar() {
+// Export các hàm toàn cục
+window.toggleSidebar = function () {
   const sidebar = document.querySelector(".sidebar");
   const mainContent = document.querySelector(".main-content");
   if (sidebar && mainContent) {
     sidebar.classList.toggle("collapsed");
     mainContent.classList.toggle("expanded");
   }
-}
-
-// Export for global use
-window.AdminDashboard = AdminDashboard;
-window.toggleSidebar = toggleSidebar;
+};

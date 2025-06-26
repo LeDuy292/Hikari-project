@@ -22,10 +22,11 @@ public class AdminDashboardService {
             result.put("totalNotifications", dashboardDAO.getTotalNotifications());
             
             // Lấy dữ liệu gần đây
-            result.put("recentUsers", dashboardDAO.getRecentUsers(5));
-            result.put("recentCourses", dashboardDAO.getRecentCourses(5));
-            result.put("recentPayments", dashboardDAO.getRecentPayments(5));
-            result.put("recentReviews", dashboardDAO.getRecentReviews(5));
+            result.put("recentUsers", dashboardDAO.getRecentUsers(3));
+            result.put("recentCourses", dashboardDAO.getRecentCourses(3));
+            result.put("recentPayments", dashboardDAO.getRecentPayments(3));
+            result.put("recentReviews", dashboardDAO.getRecentReviews(3));
+            result.put("recentNotifications", dashboardDAO.recentNotifications(3));
             
             // Lấy thống kê theo tháng
             Map<String, Object> monthlyStatsRaw = dashboardDAO.getMonthlyStatistics();
@@ -73,6 +74,7 @@ public class AdminDashboardService {
             result.put("recentCourses", new ArrayList<>());
             result.put("recentPayments", new ArrayList<>());
             result.put("recentReviews", new ArrayList<>());
+            result.put("recentNotifications", new ArrayList<>());
             result.put("monthlyStats", new HashMap<>());
             result.put("paymentStats", new HashMap<>());
             result.put("courseStats", new HashMap<>());

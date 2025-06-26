@@ -56,6 +56,68 @@ body {
   color: #666;
 }
 
+/* Header Admin Styles */
+.header {
+  background: linear-gradient(135deg, var(--white), #f8f9fa);
+  padding: 20px 30px;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-profile .avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 3px solid var(--primary-color);
+  object-fit: cover;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--secondary-color);
+  font-size: 0.95rem;
+}
+
+.logout-btn {
+  color: var(--danger-color);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.logout-btn:hover {
+  color: #c0392b;
+}
+
 /* Statistics Cards */
 .stats-grid {
   display: grid;
@@ -155,11 +217,119 @@ body {
   color: var(--secondary-color);
 }
 
+/* Collapsible Sections */
+.collapsible-section {
+  margin-bottom: 20px;
+}
+
+.collapsible-section .section-header {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.collapsible-section .section-header:hover {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.toggle-icon {
+  font-size: 1rem;
+  color: var(--primary-color);
+  transition: transform 0.3s ease;
+}
+
+.collapsible-section .section-header[aria-expanded="true"] .toggle-icon {
+  transform: rotate(180deg);
+}
+
+/* Overview Chart Container */
+.overview-chart-container {
+  height: auto !important;
+  min-height: 500px;
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 300px;
+  margin-bottom: 20px;
+}
+
+.chart-center-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.center-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  line-height: 1;
+}
+
+.center-label {
+  font-size: 0.9rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 5px;
+}
+
+.chart-legend {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.legend-item:hover {
+  background: #e9ecef;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-text {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #198754
+  font-weight: 500;
+}
+
+.legend-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+}
+
 /* Recent Data Sections - Improved */
 .course-section-container {
   background: var(--white);
   border-radius: 20px;
-  padding: 30px;
+  padding: 12.4px 30px;
   margin-bottom: 30px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--border-color);
@@ -350,7 +520,8 @@ body {
   color: var(--white);
 }
 
-.status-badge.completed {
+.status-badge.completed,
+.status-badge.complete {
   background: linear-gradient(135deg, #27ae60, #229954);
   color: var(--white);
 }
@@ -436,6 +607,10 @@ body {
   .recent-section {
     grid-template-columns: 1fr;
   }
+  canvas#overviewChart {
+  height: 300px !important;
+}
+
 }
 
 @media (max-width: 768px) {
@@ -486,5 +661,28 @@ body {
 
   .course-section-container {
     padding: 15px;
+  }
+
+  .row.mb-4 {
+    flex-direction: column;
+  }
+
+  .col-md-6 {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .chart-legend {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .header-actions {
+    justify-content: center;
   }
 }

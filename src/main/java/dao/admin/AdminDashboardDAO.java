@@ -97,6 +97,80 @@ public class AdminDashboardDAO {
         return 0;
     }
 
+    // Thống kê tổng quan cho biểu đồ
+    public Map<String, Object> getOverviewStatistics() throws SQLException {
+        Map<String, Object> stats = new HashMap<>();
+        
+        try (Connection conn = dbContext.getConnection()) {
+            // Thống kê người dùng theo role
+            String userSql = "SELECT role, COUNT(*) as count FROM UserAccount GROUP BY role";
+            Map<String, Integer> userStats = new HashMap<>();
+            try (PreparedStatement stmt = conn.prepareStatement(userSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    userStats.put(rs.getString("role"), rs.getInt("count"));
+                }
+            }
+            stats.put("usersByRole", userStats);
+            
+            // Thống kê khóa học theo trạng thái
+            String courseSql = "SELECT " +
+                              "SUM(CASE WHEN isActive = 1 THEN 1 ELSE 0 END) as active, " +
+                              "SUM(CASE WHEN isActive = 0 THEN 1 ELSE 0 END) as inactive " +
+                              "FROM Courses";
+            Map<String, Integer> courseStats = new HashMap<>();
+            try (PreparedStatement stmt = conn.prepareStatement(courseSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    courseStats.put("active", rs.getInt("active"));
+                    courseStats.put("inactive", rs.getInt("inactive"));
+                }
+            }
+            stats.put("coursesByStatus", courseStats);
+            
+            // Thống kê thanh toán theo trạng thái
+            String paymentSql = "SELECT paymentStatus, COUNT(*) as count, SUM(amount) as total " +
+                               "FROM Payment GROUP BY paymentStatus";
+            Map<String, Map<String, Double>> paymentStats = new HashMap<>();
+            try (PreparedStatement stmt = conn.prepareStatement(paymentSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Double> statusData = new HashMap<>();
+                    statusData.put("count", (double) rs.getInt("count"));
+                    statusData.put("total", rs.getDouble("total"));
+                    paymentStats.put(rs.getString("paymentStatus"), statusData);
+                }
+            }
+            stats.put("paymentsByStatus", paymentStats);
+            
+            // Thống kê đánh giá theo rating
+            String reviewSql = "SELECT rating, COUNT(*) as count FROM Course_Reviews GROUP BY rating ORDER BY rating";
+            Map<String, Integer> reviewStats = new HashMap<>();
+            try (PreparedStatement stmt = conn.prepareStatement(reviewSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    reviewStats.put(rs.getString("rating") + " sao", rs.getInt("count"));
+                }
+            }
+            stats.put("reviewsByRating", reviewStats);
+            
+            // Tổng doanh thu
+            String revenueSql = "SELECT SUM(amount) as totalRevenue FROM Payment WHERE paymentStatus = 'Complete'";
+            try (PreparedStatement stmt = conn.prepareStatement(revenueSql);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    stats.put("totalRevenue", rs.getDouble("totalRevenue"));
+                }
+            }
+            
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting overview statistics", e);
+            throw e;
+        }
+        
+        return stats;
+    }
+
     // Dữ liệu gần đây
     public List<UserAccount> getRecentUsers(int limit) throws SQLException {
         List<UserAccount> users = new ArrayList<>();
@@ -357,5 +431,34 @@ public class AdminDashboardDAO {
         stats.put("paymentMethods", methodStats);
         
         return stats;
+    }
+
+    public List<Map<String, Object>> recentNotifications(int limit) throws SQLException {
+        List<Map<String, Object>> notifications = new ArrayList<>();
+        String sql = "SELECT a.id, a.title, a.content, a.postedDate, u.fullName AS postedByName " +
+                     "FROM Announcement a " +
+                     "LEFT JOIN UserAccount u ON a.postedBy = u.userID " +
+                     "ORDER BY a.postedDate DESC LIMIT ?";
+
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, limit);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> notification = new HashMap<>();
+                    notification.put("id", rs.getInt("id"));
+                    notification.put("title", rs.getString("title"));
+                    notification.put("content", rs.getString("content"));
+                    notification.put("postedDate", rs.getTimestamp("postedDate"));
+                    notification.put("postedByName", rs.getString("postedByName"));
+                    notifications.add(notification);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting recent notifications", e);
+            throw e;
+        }
+        return notifications;
     }
 }

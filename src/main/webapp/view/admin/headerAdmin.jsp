@@ -5,7 +5,7 @@
     String userName = (currentUser != null) ? currentUser.getFullName() : "Quản Trị";
     String userAvatar = (currentUser != null && currentUser.getProfilePicture() != null) 
                        ? currentUser.getProfilePicture() 
-                       : "img/dashborad/defaultLogoAdmin.png";
+                       : "assets/img/dashborad/defaultLogoAdmin.jpg";
 %>
 
 <div class="header">
