@@ -59,7 +59,7 @@ public class UserDAO {
     }
 
     public void addUser(UserAccount user) {
-        String sql = "INSERT INTO UserAccount (userID, fullName, username, email, password, role, profilePicture) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO UserAccount (userID, fullName, username, email, password, role, profilePicture, phone, birthDate, registrationDate, isBlocked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement pre = con.prepareStatement(sql);
             pre.setString(1, user.getUserID());
@@ -69,6 +69,10 @@ public class UserDAO {
             pre.setString(5, user.getPassword());
             pre.setString(6, user.getRole());
             pre.setString(7, user.getProfilePicture());
+            pre.setString(8, user.getPhone());
+            pre.setDate(9, user.getBirthDate() != null ? new Date(user.getBirthDate().getTime()) : null);
+            pre.setDate(10, Date.valueOf(LocalDate.now()));
+            pre.setBoolean(11, false); // Default not blocked
             pre.executeUpdate();
         } catch (Exception e) {
             System.out.println("Error in addUser: " + e);
@@ -119,7 +123,7 @@ public class UserDAO {
             return false;
         }
 
-        String sql = "INSERT INTO UserAccount (userID, username, email, password, role, fullName, registrationDate, profilePicture, phone, birthDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO UserAccount (userID, username, email, password, role, fullName, registrationDate, profilePicture, phone, birthDate, isBlocked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         try {
             conn = new DBContext().getConnection();
@@ -129,16 +133,17 @@ public class UserDAO {
                 stmt.setString(2, user.getUsername());
                 stmt.setString(3, user.getEmail());
                 stmt.setString(4, user.getPassword());
-                stmt.setString(5, user.getRole());
+                stmt.setString(5, user.getRole()); // Use the role from the user object
                 stmt.setString(6, user.getFullName() != null ? user.getFullName() : user.getUsername());
                 stmt.setDate(7, Date.valueOf(LocalDate.now()));
                 stmt.setString(8, user.getProfilePicture());
                 stmt.setString(9, user.getPhone());
                 stmt.setDate(10, user.getBirthDate() != null ? new Date(user.getBirthDate().getTime()) : null);
+                stmt.setBoolean(11, false); // Default not blocked
                 int rows = stmt.executeUpdate();
                 if (rows > 0) {
                     conn.commit();
-                    LOGGER.info("User registered successfully: " + user.getUsername() + " with ID: " + user.getUserID());
+                    LOGGER.info("User registered successfully: " + user.getUsername() + " with ID: " + user.getUserID() + " and role: " + user.getRole());
                     return true;
                 }
                 conn.rollback();
@@ -226,6 +231,11 @@ public class UserDAO {
                     user.setOtpExpiry(rs.getTimestamp("otpExpiry"));
                     user.setResetToken(rs.getString("resetToken"));
                     user.setResetTokenExpiry(rs.getTimestamp("resetTokenExpiry"));
+                    try {
+                        user.setBlocked(rs.getBoolean("isBlocked"));
+                    } catch (SQLException e) {
+                        user.setBlocked(false); // Default if column doesn't exist
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -410,7 +420,7 @@ public class UserDAO {
     }
 
     public void updateUserProfile(UserAccount user) throws ClassNotFoundException, SQLException {
-        String sql = "UPDATE UserAccount SET fullName = ?, username = ?, email = ?, phone = ?, birthDate = ?, profilePicture = ?";
+        String sql = "UPDATE UserAccount SET fullName = ?, username = ?, email = ?, phone = ?, birthDate = ?, profilePicture = ?, role = ?";
         
         // Add password update if provided
         if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
@@ -427,6 +437,7 @@ public class UserDAO {
             pstmt.setString(paramIndex++, user.getPhone());
             pstmt.setDate(paramIndex++, user.getBirthDate() != null ? new java.sql.Date(user.getBirthDate().getTime()) : null);
             pstmt.setString(paramIndex++, user.getProfilePicture());
+            pstmt.setString(paramIndex++, user.getRole()); // Include role update
             
             if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
                 pstmt.setString(paramIndex++, user.getPassword());
@@ -438,7 +449,7 @@ public class UserDAO {
             if (rowsAffected == 0) {
                 throw new SQLException("No user found with userNum: " + user.getUserID());
             }
-            LOGGER.info("User profile updated for userNum: " + user.getUserID());
+            LOGGER.info("User profile updated for userNum: " + user.getUserID() + " with role: " + user.getRole());
         } catch (SQLException e) {
             LOGGER.severe("Error updating user profile for userNum: " + user.getUserID() + ", " + e.getMessage());
             throw e;
@@ -467,6 +478,11 @@ public class UserDAO {
                     user.setOtpExpiry(rs.getTimestamp("otpExpiry"));
                     user.setResetToken(rs.getString("resetToken"));
                     user.setResetTokenExpiry(rs.getTimestamp("resetTokenExpiry"));
+                    try {
+                        user.setBlocked(rs.getBoolean("isBlocked"));
+                    } catch (SQLException e) {
+                        user.setBlocked(false); // Default if column doesn't exist
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -498,6 +514,11 @@ public class UserDAO {
                     user.setOtpExpiry(rs.getTimestamp("otpExpiry"));
                     user.setResetToken(rs.getString("resetToken"));
                     user.setResetTokenExpiry(rs.getTimestamp("resetTokenExpiry"));
+                    try {
+                        user.setBlocked(rs.getBoolean("isBlocked"));
+                    } catch (SQLException e) {
+                        user.setBlocked(false); // Default if column doesn't exist
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -612,8 +633,12 @@ public class UserDAO {
                 user.setProfilePicture(rs.getString("profilePicture"));
                 user.setPhone(rs.getString("phone"));
                 user.setBirthDate(rs.getDate("birthDate"));
-                // Store course count in a custom field or use a map
                 user.setCourseCount(rs.getInt("courseCount"));
+                try {
+                    user.setBlocked(rs.getBoolean("isBlocked"));
+                } catch (SQLException e) {
+                    user.setBlocked(false); // Default if column doesn't exist
+                }
                 users.add(user);
             }
         } catch (SQLException e) {
@@ -623,15 +648,14 @@ public class UserDAO {
         return users;
     }
 
-    public void updateUserStatus(String userID, boolean isActive) throws SQLException {
-        // Since there's no isActive field, we can add one or use a different approach
-        // For now, we'll add an isActive field to the database
-        String sql = "UPDATE UserAccount SET isActive = ? WHERE userID = ?";
+    // Block/Unblock user functionality
+    public void updateUserStatus(String userID, boolean isBlocked) throws SQLException {
+        String sql = "UPDATE UserAccount SET isBlocked = ? WHERE userID = ?";
         
         try (Connection conn = new DBContext().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setBoolean(1, isActive);
+            stmt.setBoolean(1, isBlocked);
             stmt.setString(2, userID);
             int rowsAffected = stmt.executeUpdate();
             
@@ -639,7 +663,7 @@ public class UserDAO {
                 throw new SQLException("No user found with ID: " + userID);
             }
             
-            LOGGER.info("User status updated for: " + userID + ", active: " + isActive);
+            LOGGER.info("User status updated for: " + userID + ", blocked: " + isBlocked);
         } catch (SQLException e) {
             LOGGER.severe("Error updating user status: " + userID + ", " + e.getMessage());
             throw e;
@@ -692,6 +716,11 @@ public class UserDAO {
                     user.setPhone(rs.getString("phone"));
                     user.setBirthDate(rs.getDate("birthDate"));
                     user.setCourseCount(rs.getInt("courseCount"));
+                    try {
+                        user.setBlocked(rs.getBoolean("isBlocked"));
+                    } catch (SQLException e) {
+                        user.setBlocked(false); // Default if column doesn't exist
+                    }
                     users.add(user);
                 }
             }
@@ -764,6 +793,11 @@ public class UserDAO {
                     user.setPhone(rs.getString("phone"));
                     user.setBirthDate(rs.getDate("birthDate"));
                     user.setCourseCount(rs.getInt("courseCount"));
+                    try {
+                        user.setBlocked(rs.getBoolean("isBlocked"));
+                    } catch (SQLException e) {
+                        user.setBlocked(false); // Default if column doesn't exist
+                    }
                     users.add(user);
                 }
             }

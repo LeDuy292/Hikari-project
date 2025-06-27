@@ -5,31 +5,31 @@ import java.util.Date;
 public class UserAccount {
     private String userID;
     private String username;
-    private String fullName;
     private String email;
     private String password;
     private String role;
+    private String fullName;
     private Date registrationDate;
     private String profilePicture;
     private String phone;
     private Date birthDate;
+    private String sessionId;
     private String otp;
     private Date otpExpiry;
     private String resetToken;
     private Date resetTokenExpiry;
-    private String sessionId;
-    private int courseCount; // For admin management
-    private boolean isActive = true; // For user status
+    private int courseCount;
+    private boolean isBlocked;
 
-    // Default constructor
-    public UserAccount() {}
+    // Constructors
+    public UserAccount() {
+    }
 
-    // Constructor with basic fields
-    public UserAccount(String userID, String username, String fullName, String email, String role) {
+    public UserAccount(String userID, String username, String email, String password, String role) {
         this.userID = userID;
         this.username = username;
-        this.fullName = fullName;
         this.email = email;
+        this.password = password;
         this.role = role;
     }
 
@@ -48,14 +48,6 @@ public class UserAccount {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     public String getEmail() {
@@ -80,6 +72,14 @@ public class UserAccount {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public Date getRegistrationDate() {
@@ -146,14 +146,6 @@ public class UserAccount {
         this.resetTokenExpiry = resetTokenExpiry;
     }
 
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
     public int getCourseCount() {
         return courseCount;
     }
@@ -162,26 +154,45 @@ public class UserAccount {
         this.courseCount = courseCount;
     }
 
-    public boolean isActive() {
-        return isActive;
+    public boolean isBlocked() {
+        return isBlocked;
     }
 
-    public void setActive(boolean active) {
-        isActive = active;
+    public void setBlocked(boolean blocked) {
+        isBlocked = blocked;
     }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public boolean isIsBlocked() {
+        return isBlocked;
+    }
+
+    public void setIsBlocked(boolean isBlocked) {
+        this.isBlocked = isBlocked;
+    }
+    
+    
 
     @Override
     public String toString() {
         return "UserAccount{" +
                 "userID='" + userID + '\'' +
                 ", username='" + username + '\'' +
-                ", fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
                 ", role='" + role + '\'' +
+                ", fullName='" + fullName + '\'' +
                 ", registrationDate=" + registrationDate +
                 ", phone='" + phone + '\'' +
+                ", birthDate=" + birthDate +
                 ", courseCount=" + courseCount +
-                ", isActive=" + isActive +
+                ", isBlocked=" + isBlocked +
                 '}';
     }
 }

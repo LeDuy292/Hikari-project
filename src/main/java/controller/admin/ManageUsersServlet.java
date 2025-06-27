@@ -12,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet("/admin/users")
 public class ManageUsersServlet extends HttpServlet {
@@ -20,6 +22,13 @@ public class ManageUsersServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Check admin permission
+        UserAccount currentUser = (UserAccount) req.getSession().getAttribute("user");
+        if (currentUser == null || !"Admin".equals(currentUser.getRole())) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
+
         String action = req.getParameter("action");
         String message = req.getParameter("message");
         String error = req.getParameter("error");
@@ -41,9 +50,17 @@ public class ManageUsersServlet extends HttpServlet {
                 req.getRequestDispatcher("/view/admin/manageUsers.jsp").forward(req, resp);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            req.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
-            req.getRequestDispatcher("/view/admin/manageUsers.jsp").forward(req, resp);
+            try {
+                e.printStackTrace();
+                req.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+                List<UserAccount> users = userService.getAllUsers();
+                req.setAttribute("users", users);
+                req.getRequestDispatcher("/view/admin/manageUsers.jsp").forward(req, resp);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ManageUsersServlet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                Logger.getLogger(ManageUsersServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -114,6 +131,13 @@ public class ManageUsersServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Check admin permission
+        UserAccount currentUser = (UserAccount) req.getSession().getAttribute("user");
+        if (currentUser == null || !"Admin".equals(currentUser.getRole())) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
+
         String action = req.getParameter("action");
         
         try {
@@ -135,7 +159,7 @@ public class ManageUsersServlet extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + e.getMessage());
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode(e.getMessage(), "UTF-8"));
         }
     }
 
@@ -153,32 +177,37 @@ public class ManageUsersServlet extends HttpServlet {
 
         // Validation
         if (fullName == null || fullName.trim().isEmpty()) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=Họ tên không được để trống");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Họ tên không được để trống", "UTF-8"));
             return;
         }
         
         if (!ValidationUtil.isValidUsername(username)) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=Tên đăng nhập không hợp lệ");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Tên đăng nhập không hợp lệ", "UTF-8"));
             return;
         }
         
         if (!ValidationUtil.isValidEmail(email)) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=Email không hợp lệ");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Email không hợp lệ", "UTF-8"));
             return;
         }
         
         if (!ValidationUtil.isValidPassword(password)) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=Mật khẩu phải dài 6-50 ký tự và chứa ít nhất một chữ và một số");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Mật khẩu phải dài 6-50 ký tự và chứa ít nhất một chữ và một số", "UTF-8"));
             return;
         }
         
         if (!password.equals(confirmPassword)) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=Mật khẩu xác nhận không khớp");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Mật khẩu xác nhận không khớp", "UTF-8"));
+            return;
+        }
+
+        if (role == null || role.trim().isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Vui lòng chọn vai trò", "UTF-8"));
             return;
         }
 
         if (userService.isEmailExists(email)) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=Email đã tồn tại");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Email đã tồn tại", "UTF-8"));
             return;
         }
 
@@ -189,7 +218,7 @@ public class ManageUsersServlet extends HttpServlet {
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(password);
-        user.setRole(role);
+        user.setRole(role); // Set the selected role
         user.setPhone(phone);
         
         // Parse birth date
@@ -205,9 +234,9 @@ public class ManageUsersServlet extends HttpServlet {
         
         boolean success = userService.registerUser(user);
         if (success) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?message=Thêm người dùng thành công");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?message=" + java.net.URLEncoder.encode("Thêm người dùng thành công với vai trò " + role, "UTF-8"));
         } else {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=Không thể thêm người dùng");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Không thể thêm người dùng", "UTF-8"));
         }
     }
 
@@ -224,24 +253,29 @@ public class ManageUsersServlet extends HttpServlet {
 
         // Validation
         if (userID == null || userID.trim().isEmpty()) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=ID người dùng không hợp lệ");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("ID người dùng không hợp lệ", "UTF-8"));
             return;
         }
 
         if (fullName == null || fullName.trim().isEmpty()) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=Họ tên không được để trống");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Họ tên không được để trống", "UTF-8"));
             return;
         }
 
         if (!ValidationUtil.isValidEmail(email)) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=Email không hợp lệ");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Email không hợp lệ", "UTF-8"));
+            return;
+        }
+
+        if (role == null || role.trim().isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Vui lòng chọn vai trò", "UTF-8"));
             return;
         }
 
         // Get existing user
         UserAccount existingUser = userService.findByUserNum(userID);
         if (existingUser == null) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=Không tìm thấy người dùng");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Không tìm thấy người dùng", "UTF-8"));
             return;
         }
 
@@ -249,16 +283,18 @@ public class ManageUsersServlet extends HttpServlet {
         existingUser.setFullName(fullName);
         existingUser.setUsername(username);
         existingUser.setEmail(email);
-        existingUser.setRole(role);
+        existingUser.setRole(role); // Update role
         existingUser.setPhone(phone);
         
         // Update password only if provided
         if (password != null && !password.trim().isEmpty()) {
             if (!ValidationUtil.isValidPassword(password)) {
-                resp.sendRedirect(req.getContextPath() + "/admin/users?error=Mật khẩu không hợp lệ");
+                resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Mật khẩu không hợp lệ", "UTF-8"));
                 return;
             }
             existingUser.setPassword(password);
+        } else {
+            existingUser.setPassword(null); // Don't update password
         }
         
         // Parse birth date
@@ -273,7 +309,7 @@ public class ManageUsersServlet extends HttpServlet {
         }
         
         userService.updateUserInfo(existingUser);
-        resp.sendRedirect(req.getContextPath() + "/admin/users?message=Cập nhật thông tin thành công");
+        resp.sendRedirect(req.getContextPath() + "/admin/users?message=" + java.net.URLEncoder.encode("Cập nhật thông tin thành công với vai trò " + role, "UTF-8"));
     }
 
     private void handleBlockUser(HttpServletRequest req, HttpServletResponse resp) 
@@ -282,15 +318,15 @@ public class ManageUsersServlet extends HttpServlet {
         String statusStr = req.getParameter("status");
         
         if (userID == null || userID.trim().isEmpty()) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=ID người dùng không hợp lệ");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("ID người dùng không hợp lệ", "UTF-8"));
             return;
         }
         
-        boolean isActive = "Hoạt Động".equals(statusStr);
-        userService.updateUserStatus(userID, isActive);
+        boolean isBlocked = "true".equals(statusStr);
+        userDAO.updateUserStatus(userID, isBlocked);
         
-        String message = isActive ? "Mở khóa tài khoản thành công" : "Khóa tài khoản thành công";
-        resp.sendRedirect(req.getContextPath() + "/admin/users?message=" + message);
+        String message = isBlocked ? "Khóa tài khoản thành công" : "Mở khóa tài khoản thành công";
+        resp.sendRedirect(req.getContextPath() + "/admin/users?message=" + java.net.URLEncoder.encode(message, "UTF-8"));
     }
 
     private void handleDeleteUser(HttpServletRequest req, HttpServletResponse resp) 
@@ -298,11 +334,11 @@ public class ManageUsersServlet extends HttpServlet {
         String userID = req.getParameter("userId");
         
         if (userID == null || userID.trim().isEmpty()) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=ID người dùng không hợp lệ");
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("ID người dùng không hợp lệ", "UTF-8"));
             return;
         }
         
         userService.deleteUser(userID);
-        resp.sendRedirect(req.getContextPath() + "/admin/users?message=Xóa người dùng thành công");
+        resp.sendRedirect(req.getContextPath() + "/admin/users?message=" + java.net.URLEncoder.encode("Xóa người dùng thành công", "UTF-8"));
     }
 }
