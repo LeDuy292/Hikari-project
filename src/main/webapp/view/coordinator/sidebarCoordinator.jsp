@@ -207,7 +207,7 @@
             <i class="fas fa-star"></i>
             <span>Phê duyệt bài kiểm tra</span>
         </a>
-        <a href="${pageContext.request.contextPath}/view/coordinator/instructor-assignment.jsp" class="sidebar-nav-item <%= currentPage.equals("instructor-assignment.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/LoadTeacher" class="sidebar-nav-item <%= currentPage.equals("instructor-assignment.jsp") ? "active" : ""%>">
             <i class="fas fa-bell"></i>
             <span>Phân công giảng viên</span>
         </a>

@@ -12,6 +12,8 @@ import java.util.logging.Level;
 import model.UserAccount;
 import utils.DBContext;
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.ArrayList;
 
 public class UserDAO {
 
@@ -22,8 +24,7 @@ public class UserDAO {
     private Connection con;
 
     public UserDAO() {
-        // DBContext dbContext = new DBContext();
-         this.dbContext = new DBContext();
+        this.dbContext = new DBContext();
         try {
             con = dbContext.getConnection();
             System.out.println("Database connection successful!");
@@ -58,21 +59,25 @@ public class UserDAO {
     }
 
     public void addUser(UserAccount user) {
-    String sql = "INSERT INTO UserAccount (userID, fullName, username, email, password, role, profilePicture) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    try {
-        PreparedStatement pre = con.prepareStatement(sql);
-        pre.setString(1, user.getUserID());
-        pre.setString(2, user.getFullName());
-        pre.setString(3, user.getUsername()); // Added username
-        pre.setString(4, user.getEmail());
-        pre.setString(5, user.getPassword()); // Added password
-        pre.setString(6, user.getRole());
-        pre.setString(7, user.getProfilePicture());
-        pre.executeUpdate();
-    } catch (Exception e) {
-        System.out.println("Error in addUser: " + e);
+        String sql = "INSERT INTO UserAccount (userID, fullName, username, email, password, role, profilePicture, phone, birthDate, registrationDate, isBlocked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            PreparedStatement pre = con.prepareStatement(sql);
+            pre.setString(1, user.getUserID());
+            pre.setString(2, user.getFullName());
+            pre.setString(3, user.getUsername());
+            pre.setString(4, user.getEmail());
+            pre.setString(5, user.getPassword());
+            pre.setString(6, user.getRole());
+            pre.setString(7, user.getProfilePicture());
+            pre.setString(8, user.getPhone());
+            pre.setDate(9, user.getBirthDate() != null ? new Date(user.getBirthDate().getTime()) : null);
+            pre.setDate(10, Date.valueOf(LocalDate.now()));
+            pre.setBoolean(11, false); // Default not blocked
+            pre.executeUpdate();
+        } catch (Exception e) {
+            System.out.println("Error in addUser: " + e);
+        }
     }
-}
 
     public void updateUserProfileGG(UserAccount user) {
         String sql = "UPDATE UserAccount SET fullName = ?, username = ?, phone = ?, birthDate = ?, password = ? WHERE userID = ?";
@@ -83,7 +88,7 @@ public class UserDAO {
             pre.setString(3, user.getPhone());
             java.util.Date birthDay = new java.sql.Date(user.getBirthDate().getTime());
             pre.setDate(4, (Date) birthDay);
-            pre.setString(5, user.getPassword()); // Added passwordpre.setString(5, user.getPassword()); // Added password
+            pre.setString(5, user.getPassword());
             pre.setString(6, user.getUserID());
             pre.executeUpdate();
         } catch (Exception e) {
@@ -95,7 +100,7 @@ public class UserDAO {
         String sql = "SELECT userID, role FROM UserAccount WHERE username = ? AND password = ?";
         try (Connection conn = new DBContext().getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
-            stmt.setString(2, password); // Compare directly with plaintext
+            stmt.setString(2, password);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     UserAccount user = new UserAccount();
@@ -118,26 +123,27 @@ public class UserDAO {
             return false;
         }
 
-        String sql = "INSERT INTO UserAccount (userID, username, email, password, role, fullName, registrationDate, profilePicture, phone, birthDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO UserAccount (userID, username, email, password, role, fullName, registrationDate, profilePicture, phone, birthDate, isBlocked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         try {
             conn = new DBContext().getConnection();
-            conn.setAutoCommit(false); // Start transaction
+            conn.setAutoCommit(false);
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, user.getUserID()); // Now userID is already set
+                stmt.setString(1, user.getUserID());
                 stmt.setString(2, user.getUsername());
                 stmt.setString(3, user.getEmail());
-                stmt.setString(4, user.getPassword()); // Store plaintext
-                stmt.setString(5, user.getRole());
+                stmt.setString(4, user.getPassword());
+                stmt.setString(5, user.getRole()); // Use the role from the user object
                 stmt.setString(6, user.getFullName() != null ? user.getFullName() : user.getUsername());
                 stmt.setDate(7, Date.valueOf(LocalDate.now()));
-                stmt.setString(8, null);
-                stmt.setString(9, null);
-                stmt.setDate(10, null);
+                stmt.setString(8, user.getProfilePicture());
+                stmt.setString(9, user.getPhone());
+                stmt.setDate(10, user.getBirthDate() != null ? new Date(user.getBirthDate().getTime()) : null);
+                stmt.setBoolean(11, false); // Default not blocked
                 int rows = stmt.executeUpdate();
                 if (rows > 0) {
                     conn.commit();
-                    LOGGER.info("User registered successfully: " + user.getUsername() + " with ID: " + user.getUserID());
+                    LOGGER.info("User registered successfully: " + user.getUsername() + " with ID: " + user.getUserID() + " and role: " + user.getRole());
                     return true;
                 }
                 conn.rollback();
@@ -185,18 +191,17 @@ public class UserDAO {
         return false;
     }
 
-    // FIX: Updated generateNewUserID method to use correct table name
     public String generateNewUserID() throws SQLException, ClassNotFoundException {
         String query = "SELECT userID FROM UserAccount WHERE userID LIKE 'U%' ORDER BY userID DESC LIMIT 1";
         try (Connection conn = new DBContext().getConnection(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             if (rs.next()) {
-                String lastID = rs.getString("userID"); // ví dụ: U007
-                int num = Integer.parseInt(lastID.substring(1)); // lấy 007 → 7
+                String lastID = rs.getString("userID");
+                int num = Integer.parseInt(lastID.substring(1));
                 int newNum = num + 1;
-                return String.format("U%03d", newNum); // → U008
+                return String.format("U%03d", newNum);
             } else {
-                return "U001"; // Nếu chưa có ai trong bảng
+                return "U001";
             }
         } catch (SQLException e) {
             LOGGER.severe("Error generating new userID: " + e.getMessage());
@@ -226,6 +231,11 @@ public class UserDAO {
                     user.setOtpExpiry(rs.getTimestamp("otpExpiry"));
                     user.setResetToken(rs.getString("resetToken"));
                     user.setResetTokenExpiry(rs.getTimestamp("resetTokenExpiry"));
+                    try {
+                        user.setBlocked(rs.getBoolean("isBlocked"));
+                    } catch (SQLException e) {
+                        user.setBlocked(false); // Default if column doesn't exist
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -283,13 +293,13 @@ public class UserDAO {
         Connection conn = null;
         try {
             conn = new DBContext().getConnection();
-            conn.setAutoCommit(false); // Start transaction
+            conn.setAutoCommit(false);
             String sql = "UPDATE UserAccount SET password = ?, otp = ?, otpExpiry = ?, sessionId = ? WHERE UserID = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, user.getPassword()); // Store plaintext
-                pstmt.setString(2, null); // Reset otp to null
-                pstmt.setTimestamp(3, null); // Reset otpExpiry to null
-                pstmt.setString(4, null); // Invalidate session
+                pstmt.setString(1, user.getPassword());
+                pstmt.setString(2, null);
+                pstmt.setTimestamp(3, null);
+                pstmt.setString(4, null);
                 pstmt.setString(5, user.getUserID());
                 int rows = pstmt.executeUpdate();
                 if (rows == 0) {
@@ -410,19 +420,36 @@ public class UserDAO {
     }
 
     public void updateUserProfile(UserAccount user) throws ClassNotFoundException, SQLException {
-        String sql = "UPDATE UserAccount SET fullName = ?, phone = ?, birthDate = ?, email = ?, profilePicture = ? WHERE userID = ?";
+        String sql = "UPDATE UserAccount SET fullName = ?, username = ?, email = ?, phone = ?, birthDate = ?, profilePicture = ?, role = ?";
+        
+        // Add password update if provided
+        if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+            sql += ", password = ?";
+        }
+        
+        sql += " WHERE userID = ?";
+        
         try (Connection conn = new DBContext().getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, user.getFullName());
-            pstmt.setString(2, user.getPhone());
-            pstmt.setDate(3, user.getBirthDate() != null ? new java.sql.Date(user.getBirthDate().getTime()) : null);
-            pstmt.setString(4, user.getEmail());
-            pstmt.setString(5, user.getProfilePicture());
-            pstmt.setString(6, user.getUserID());
+            int paramIndex = 1;
+            pstmt.setString(paramIndex++, user.getFullName());
+            pstmt.setString(paramIndex++, user.getUsername());
+            pstmt.setString(paramIndex++, user.getEmail());
+            pstmt.setString(paramIndex++, user.getPhone());
+            pstmt.setDate(paramIndex++, user.getBirthDate() != null ? new java.sql.Date(user.getBirthDate().getTime()) : null);
+            pstmt.setString(paramIndex++, user.getProfilePicture());
+            pstmt.setString(paramIndex++, user.getRole()); // Include role update
+            
+            if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+                pstmt.setString(paramIndex++, user.getPassword());
+            }
+            
+            pstmt.setString(paramIndex, user.getUserID());
+            
             int rowsAffected = pstmt.executeUpdate();
             if (rowsAffected == 0) {
                 throw new SQLException("No user found with userNum: " + user.getUserID());
             }
-            LOGGER.info("User profile updated for userNum: " + user.getUserID());
+            LOGGER.info("User profile updated for userNum: " + user.getUserID() + " with role: " + user.getRole());
         } catch (SQLException e) {
             LOGGER.severe("Error updating user profile for userNum: " + user.getUserID() + ", " + e.getMessage());
             throw e;
@@ -451,6 +478,11 @@ public class UserDAO {
                     user.setOtpExpiry(rs.getTimestamp("otpExpiry"));
                     user.setResetToken(rs.getString("resetToken"));
                     user.setResetTokenExpiry(rs.getTimestamp("resetTokenExpiry"));
+                    try {
+                        user.setBlocked(rs.getBoolean("isBlocked"));
+                    } catch (SQLException e) {
+                        user.setBlocked(false); // Default if column doesn't exist
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -482,6 +514,11 @@ public class UserDAO {
                     user.setOtpExpiry(rs.getTimestamp("otpExpiry"));
                     user.setResetToken(rs.getString("resetToken"));
                     user.setResetTokenExpiry(rs.getTimestamp("resetTokenExpiry"));
+                    try {
+                        user.setBlocked(rs.getBoolean("isBlocked"));
+                    } catch (SQLException e) {
+                        user.setBlocked(false); // Default if column doesn't exist
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -491,9 +528,8 @@ public class UserDAO {
         return user;
     }
     
-    
-    // forum///
-     public UserAccount getUserByUsername(String username) throws SQLException {
+    // Forum methods
+    public UserAccount getUserByUsername(String username) throws SQLException {
         UserAccount user = null;
         String query = "SELECT userID, username, fullName, email, password, role, registrationDate, "
                 + "profilePicture, phone, birthDate FROM UserAccount WHERE username = ?";
@@ -573,5 +609,202 @@ public class UserDAO {
         return user;
     }
     
-    ///end
+    // Admin management methods
+    public List<UserAccount> getAllUsers() throws SQLException {
+        List<UserAccount> users = new ArrayList<>();
+        String sql = "SELECT u.*, " +
+                    "(SELECT COUNT(*) FROM Course_Enrollments ce " +
+                    "JOIN Student s ON ce.studentID = s.studentID " +
+                    "WHERE s.userID = u.userID) as courseCount " +
+                    "FROM UserAccount u ORDER BY u.registrationDate DESC";
+        
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                UserAccount user = new UserAccount();
+                user.setUserID(rs.getString("userID"));
+                user.setUsername(rs.getString("username"));
+                user.setFullName(rs.getString("fullName"));
+                user.setEmail(rs.getString("email"));
+                user.setRole(rs.getString("role"));
+                user.setRegistrationDate(rs.getDate("registrationDate"));
+                user.setProfilePicture(rs.getString("profilePicture"));
+                user.setPhone(rs.getString("phone"));
+                user.setBirthDate(rs.getDate("birthDate"));
+                user.setCourseCount(rs.getInt("courseCount"));
+                try {
+                    user.setBlocked(rs.getBoolean("isBlocked"));
+                } catch (SQLException e) {
+                    user.setBlocked(false); // Default if column doesn't exist
+                }
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error getting all users: " + e.getMessage());
+            throw e;
+        }
+        return users;
+    }
+
+    // Block/Unblock user functionality
+    public void updateUserStatus(String userID, boolean isBlocked) throws SQLException {
+        String sql = "UPDATE UserAccount SET isBlocked = ? WHERE userID = ?";
+        
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setBoolean(1, isBlocked);
+            stmt.setString(2, userID);
+            int rowsAffected = stmt.executeUpdate();
+            
+            if (rowsAffected == 0) {
+                throw new SQLException("No user found with ID: " + userID);
+            }
+            
+            LOGGER.info("User status updated for: " + userID + ", blocked: " + isBlocked);
+        } catch (SQLException e) {
+            LOGGER.severe("Error updating user status: " + userID + ", " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void deleteUser(String userID) throws SQLException {
+        String sql = "DELETE FROM UserAccount WHERE userID = ?";
+        
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, userID);
+            int rowsAffected = stmt.executeUpdate();
+            
+            if (rowsAffected == 0) {
+                throw new SQLException("No user found with ID: " + userID);
+            }
+            
+            LOGGER.info("User deleted successfully: " + userID);
+        } catch (SQLException e) {
+            LOGGER.severe("Error deleting user: " + userID + ", " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public List<UserAccount> getUsersByRole(String role) throws SQLException {
+        List<UserAccount> users = new ArrayList<>();
+        String sql = "SELECT u.*, " +
+                    "(SELECT COUNT(*) FROM Course_Enrollments ce " +
+                    "JOIN Student s ON ce.studentID = s.studentID " +
+                    "WHERE s.userID = u.userID) as courseCount " +
+                    "FROM UserAccount u WHERE u.role = ? ORDER BY u.registrationDate DESC";
+        
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, role);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    UserAccount user = new UserAccount();
+                    user.setUserID(rs.getString("userID"));
+                    user.setUsername(rs.getString("username"));
+                    user.setFullName(rs.getString("fullName"));
+                    user.setEmail(rs.getString("email"));
+                    user.setRole(rs.getString("role"));
+                    user.setRegistrationDate(rs.getDate("registrationDate"));
+                    user.setProfilePicture(rs.getString("profilePicture"));
+                    user.setPhone(rs.getString("phone"));
+                    user.setBirthDate(rs.getDate("birthDate"));
+                    user.setCourseCount(rs.getInt("courseCount"));
+                    try {
+                        user.setBlocked(rs.getBoolean("isBlocked"));
+                    } catch (SQLException e) {
+                        user.setBlocked(false); // Default if column doesn't exist
+                    }
+                    users.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error getting users by role: " + role + ", " + e.getMessage());
+            throw e;
+        }
+        return users;
+    }
+
+    // Filter methods for admin
+    public List<UserAccount> getFilteredUsers(String role, String status, String dateFrom, String dateTo, 
+                                            String nameSearch, int minCourses) throws SQLException {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT u.*, ");
+        sql.append("(SELECT COUNT(*) FROM Course_Enrollments ce ");
+        sql.append("JOIN Student s ON ce.studentID = s.studentID ");
+        sql.append("WHERE s.userID = u.userID) as courseCount ");
+        sql.append("FROM UserAccount u WHERE 1=1 ");
+        
+        List<Object> params = new ArrayList<>();
+        
+        if (role != null && !role.trim().isEmpty()) {
+            sql.append("AND u.role = ? ");
+            params.add(role);
+        }
+        
+        if (nameSearch != null && !nameSearch.trim().isEmpty()) {
+            sql.append("AND (u.fullName LIKE ? OR u.username LIKE ? OR u.email LIKE ?) ");
+            String searchPattern = "%" + nameSearch + "%";
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
+        }
+        
+        if (dateFrom != null && !dateFrom.trim().isEmpty()) {
+            sql.append("AND u.registrationDate >= ? ");
+            params.add(Date.valueOf(dateFrom));
+        }
+        
+        if (dateTo != null && !dateTo.trim().isEmpty()) {
+            sql.append("AND u.registrationDate <= ? ");
+            params.add(Date.valueOf(dateTo));
+        }
+        
+        sql.append("HAVING courseCount >= ? ");
+        params.add(minCourses);
+        
+        sql.append("ORDER BY u.registrationDate DESC");
+        
+        List<UserAccount> users = new ArrayList<>();
+        
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    UserAccount user = new UserAccount();
+                    user.setUserID(rs.getString("userID"));
+                    user.setUsername(rs.getString("username"));
+                    user.setFullName(rs.getString("fullName"));
+                    user.setEmail(rs.getString("email"));
+                    user.setRole(rs.getString("role"));
+                    user.setRegistrationDate(rs.getDate("registrationDate"));
+                    user.setProfilePicture(rs.getString("profilePicture"));
+                    user.setPhone(rs.getString("phone"));
+                    user.setBirthDate(rs.getDate("birthDate"));
+                    user.setCourseCount(rs.getInt("courseCount"));
+                    try {
+                        user.setBlocked(rs.getBoolean("isBlocked"));
+                    } catch (SQLException e) {
+                        user.setBlocked(false); // Default if column doesn't exist
+                    }
+                    users.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error getting filtered users: " + e.getMessage());
+            throw e;
+        }
+        return users;
+    }
 }
