@@ -109,49 +109,49 @@ class ShoppingCart {
     const finalPrice = item.totalPrice - item.discountApplied
 
     return `
-          <div class="cart-item flex items-center py-6 border-b border-gray-200" data-item-id="${item.cartItemID}">
-              <div class="flex-shrink-0">
-                  <img src="${imageUrl}" alt="${item.courseTitle}" 
-                       class="w-20 h-20 object-cover rounded-lg shadow-sm"
-                       onerror="this.src='${this.contextPath}/assets/img/course-placeholder.jpg'">
-              </div>
-              <div class="ml-6 flex-1">
-                  <h3 class="text-lg font-semibold text-gray-900 mb-1">${item.courseTitle}</h3>
-                  <p class="text-sm text-gray-600 mb-2">${item.courseDescription || "Khóa học tiếng Nhật chất lượng cao"}</p>
-                  <div class="flex items-center space-x-4">
-                      <div class="flex items-center">
-                          <label class="text-sm text-gray-500 mr-2">Số lượng:</label>
-                          <div class="flex items-center border border-gray-300 rounded">
-                              <button class="quantity-btn minus px-3 py-1 text-gray-600 hover:bg-gray-100" 
-                                      onclick="cart.updateQuantity(${item.cartItemID}, ${item.quantity - 1})">-</button>
-                              <span class="px-3 py-1 text-center min-w-[40px]">${item.quantity}</span>
-                              <button class="quantity-btn plus px-3 py-1 text-gray-600 hover:bg-gray-100"
-                                      onclick="cart.updateQuantity(${item.cartItemID}, ${item.quantity + 1})">+</button>
-                          </div>
+      <div class="cart-item flex items-center py-6 border-b border-gray-200" data-item-id="${item.cartItemID}">
+          <div class="flex-shrink-0">
+              <img src="${imageUrl}" alt="${item.courseTitle}" 
+                   class="w-20 h-20 object-cover rounded-lg shadow-sm"
+                   onerror="this.src='${this.contextPath}/assets/img/course-placeholder.jpg'">
+          </div>
+          <div class="ml-6 flex-1">
+              <h3 class="text-lg font-semibold text-gray-900 mb-1">${item.courseTitle}</h3>
+              <p class="text-sm text-gray-600 mb-2">${item.courseDescription || "Khóa học tiếng Nhật chất lượng cao"}</p>
+              <div class="flex items-center space-x-4">
+                  <div class="flex items-center">
+                      <label class="text-sm text-gray-500 mr-2">Số lượng:</label>
+                      <div class="flex items-center border border-gray-300 rounded">
+                          <button class="quantity-btn minus px-3 py-1 text-gray-600 hover:bg-gray-100" 
+                                  onclick="cart.updateQuantity(${item.cartItemID}, ${item.quantity - 1})">-</button>
+                          <span class="px-3 py-1 text-center min-w-[40px]">${item.quantity}</span>
+                          <button class="quantity-btn plus px-3 py-1 text-gray-600 hover:bg-gray-100"
+                                  onclick="cart.updateQuantity(${item.cartItemID}, ${item.quantity + 1})">+</button>
                       </div>
-                      ${
-                        item.discountApplied > 0
-                          ? `
-                          <div class="text-sm">
-                              <span class="text-gray-500 line-through">${this.formatCurrency(item.totalPrice)}</span>
-                              <span class="text-green-600 font-semibold ml-2">${this.formatCurrency(finalPrice)}</span>
-                              <span class="text-xs text-green-600 block">Tiết kiệm ${this.formatCurrency(item.discountApplied)}</span>
-                          </div>
-                      `
-                          : `
-                          <div class="text-lg font-semibold text-gray-900">${this.formatCurrency(item.totalPrice)}</div>
-                      `
-                      }
                   </div>
-              </div>
-              <div class="ml-6">
-                  <button class="remove-btn text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors"
-                          onclick="cart.removeItem(${item.cartItemID})" title="Xóa khỏi giỏ hàng">
-                      <i class="fa fa-trash"></i>
-                  </button>
+                  ${
+                    item.discountApplied > 0
+                      ? `
+                      <div class="text-sm">
+                          <span class="text-gray-500 line-through">${this.formatCurrency(item.totalPrice)}</span>
+                          <span class="text-green-600 font-semibold ml-2">${this.formatCurrency(finalPrice)}</span>
+                          <span class="text-xs text-green-600 block">Tiết kiệm ${this.formatCurrency(item.discountApplied)}</span>
+                      </div>
+                  `
+                      : `
+                      <div class="text-lg font-semibold text-gray-900">${this.formatCurrency(item.totalPrice)}</div>
+                  `
+                  }
               </div>
           </div>
-      `
+          <div class="ml-6">
+              <button class="remove-btn text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors"
+                      onclick="cart.removeItem(${item.cartItemID})" title="Xóa khỏi giỏ hàng">
+                  <i class="fa fa-trash"></i>
+              </button>
+          </div>
+      </div>
+  `
   }
 
   async addToCart(courseID) {
@@ -169,6 +169,7 @@ class ShoppingCart {
       if (data.success) {
         this.showMessage(data.message, "success")
         this.updateCartIcon() // Update cart icon immediately
+        this.updateCourseActionButton(courseID) // Update the specific button on course/roadmap/commitments page
       } else {
         this.showMessage(data.message, "error")
       }
@@ -227,6 +228,11 @@ class ShoppingCart {
         this.loadCartData() // Reload cart
         this.showMessage("Đã xóa khóa học khỏi giỏ hàng", "success")
         this.updateCartIcon() // Update cart icon
+        // If on a course detail page, update its button state
+        const courseIdOnPage = document.querySelector('[id^="courseActionBtn_"]')?.dataset.courseId
+        if (courseIdOnPage) {
+          this.updateCourseActionButton(courseIdOnPage)
+        }
       } else {
         this.showMessage(data.message || "Không thể xóa khóa học", "error")
       }
@@ -370,6 +376,51 @@ class ShoppingCart {
       console.error("Error updating cart icon:", error)
     }
   }
+
+  // New function to update the "Add to Cart" / "Buy Now" button on course detail pages
+  async updateCourseActionButton(courseID) {
+    const button = document.getElementById(`courseActionBtn_${courseID}`)
+    if (!button) return
+
+    try {
+      const response = await fetch(`${this.contextPath}/cart`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "action=getCartData",
+      })
+      const data = await response.json()
+
+      let isInCart = false
+      if (data.success && data.items) {
+        isInCart = data.items.some((item) => item.courseID === courseID)
+      }
+
+      if (isInCart) {
+        button.textContent = "Mua ngay"
+        button.onclick = () => {
+          window.location.href = `${this.contextPath}/view/student/shopping_cart.jsp`
+        }
+        button.classList.remove("bg-orange-500", "hover:bg-orange-600")
+        button.classList.add("bg-green-500", "hover:bg-green-600") // Change color for "Buy Now"
+      } else {
+        button.textContent = "Thêm vào giỏ hàng"
+        button.onclick = () => {
+          this.addToCart(courseID) // Call the existing addToCart
+        }
+        button.classList.remove("bg-green-500", "hover:bg-green-600")
+        button.classList.add("bg-orange-500", "hover:bg-orange-600")
+      }
+    } catch (error) {
+      console.error("Error updating course action button:", error)
+      // Fallback to default state or show error
+      button.textContent = "Thêm vào giỏ hàng"
+      button.onclick = () => {
+        this.addToCart(courseID)
+      }
+      button.classList.remove("bg-green-500", "hover:bg-green-600")
+      button.classList.add("bg-orange-500", "hover:bg-orange-600")
+    }
+  }
 }
 
 // Global cart instance
@@ -378,6 +429,7 @@ let cart
 // Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   cart = new ShoppingCart()
+  cart.updateCartIcon() // Ensure cart icon is updated on every page load
 })
 
 // Global functions for onclick handlers
@@ -385,6 +437,7 @@ window.cart = {
   updateQuantity: (cartItemID, quantity) => cart.updateQuantity(cartItemID, quantity),
   removeItem: (cartItemID) => cart.removeItem(cartItemID),
   addToCart: (courseID) => cart.addToCart(courseID), // Expose addToCart globally
+  updateCourseActionButton: (courseID) => cart.updateCourseActionButton(courseID), // Expose new function
 }
 
 // Modal control functions (keeping existing functionality)
