@@ -60,7 +60,7 @@ public class LoginServlet extends HttpServlet {
                             response.sendRedirect(request.getContextPath() + "/admin/dashboard");
                         }
                         else if((user.getRole()).equals("Teacher")){
-                            response.sendRedirect(request.getContextPath() + "view/teacher/manageCourse.jsp");
+                            response.sendRedirect(request.getContextPath() + "/view/teacher/manageCourse.jsp");
                         }
                          else {
                             response.sendRedirect(request.getContextPath() + "/view/student/home.jsp");

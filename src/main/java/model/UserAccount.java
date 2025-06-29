@@ -19,7 +19,7 @@ public class UserAccount {
     private String resetToken;
     private Date resetTokenExpiry;
     private int courseCount;
-    private boolean isBlocked;
+    private boolean isActive; // Changed from isBlocked to isActive
 
     // Constructors
     public UserAccount() {
@@ -31,6 +31,7 @@ public class UserAccount {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.isActive = true; // Default to active
     }
 
     // Getters and Setters
@@ -154,12 +155,12 @@ public class UserAccount {
         this.courseCount = courseCount;
     }
 
-    public boolean isBlocked() {
-        return isBlocked;
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setBlocked(boolean blocked) {
-        isBlocked = blocked;
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public String getSessionId() {
@@ -168,31 +169,5 @@ public class UserAccount {
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
-    }
-
-    public boolean isIsBlocked() {
-        return isBlocked;
-    }
-
-    public void setIsBlocked(boolean isBlocked) {
-        this.isBlocked = isBlocked;
-    }
-    
-    
-
-    @Override
-    public String toString() {
-        return "UserAccount{" +
-                "userID='" + userID + '\'' +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", role='" + role + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", registrationDate=" + registrationDate +
-                ", phone='" + phone + '\'' +
-                ", birthDate=" + birthDate +
-                ", courseCount=" + courseCount +
-                ", isBlocked=" + isBlocked +
-                '}';
     }
 }

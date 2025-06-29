@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -82,9 +83,8 @@ public class ManageUsersServlet extends HttpServlet {
     }
 
     private void handleFilterUsers(HttpServletRequest req, HttpServletResponse resp) 
-            throws ServletException, IOException, SQLException {
+            throws ServletException, IOException, SQLException, ClassNotFoundException {
         String role = req.getParameter("role");
-        String status = req.getParameter("status");
         String dateFrom = req.getParameter("dateFrom");
         String dateTo = req.getParameter("dateTo");
         String nameSearch = req.getParameter("nameSearch");
@@ -99,12 +99,11 @@ public class ManageUsersServlet extends HttpServlet {
             }
         }
 
-        List<UserAccount> users = userDAO.getFilteredUsers(role, status, dateFrom, dateTo, nameSearch, minCourses);
+        List<UserAccount> users = userDAO.getFilteredUsers(role, null, dateFrom, dateTo, nameSearch, minCourses);
         req.setAttribute("users", users);
         
         // Keep filter values for form
         req.setAttribute("selectedRole", role);
-        req.setAttribute("selectedStatus", status);
         req.setAttribute("selectedDateFrom", dateFrom);
         req.setAttribute("selectedDateTo", dateTo);
         req.setAttribute("selectedNameSearch", nameSearch);
@@ -150,9 +149,6 @@ public class ManageUsersServlet extends HttpServlet {
                     break;
                 case "block":
                     handleBlockUser(req, resp);
-                    break;
-                case "delete":
-                    handleDeleteUser(req, resp);
                     break;
                 default:
                     resp.sendRedirect(req.getContextPath() + "/admin/users?error=Hành động không hợp lệ");
@@ -201,8 +197,8 @@ public class ManageUsersServlet extends HttpServlet {
             return;
         }
 
-        if (role == null || role.trim().isEmpty()) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Vui lòng chọn vai trò", "UTF-8"));
+        if (role == null || role.trim().isEmpty() || !Arrays.asList("Student", "Teacher", "Admin", "Coordinator").contains(role)) {
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Vui lòng chọn vai trò hợp lệ", "UTF-8"));
             return;
         }
 
@@ -220,6 +216,7 @@ public class ManageUsersServlet extends HttpServlet {
         user.setPassword(password);
         user.setRole(role); // Set the selected role
         user.setPhone(phone);
+        user.setIsActive(true); // Default to active
         
         // Parse birth date
         if (birthDateStr != null && !birthDateStr.trim().isEmpty()) {
@@ -267,8 +264,8 @@ public class ManageUsersServlet extends HttpServlet {
             return;
         }
 
-        if (role == null || role.trim().isEmpty()) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Vui lòng chọn vai trò", "UTF-8"));
+        if (role == null || role.trim().isEmpty() || !Arrays.asList("Student", "Teacher", "Admin", "Coordinator").contains(role)) {
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("Vui lòng chọn vai trò hợp lệ", "UTF-8"));
             return;
         }
 
@@ -315,30 +312,19 @@ public class ManageUsersServlet extends HttpServlet {
     private void handleBlockUser(HttpServletRequest req, HttpServletResponse resp) 
             throws IOException, ClassNotFoundException, SQLException {
         String userID = req.getParameter("userId");
-        String statusStr = req.getParameter("status");
+        String isActiveStr = req.getParameter("isActive");
         
         if (userID == null || userID.trim().isEmpty()) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("ID người dùng không hợp lệ", "UTF-8"));
+            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + 
+                java.net.URLEncoder.encode("ID người dùng không hợp lệ", "UTF-8"));
             return;
         }
         
-        boolean isBlocked = "true".equals(statusStr);
-        userDAO.updateUserStatus(userID, isBlocked);
+        boolean isActive = Boolean.parseBoolean(isActiveStr);
+        userService.updateUserStatus(userID, isActive);
         
-        String message = isBlocked ? "Khóa tài khoản thành công" : "Mở khóa tài khoản thành công";
-        resp.sendRedirect(req.getContextPath() + "/admin/users?message=" + java.net.URLEncoder.encode(message, "UTF-8"));
-    }
-
-    private void handleDeleteUser(HttpServletRequest req, HttpServletResponse resp) 
-            throws IOException, ClassNotFoundException, SQLException {
-        String userID = req.getParameter("userId");
-        
-        if (userID == null || userID.trim().isEmpty()) {
-            resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode("ID người dùng không hợp lệ", "UTF-8"));
-            return;
-        }
-        
-        userService.deleteUser(userID);
-        resp.sendRedirect(req.getContextPath() + "/admin/users?message=" + java.net.URLEncoder.encode("Xóa người dùng thành công", "UTF-8"));
+        String message = isActive ? "Mở khóa tài khoản thành công" : "Khóa tài khoản thành công";
+        resp.sendRedirect(req.getContextPath() + "/admin/users?message=" + 
+            java.net.URLEncoder.encode(message, "UTF-8"));
     }
 }

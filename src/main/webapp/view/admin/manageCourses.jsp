@@ -20,14 +20,17 @@
                 <%@ include file="sidebar.jsp" %>
                 <div class="main-content">
                     <div class="content-wrapper">
-                        <!-- Include Header -->
-                        <jsp:include page="headerAdmin.jsp">
-                            <jsp:param name="pageTitle" value="Quản Lý Khóa Học"/>
-                            <jsp:param name="showAddButton" value="true"/>
-                            <jsp:param name="addButtonText" value="Thêm Khóa Học"/>
-                            <jsp:param name="addModalTarget" value="addCourseModal"/>
-                            <jsp:param name="showNotification" value="false"/>
-                        </jsp:include>
+                        <%                            
+                            request.setAttribute("pageTitle", "Quản Lý Khóa Học");
+                            request.setAttribute("showAddButton", true);
+                            request.setAttribute("addButtonText", "Thêm Khóa Học");
+                            request.setAttribute("addBtnLink", "addCourse.jsp");
+                            request.setAttribute("addBtnIcon", "fa-book-medical");
+                            request.setAttribute("pageIcon", "fa-book");
+                            request.setAttribute("showNotification", false);
+                        %>
+                        <%@ include file="headerAdmin.jsp" %>
+
 
                         <div class="filter-section">
                             <label for="teacherFilter">Giáo Viên:</label>
@@ -352,71 +355,71 @@
         <script src="${pageContext.request.contextPath}/assets/js/admin/manaCourses.js"></script>
         <script>
 // JavaScript functions for modal handling
-function viewCourse(courseId) {
-    // Send AJAX request to get course details
-    fetch('${pageContext.request.contextPath}/admin/courses?action=detail&id=' + courseId)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('viewCourseID').textContent = data.courseID;
-            document.getElementById('viewCourseTitle').textContent = data.title;
-            document.getElementById('viewCourseDescription').textContent = data.description || 'Không có mô tả';
-            document.getElementById('viewCourseFee').textContent = new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(data.fee);
-            document.getElementById('viewCourseDuration').textContent = data.duration + ' tuần';
-            document.getElementById('viewCourseStartDate').textContent = new Date(data.startDate).toLocaleDateString('vi-VN');
-            document.getElementById('viewCourseEndDate').textContent = new Date(data.endDate).toLocaleDateString('vi-VN');
-            document.getElementById('viewCourseStatus').innerHTML = data.isActive ? '<span class="badge badge-active">Hoạt động</span>' : '<span class="badge badge-inactive">Không hoạt động</span>';
-            
-            var modal = new bootstrap.Modal(document.getElementById('viewCourseModal'));
-            modal.show();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi tải thông tin khóa học');
-        });
-}
+                                                            function viewCourse(courseId) {
+                                                                // Send AJAX request to get course details
+                                                                fetch('${pageContext.request.contextPath}/admin/courses?action=detail&id=' + courseId)
+                                                                        .then(response => response.json())
+                                                                        .then(data => {
+                                                                            document.getElementById('viewCourseID').textContent = data.courseID;
+                                                                            document.getElementById('viewCourseTitle').textContent = data.title;
+                                                                            document.getElementById('viewCourseDescription').textContent = data.description || 'Không có mô tả';
+                                                                            document.getElementById('viewCourseFee').textContent = new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(data.fee);
+                                                                            document.getElementById('viewCourseDuration').textContent = data.duration + ' tuần';
+                                                                            document.getElementById('viewCourseStartDate').textContent = new Date(data.startDate).toLocaleDateString('vi-VN');
+                                                                            document.getElementById('viewCourseEndDate').textContent = new Date(data.endDate).toLocaleDateString('vi-VN');
+                                                                            document.getElementById('viewCourseStatus').innerHTML = data.isActive ? '<span class="badge badge-active">Hoạt động</span>' : '<span class="badge badge-inactive">Không hoạt động</span>';
 
-function editCourse(courseId) {
-    // Send AJAX request to get course details for editing
-    fetch('${pageContext.request.contextPath}/admin/courses?action=detail&id=' + courseId)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('editCourseID').value = data.courseID;
-            document.getElementById('editTitle').value = data.title;
-            document.getElementById('editDescription').value = data.description || '';
-            document.getElementById('editFee').value = data.fee;
-            document.getElementById('editDuration').value = data.duration;
-            document.getElementById('editStartDate').value = data.startDate;
-            document.getElementById('editEndDate').value = data.endDate;
-            document.getElementById('editIsActive').value = data.isActive.toString();
-            document.getElementById('editImageUrl').value = data.imageUrl || '';
-            
-            var modal = new bootstrap.Modal(document.getElementById('editCourseModal'));
-            modal.show();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi tải thông tin khóa học');
-        });
-}
+                                                                            var modal = new bootstrap.Modal(document.getElementById('viewCourseModal'));
+                                                                            modal.show();
+                                                                        })
+                                                                        .catch(error => {
+                                                                            console.error('Error:', error);
+                                                                            alert('Có lỗi xảy ra khi tải thông tin khóa học');
+                                                                        });
+                                                            }
 
-function deleteCourse(courseId) {
-    // Send AJAX request to get course details for deletion confirmation
-    fetch('${pageContext.request.contextPath}/admin/courses?action=detail&id=' + courseId)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('deleteCourseTitle').textContent = data.title;
-            document.getElementById('deleteCourseID').textContent = data.courseID;
-            document.getElementById('deleteConfirmCourseID').value = data.courseID;
-            
-            var modal = new bootstrap.Modal(document.getElementById('deleteCourseModal'));
-            modal.show();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi tải thông tin khóa học');
-        });
-}
-</script>
+                                                            function editCourse(courseId) {
+                                                                // Send AJAX request to get course details for editing
+                                                                fetch('${pageContext.request.contextPath}/admin/courses?action=detail&id=' + courseId)
+                                                                        .then(response => response.json())
+                                                                        .then(data => {
+                                                                            document.getElementById('editCourseID').value = data.courseID;
+                                                                            document.getElementById('editTitle').value = data.title;
+                                                                            document.getElementById('editDescription').value = data.description || '';
+                                                                            document.getElementById('editFee').value = data.fee;
+                                                                            document.getElementById('editDuration').value = data.duration;
+                                                                            document.getElementById('editStartDate').value = data.startDate;
+                                                                            document.getElementById('editEndDate').value = data.endDate;
+                                                                            document.getElementById('editIsActive').value = data.isActive.toString();
+                                                                            document.getElementById('editImageUrl').value = data.imageUrl || '';
+
+                                                                            var modal = new bootstrap.Modal(document.getElementById('editCourseModal'));
+                                                                            modal.show();
+                                                                        })
+                                                                        .catch(error => {
+                                                                            console.error('Error:', error);
+                                                                            alert('Có lỗi xảy ra khi tải thông tin khóa học');
+                                                                        });
+                                                            }
+
+                                                            function deleteCourse(courseId) {
+                                                                // Send AJAX request to get course details for deletion confirmation
+                                                                fetch('${pageContext.request.contextPath}/admin/courses?action=detail&id=' + courseId)
+                                                                        .then(response => response.json())
+                                                                        .then(data => {
+                                                                            document.getElementById('deleteCourseTitle').textContent = data.title;
+                                                                            document.getElementById('deleteCourseID').textContent = data.courseID;
+                                                                            document.getElementById('deleteConfirmCourseID').value = data.courseID;
+
+                                                                            var modal = new bootstrap.Modal(document.getElementById('deleteCourseModal'));
+                                                                            modal.show();
+                                                                        })
+                                                                        .catch(error => {
+                                                                            console.error('Error:', error);
+                                                                            alert('Có lỗi xảy ra khi tải thông tin khóa học');
+                                                                        });
+                                                            }
+        </script>
 
     </body>
 </html>

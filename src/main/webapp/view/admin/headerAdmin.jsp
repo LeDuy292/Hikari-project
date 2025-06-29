@@ -1,40 +1,36 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-
-<%@ page import="model.UserAccount" %>
-<%
-    UserAccount currentUser = (UserAccount) session.getAttribute("user");
-    String userName = (currentUser != null) ? currentUser.getFullName() : "Quản Trị";
-    String userAvatar = (currentUser != null && currentUser.getProfilePicture() != null)
-            ? currentUser.getProfilePicture()
-            : "assets/img/dashborad/defaultLogoAdmin.jpg";
-%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<link href="${pageContext.request.contextPath}/assets/css/admin/headerAdmin.css" rel="stylesheet" />
 <div class="header">
-    <h2 class="header-title">${param.pageTitle != null ? param.pageTitle : 'Dashboard'}</h2>
-    <div class="header-actions">
-        <c:if test="${param.showAddButton == 'true'}">
-            <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#${param.addModalTarget}">
-                <i class="fas fa-plus"></i> ${param.addButtonText != null ? param.addButtonText : 'Thêm'}
-            </button>
+    <h1 class="header-title">
+        <c:if test="${not empty pageIcon}">
+            <i class="fas ${pageIcon}"></i>
         </c:if>
-
-        <c:if test="${param.showNotification == 'true'}">
+        ${pageTitle}
+    </h1>
+    <div class="header-actions">
+        <c:if test="${showAddButton != null && showAddButton}">
+            <a href="${addBtnLink != null ? addBtnLink : '#'}" 
+               class="btn-add-user" 
+               ${addModalTarget != null ? 'data-bs-toggle="modal" data-bs-target="#'.concat(addModalTarget).concat('"') : ''}>
+                <i class="fas ${addBtnIcon != null ? addBtnIcon : 'fa-plus'}"></i>
+                ${addButtonText != null ? addButtonText : 'Thêm Mới'}
+            </a>
+        </c:if>
+        <c:if test="${showNotification != null && showNotification}">
             <div class="notification">
                 <button class="btn-notification" data-bs-toggle="modal" data-bs-target="#notificationModal">
                     <i class="fas fa-bell"></i>
-                    <span class="notification-count" id="notificationCount">2</span>
+                    <span class="notification-count">${notificationCount != null ? notificationCount : 0}</span>
                 </button>
             </div>
         </c:if>
-
         <div class="user-profile">
-            <img src="${pageContext.request.contextPath}/<%= userAvatar%>" alt="Ảnh Đại Diện Quản Trị" class="avatar" />
+            <img src="${pageContext.request.contextPath}/assets/img/dashborad/defaultAvatar.jpg" alt="User Avatar" class="avatar" />
             <div class="user-info">
-                <span class="user-name">Xin Chào, <%= userName%></span>
+                <span class="user-name">${sessionScope.user != null ? sessionScope.user.fullName : 'Admin'}</span>
                 <a href="${pageContext.request.contextPath}/logout" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Đăng Xuất
+                    <i class="fas fa-sign-out-alt"></i> Đăng Xuất
                 </a>
             </div>
         </div>

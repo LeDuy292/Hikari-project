@@ -14,6 +14,7 @@ import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @WebServlet(name = "EditPostServlet", urlPatterns = {"/forum/editPost/*"})
@@ -62,7 +63,12 @@ public class EditPostServlet extends HttpServlet {
                     return;
                 }
                 
-                UserAccount user = userDAO.getUserByUsername(username);
+                UserAccount user = null;
+                try {
+                    user = userDAO.getUserByUsername(username);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(EditPostServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 request.setAttribute("post", post);
                 request.setAttribute("username", username);
                 request.setAttribute("user", user);

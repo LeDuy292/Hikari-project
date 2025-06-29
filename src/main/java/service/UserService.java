@@ -30,10 +30,13 @@ public class UserService {
         if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
             user.setFullName(user.getUsername());
         }
-        user.setRole("Student");
+        // Set default role to "Student" if role is null or empty (for login page)
+        if (user.getRole() == null || user.getRole().trim().isEmpty()) {
+            user.setRole("Student");
+        }
         boolean isRegistered = userDAO.registerUser(user);
         if (isRegistered) {
-            LOGGER.info("User registered successfully: " + user.getUsername());
+            LOGGER.info("User registered successfully: " + user.getUsername() + " with role: " + user.getRole());
         } else {
             LOGGER.severe("User registration failed for: " + user.getUsername());
         }
@@ -48,9 +51,12 @@ public class UserService {
         UserAccount user = userDAO.authenticateUser(username, password);
         if (user != null) {
             UserAccount fullUser = userDAO.findByUsername(username);
-            if (fullUser != null) {
+            if (fullUser != null && fullUser.isActive()) {
                 LOGGER.info("User logged in successfully: " + username);
                 return fullUser;
+            } else {
+                LOGGER.warning("Login failed: User account is inactive for username: " + username);
+                return null;
             }
         }
         LOGGER.warning("Login failed for username: " + username);
@@ -113,7 +119,6 @@ public class UserService {
         return user;
     }
 
-    // Admin management methods
     public List<UserAccount> getAllUsers() throws ClassNotFoundException, SQLException {
         return userDAO.getAllUsers();
     }
@@ -132,12 +137,6 @@ public class UserService {
         userDAO.updateUserStatus(userID, isActive);
     }
 
-    public void deleteUser(String userID) throws ClassNotFoundException, SQLException {
-        if (userID == null || userID.trim().isEmpty()) {
-            throw new IllegalArgumentException("User ID không được để trống");
-        }
-        userDAO.deleteUser(userID);
-    }
 
     public void updateUserInfo(UserAccount user) throws ClassNotFoundException, SQLException {
         if (user == null || user.getUserID() == null) {
@@ -152,7 +151,6 @@ public class UserService {
         if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
             throw new IllegalArgumentException("Họ tên không được để trống");
         }
-
         userDAO.updateUserProfile(user);
         LOGGER.info("User information updated for: " + user.getUserID());
     }
