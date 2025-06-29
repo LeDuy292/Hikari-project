@@ -20,14 +20,18 @@
                 <%@ include file="sidebar.jsp" %>
                 <div class="main-content">
                     <div class="content-wrapper">
-                        <!-- Replace the header section with: -->
-                        <jsp:include page="headerAdmin.jsp">
-                            <jsp:param name="pageTitle" value="Quản Lý Thông Báo"/>
-                            <jsp:param name="showAddButton" value="true"/>
-                            <jsp:param name="addButtonText" value="Thêm Thông Báo"/>
-                            <jsp:param name="addModalTarget" value="createNotificationModal"/>
-                            <jsp:param name="showNotification" value="false"/>
-                        </jsp:include>
+                        
+                        <%                            
+                            request.setAttribute("pageTitle", "Quản Lý Thông Báo");
+                            request.setAttribute("showAddButton", true);
+                            request.setAttribute("addButtonText", "Thêm Thông Báo");
+                            request.setAttribute("addModalTarget", "createNotificationModal");
+                            request.setAttribute("addBtnIcon", "fa-plus");
+                            request.setAttribute("pageIcon", "fa-bell");
+                            request.setAttribute("showNotification", false);
+                        %>
+                        <%@ include file="headerAdmin.jsp" %>
+                        
                         <!-- Filter Section -->
                         <div class="filter-section">
                             <div class="filter-row">
@@ -290,62 +294,62 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <script>
 // JavaScript functions for modal handling
-function viewNotification(notificationId) {
-    fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + notificationId)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('modalNotificationId').textContent = 'NOT' + String(data.id).padStart(3, '0');
-            document.getElementById('modalTitle').textContent = data.title;
-            document.getElementById('modalType').textContent = data.type;
-            document.getElementById('modalContent').textContent = data.content;
-            document.getElementById('modalSendDate').textContent = new Date(data.sendDate).toLocaleDateString('vi-VN');
-            document.getElementById('modalRecipient').textContent = data.recipient;
-            
-            var modal = new bootstrap.Modal(document.getElementById('viewNotificationModal'));
-            modal.show();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi tải thông tin thông báo');
-        });
-}
+                                                            function viewNotification(notificationId) {
+                                                                fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + notificationId)
+                                                                        .then(response => response.json())
+                                                                        .then(data => {
+                                                                            document.getElementById('modalNotificationId').textContent = 'NOT' + String(data.id).padStart(3, '0');
+                                                                            document.getElementById('modalTitle').textContent = data.title;
+                                                                            document.getElementById('modalType').textContent = data.type;
+                                                                            document.getElementById('modalContent').textContent = data.content;
+                                                                            document.getElementById('modalSendDate').textContent = new Date(data.sendDate).toLocaleDateString('vi-VN');
+                                                                            document.getElementById('modalRecipient').textContent = data.recipient;
 
-function editNotification(notificationId) {
-    fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + notificationId)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('editNotificationId').value = data.id;
-            document.getElementById('editTitle').value = data.title;
-            document.getElementById('editType').value = data.type;
-            document.getElementById('editContent').value = data.content;
-            document.getElementById('editRecipient').value = data.recipient;
-            
-            var modal = new bootstrap.Modal(document.getElementById('editNotificationModal'));
-            modal.show();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi tải thông tin thông báo');
-        });
-}
+                                                                            var modal = new bootstrap.Modal(document.getElementById('viewNotificationModal'));
+                                                                            modal.show();
+                                                                        })
+                                                                        .catch(error => {
+                                                                            console.error('Error:', error);
+                                                                            alert('Có lỗi xảy ra khi tải thông tin thông báo');
+                                                                        });
+                                                            }
 
-function deleteNotification(notificationId) {
-    fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + notificationId)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('blockNotificationId').textContent = 'NOT' + String(data.id).padStart(3, '0');
-            document.getElementById('blockTitle').textContent = data.title;
-            document.getElementById('deleteNotificationIdInput').value = data.id;
-            
-            var modal = new bootstrap.Modal(document.getElementById('blockNotificationModal'));
-            modal.show();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi tải thông tin thông báo');
-        });
-}
-</script>
+                                                            function editNotification(notificationId) {
+                                                                fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + notificationId)
+                                                                        .then(response => response.json())
+                                                                        .then(data => {
+                                                                            document.getElementById('editNotificationId').value = data.id;
+                                                                            document.getElementById('editTitle').value = data.title;
+                                                                            document.getElementById('editType').value = data.type;
+                                                                            document.getElementById('editContent').value = data.content;
+                                                                            document.getElementById('editRecipient').value = data.recipient;
+
+                                                                            var modal = new bootstrap.Modal(document.getElementById('editNotificationModal'));
+                                                                            modal.show();
+                                                                        })
+                                                                        .catch(error => {
+                                                                            console.error('Error:', error);
+                                                                            alert('Có lỗi xảy ra khi tải thông tin thông báo');
+                                                                        });
+                                                            }
+
+                                                            function deleteNotification(notificationId) {
+                                                                fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + notificationId)
+                                                                        .then(response => response.json())
+                                                                        .then(data => {
+                                                                            document.getElementById('blockNotificationId').textContent = 'NOT' + String(data.id).padStart(3, '0');
+                                                                            document.getElementById('blockTitle').textContent = data.title;
+                                                                            document.getElementById('deleteNotificationIdInput').value = data.id;
+
+                                                                            var modal = new bootstrap.Modal(document.getElementById('blockNotificationModal'));
+                                                                            modal.show();
+                                                                        })
+                                                                        .catch(error => {
+                                                                            console.error('Error:', error);
+                                                                            alert('Có lỗi xảy ra khi tải thông tin thông báo');
+                                                                        });
+                                                            }
+        </script>
         <script src="${pageContext.request.contextPath}/assets/js/admin/manaNotifications.js"></script>
     </body>
 </html>

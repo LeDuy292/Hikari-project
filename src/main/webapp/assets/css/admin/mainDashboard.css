@@ -12,28 +12,34 @@
   --info-color: #3498db;
 }
 
-* {
+.container-fluid {
+  display: flex;
+  width: 100%;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
-body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
-}
-
-.admin-container {
+.row {
   display: flex;
-  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .main-content {
   flex: 1;
-  margin-left: 320px;
-  padding: 0;
-  background-color: var(--background-color);
+  padding: 32px; /* Match manaUser.css to ensure consistent top spacing */
+  margin-left: 300px;
+  background-color: #f1f5f9;
+}
+
+.content-wrapper {
+  background: white;
+  border-radius: 24px; /* Match manaUser.css */
+  padding: 32px; /* Match manaUser.css to ensure consistent top spacing */
+  height: calc(100vh - 64px); /* Match manaUser.css */
+  overflow-y: auto;
+  background-color: #f1f5f9;
 }
 
 .dashboard-content {
@@ -54,68 +60,6 @@ body {
 .page-header p {
   font-size: 1.1rem;
   color: #666;
-}
-
-/* Header Admin Styles */
-.header {
-  background: linear-gradient(135deg, var(--white), #f8f9fa);
-  padding: 20px 30px;
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--secondary-color);
-  margin: 0;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.user-profile .avatar {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  border: 3px solid var(--primary-color);
-  object-fit: cover;
-}
-
-.user-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.user-name {
-  font-weight: 600;
-  color: var(--secondary-color);
-  font-size: 0.95rem;
-}
-
-.logout-btn {
-  color: var(--danger-color);
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.logout-btn:hover {
-  color: #c0392b;
 }
 
 /* Statistics Cards */
@@ -315,7 +259,7 @@ body {
 .legend-text {
   flex: 1;
   font-size: 0.9rem;
-  color: #198754
+  color: #198754;
   font-weight: 500;
 }
 
@@ -607,10 +551,10 @@ body {
   .recent-section {
     grid-template-columns: 1fr;
   }
-  canvas#overviewChart {
-  height: 300px !important;
-}
 
+  canvas#overviewChart {
+    height: 300px !important;
+  }
 }
 
 @media (max-width: 768px) {

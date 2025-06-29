@@ -153,6 +153,7 @@ document.addEventListener("click", (e) => {
     const birthDate = button.getAttribute("data-birth-date") || "Chưa cập nhật"
     const courses = button.getAttribute("data-courses")
     const createdDate = button.getAttribute("data-created-date")
+    const status = button.getAttribute("data-status")
 
     // Populate view modal
     document.getElementById("viewUserId").textContent = userId
@@ -164,6 +165,7 @@ document.addEventListener("click", (e) => {
     document.getElementById("viewBirthDate").textContent = formatDate(birthDate)
     document.getElementById("viewCourses").textContent = courses
     document.getElementById("viewCreatedDate").textContent = formatDate(createdDate)
+    document.getElementById("viewStatus").textContent = status
   }
 })
 
@@ -204,7 +206,7 @@ document.addEventListener("click", (e) => {
     document.getElementById("blockUserId").textContent = userId
     document.getElementById("blockFullName").textContent = fullName
     document.getElementById("blockUserIdInput").value = userId
-    document.getElementById("blockStatusInput").value = status === "Hoạt Động" ? "Khóa" : "Hoạt Động"
+    document.getElementById("blockStatusInput").value = status === "Hoạt Động" ? "false" : "true"
     document.getElementById("blockAction").textContent = status === "Hoạt Động" ? "khóa" : "mở khóa"
   }
 })
