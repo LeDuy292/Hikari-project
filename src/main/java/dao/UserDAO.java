@@ -550,8 +550,11 @@ public class UserDAO {
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                users.add(mapResultSetToUser(rs));
+                UserAccount user = mapResultSetToUser(rs);
+                LOGGER.info("Fetched user: " + user.getUserID() + ", isActive: " + user.isActive());
+                users.add(user);
             }
+            LOGGER.info("Total users fetched: " + users.size());
         } catch (SQLException e) {
             LOGGER.severe("Error getting all users: " + e.getMessage());
             throw e;

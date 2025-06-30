@@ -18,8 +18,7 @@
                 <%@ include file="sidebar.jsp" %>
                 <div class="main-content">
                     <div class="content-wrapper">
-                        <%                            
-                            request.setAttribute("pageTitle", "Quản Lý Tài Khoản");
+                        <%                            request.setAttribute("pageTitle", "Quản Lý Tài Khoản");
                             request.setAttribute("showAddButton", true);
                             request.setAttribute("addButtonText", "Thêm Tài Khoản");
                             request.setAttribute("addModalTarget", "addUserModal");
