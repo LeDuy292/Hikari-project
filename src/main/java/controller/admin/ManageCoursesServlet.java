@@ -207,6 +207,27 @@ public class ManageCoursesServlet extends HttpServlet {
                 }
                 courseService.deleteCourse(id);
                 resp.sendRedirect(req.getContextPath() + "/admin/courses?message=Xóa khóa học thành công");
+            } else if ("block".equals(action)) {
+                String id = req.getParameter("id");
+                String isActiveStr = req.getParameter("isActive");
+                
+                if (id == null || id.trim().isEmpty()) {
+                    resp.sendRedirect(req.getContextPath() + "/admin/courses?error=ID khóa học không hợp lệ");
+                    return;
+                }
+                
+                boolean isActive = Boolean.parseBoolean(isActiveStr);
+                Course course = courseService.getCourseById(id);
+                if (course == null) {
+                    resp.sendRedirect(req.getContextPath() + "/admin/courses?error=Không tìm thấy khóa học");
+                    return;
+                }
+                
+                course.setIsActive(isActive);
+                courseService.editCourse(course);
+                
+                String message = isActive ? "Mở khóa khóa học thành công" : "Khóa khóa học thành công";
+                resp.sendRedirect(req.getContextPath() + "/admin/courses?message=" + java.net.URLEncoder.encode(message, "UTF-8"));
             } else {
                 resp.sendRedirect(req.getContextPath() + "/admin/courses");
             }

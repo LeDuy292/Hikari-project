@@ -18,17 +18,17 @@
                 <%@ include file="sidebar.jsp" %>
                 <div class="main-content">
                     <div class="content-wrapper">
-                        <%                            request.setAttribute("pageTitle", "Quản Lý Tài Khoản");
+                        <%                            
+                            request.setAttribute("pageTitle", "Quản Lý Tài Khoản");
                             request.setAttribute("showAddButton", true);
                             request.setAttribute("addButtonText", "Thêm Tài Khoản");
                             request.setAttribute("addModalTarget", "addUserModal");
                             request.setAttribute("addBtnIcon", "fa-user-plus");
                             request.setAttribute("pageIcon", "fa-users");
                             request.setAttribute("showNotification", true);
-                            request.setAttribute("notificationCount", 5); // Example count
+                            request.setAttribute("notificationCount", 5);
                         %>
                         <%@ include file="headerAdmin.jsp" %>
-
 
                         <!-- Messages -->
                         <c:if test="${not empty message}">
@@ -58,6 +58,16 @@
                                         <option value="Teacher" ${selectedRole == 'Teacher' ? 'selected' : ''}>Giảng Viên</option>
                                         <option value="Admin" ${selectedRole == 'Admin' ? 'selected' : ''}>Quản Trị</option>
                                         <option value="Coordinator" ${selectedRole == 'Coordinator' ? 'selected' : ''}>Điều Phối</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="statusFilter">
+                                        <i class="fas fa-toggle-on"></i> Trạng Thái:
+                                    </label>
+                                    <select class="form-select" id="statusFilter" name="status">
+                                        <option value="">Tất cả</option>
+                                        <option value="true" ${selectedStatus == 'true' ? 'selected' : ''}>Hoạt Động</option>
+                                        <option value="false" ${selectedStatus == 'false' ? 'selected' : ''}>Không Hoạt Động</option>
                                     </select>
                                 </div>
                                 <div class="filter-group">
@@ -147,9 +157,20 @@
                                                 </c:choose>
                                             </td>
                                             <td>
-                                                <span class="badge-active">
-                                                    <i class="fas fa-check-circle"></i> Hoạt Động
-                                                </span>
+                                                <c:choose>
+                                                    
+                                                    <c:when test="${user.isActive}">
+                                                        
+                                                        <span class="badge badge-active">
+                                                            <i class="fas fa-check-circle"></i> Hoạt Động
+                                                        </span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="badge badge-inactive">
+                                                            <i class="fas fa-times-circle"></i> Không Hoạt Động
+                                                        </span>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </td>
                                             <td>
                                                 <span class="badge" style="background: linear-gradient(135deg, #28a745, #34ce57);">
@@ -169,7 +190,8 @@
                                                         data-phone="${user.phone}"
                                                         data-birth-date="<fmt:formatDate value='${user.birthDate}' pattern='dd/MM/yyyy'/>"
                                                         data-courses="${user.courseCount != null ? user.courseCount : 0}"
-                                                        data-created-date="<fmt:formatDate value='${user.registrationDate}' pattern='dd/MM/yyyy'/>">
+                                                        data-created-date="<fmt:formatDate value='${user.registrationDate}' pattern='dd/MM/yyyy'/>"
+                                                        data-status="${not empty user.isActive and user.isActive ? 'Hoạt Động' : 'Không Hoạt Động'}">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
                                                 <button class="btn btn-edit btn-sm btn-action" 
@@ -184,13 +206,21 @@
                                                         data-birth-date="<fmt:formatDate value='${user.birthDate}' pattern='yyyy-MM-dd'/>">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <button class="btn btn-delete btn-sm btn-action" 
+                                                <button class="btn btn-block btn-sm btn-action" 
                                                         data-bs-toggle="modal" 
                                                         data-bs-target="#blockUserModal"
                                                         data-user-id="${user.userID}"
                                                         data-full-name="${user.fullName}"
-                                                        data-status="Hoạt Động">
-                                                    <i class="fas fa-lock"></i>
+                                                        data-status="${not empty user.isActive and user.isActive ? 'Hoạt Động' : 'Không Hoạt Động'}"
+                                                        data-is-active="${user.isActive}">
+                                                    <c:choose>
+                                                        <c:when test="${not empty user.isActive and user.isActive}">
+                                                            <i class="fas fa-lock"></i>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <i class="fas fa-unlock"></i>
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </button>
                                             </td>
                                         </tr>
@@ -462,7 +492,7 @@
                                         <form action="${pageContext.request.contextPath}/admin/users" method="POST" style="display: inline;">
                                             <input type="hidden" name="action" value="block">
                                             <input type="hidden" id="blockUserIdInput" name="userId" />
-                                            <input type="hidden" id="blockStatusInput" name="status" />
+                                            <input type="hidden" id="blockStatusInput" name="isActive" />
                                             <button type="submit" class="btn btn-confirm-block">
                                                 <i class="fas fa-lock"></i> Xác Nhận
                                             </button>
