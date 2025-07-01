@@ -14,6 +14,7 @@ import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @WebServlet(name = "EditPostServlet", urlPatterns = {"/forum/editPost/*"})
@@ -79,6 +80,8 @@ public class EditPostServlet extends HttpServlet {
             LOGGER.severe("Invalid post ID: " + e.getMessage());
             request.getSession().setAttribute("message", "ID bài viết không hợp lệ!");
             response.sendRedirect(request.getContextPath() + "/forum");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(EditPostServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
