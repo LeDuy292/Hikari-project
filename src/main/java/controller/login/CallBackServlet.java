@@ -11,8 +11,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
 import java.util.Random;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.GoogleAccount;
 import model.UserAccount;
 
@@ -72,6 +75,10 @@ public class CallBackServlet extends HttpServlet {
             } catch (IOException e) {
                 System.out.println("IOException: " + e.getMessage());
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing token");
+            } catch (SQLException ex) {
+                Logger.getLogger(CallBackServlet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(CallBackServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No authorization code provided");
