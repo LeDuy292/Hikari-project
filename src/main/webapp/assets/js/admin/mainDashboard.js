@@ -1,3 +1,4 @@
+
 class AdminDashboard {
   constructor() {
     this.charts = {};
