@@ -13,10 +13,8 @@
         <link href="${pageContext.request.contextPath}/assets/css/admin/manaCourses.css" rel="stylesheet" />
     </head>
     <body>
-
         <div class="container-fluid">
-            <div class="row"> 
-                <!-- Include Sidebar -->
+            <div class="row">
                 <%@ include file="sidebar.jsp" %>
                 <div class="main-content">
                     <div class="content-wrapper">
@@ -56,19 +54,6 @@
                                         <option value="">Tất cả</option>
                                         <option value="true" ${param.status == 'true' ? 'selected' : ''}>Hoạt Động</option>
                                         <option value="false" ${param.status == 'false' ? 'selected' : ''}>Không Hoạt Động</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <label for="categoryFilter">
-                                        <i class="fas fa-tags"></i> Danh Mục:
-                                    </label>
-                                    <select class="form-select" id="categoryFilter" name="category">
-                                        <option value="">Tất cả</option>
-                                        <option value="N5" ${param.category == 'N5' ? 'selected' : ''}>N5</option>
-                                        <option value="N4" ${param.category == 'N4' ? 'selected' : ''}>N4</option>
-                                        <option value="N3" ${param.category == 'N3' ? 'selected' : ''}>N3</option>
-                                        <option value="N2" ${param.category == 'N2' ? 'selected' : ''}>N2</option>
-                                        <option value="N1" ${param.category == 'N1' ? 'selected' : ''}>N1</option>
                                     </select>
                                 </div>
                                 <div class="filter-group">
@@ -150,23 +135,15 @@
                                             </td>
                                             <td>
                                                 <button class="btn btn-view btn-sm btn-action" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#viewCourseModal"
-                                                        data-course-id="${course.courseID}">
+                                                        onclick="viewCourse('${course.courseID}')">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
                                                 <button class="btn btn-edit btn-sm btn-action" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#editCourseModal"
-                                                        data-course-id="${course.courseID}">
+                                                        onclick="editCourse('${course.courseID}')">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <button class="btn btn-delete btn-sm btn-action" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#blockCourseModal"
-                                                        data-course-id="${course.courseID}"
-                                                        data-course-title="${course.title}"
-                                                        data-is-active="${course.isActive}">
+                                                <button class="btn btn-block btn-sm btn-action" 
+                                                        onclick="blockCourse('${course.courseID}', '${course.title}', ${course.isActive})">
                                                     <c:choose>
                                                         <c:when test="${course.isActive}">
                                                             <i class="fas fa-lock"></i>
@@ -185,17 +162,33 @@
 
                         <!-- Pagination -->
                         <div class="pagination" id="pagination">
-                            <c:if test="${currentPage > 1}">
-                                <a href="${pageContext.request.contextPath}/admin/courses?page=${currentPage - 1}&keyword=${param.keyword}&category=${param.category}" class="btn btn-pagination">
-                                    <i class="fas fa-chevron-left"></i> Trước
-                                </a>
-                            </c:if>
+                            <c:choose>
+                                <c:when test="${currentPage > 1}">
+                                    <button onclick="window.location.href='${pageContext.request.contextPath}/admin/courses?page=${currentPage - 1}&keyword=${param.keyword}&status=${param.status}&feeFrom=${param.feeFrom}&feeTo=${param.feeTo}&startDate=${param.startDate}'">
+                                        <i class="fas fa-chevron-left"></i> Trước
+                                    </button>
+                                </c:when>
+                                <c:otherwise>
+                                    <button disabled>
+                                        <i class="fas fa-chevron-left"></i> Trước
+                                    </button>
+                                </c:otherwise>
+                            </c:choose>
+                            
                             <span id="pageInfo">Trang ${currentPage} / ${totalPages}</span>
-                            <c:if test="${currentPage < totalPages}">
-                                <a href="${pageContext.request.contextPath}/admin/courses?page=${currentPage + 1}&keyword=${param.keyword}&category=${param.category}" class="btn btn-pagination">
-                                    Sau <i class="fas fa-chevron-right"></i>
-                                </a>
-                            </c:if>
+                            
+                            <c:choose>
+                                <c:when test="${currentPage < totalPages}">
+                                    <button onclick="window.location.href='${pageContext.request.contextPath}/admin/courses?page=${currentPage + 1}&keyword=${param.keyword}&status=${param.status}&feeFrom=${param.feeFrom}&feeTo=${param.feeTo}&startDate=${param.startDate}'">
+                                        Sau <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </c:when>
+                                <c:otherwise>
+                                    <button disabled>
+                                        Sau <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
 
                         <!-- Add Course Modal -->
@@ -203,14 +196,18 @@
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="addCourseModalLabel"><i class="fas fa-plus-circle"></i> Thêm Khóa Học</h5>
+                                        <h5 class="modal-title" id="addCourseModalLabel">
+                                            <i class="fas fa-plus-circle"></i> Thêm Khóa Học
+                                        </h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <form action="${pageContext.request.contextPath}/admin/courses" method="POST">
                                         <input type="hidden" name="action" value="add">
                                         <div class="modal-body">
                                             <div class="section">
-                                                <h6 class="section-title"><i class="fas fa-info-circle"></i> Thông Tin Khóa Học</h6>
+                                                <h6 class="section-title">
+                                                    <i class="fas fa-info-circle"></i> Thông Tin Khóa Học
+                                                </h6>
                                                 <div class="form-group">
                                                     <label for="courseID">ID Khóa Học <span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control" id="courseID" name="courseID" placeholder="Nhập ID khóa học" required />
@@ -247,14 +244,18 @@
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="imageUrl">URL Hình Ảnh</label>
+                                                    <label for="imageUrl">URL Hình Ảnh <span class="optional-label">(Tùy chọn)</span></label>
                                                     <input type="url" class="form-control" id="imageUrl" name="imageUrl" placeholder="Nhập URL hình ảnh" />
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Hủy</button>
-                                            <button type="submit" class="btn btn-submit">Thêm</button>
+                                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                                <i class="fas fa-times"></i> Hủy
+                                            </button>
+                                            <button type="submit" class="btn btn-submit">
+                                                <i class="fas fa-plus"></i> Thêm
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -266,12 +267,16 @@
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="viewCourseModalLabel"><i class="fas fa-book"></i> Chi Tiết Khóa Học</h5>
+                                        <h5 class="modal-title" id="viewCourseModalLabel">
+                                            <i class="fas fa-book"></i> Chi Tiết Khóa Học
+                                        </h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="section">
-                                            <h6 class="section-title"><i class="fas fa-info-circle"></i> Thông Tin Khóa Học</h6>
+                                            <h6 class="section-title">
+                                                <i class="fas fa-info-circle"></i> Thông Tin Khóa Học
+                                            </h6>
                                             <div class="info-item">
                                                 <span class="info-label">ID Khóa Học:</span>
                                                 <span class="info-value" id="viewCourseID"></span>
@@ -307,7 +312,9 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Đóng</button>
+                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                            <i class="fas fa-times"></i> Đóng
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -318,7 +325,9 @@
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="editCourseModalLabel"><i class="fas fa-edit"></i> Chỉnh Sửa Khóa Học</h5>
+                                        <h5 class="modal-title" id="editCourseModalLabel">
+                                            <i class="fas fa-edit"></i> Chỉnh Sửa Khóa Học
+                                        </h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <form action="${pageContext.request.contextPath}/admin/courses" method="POST">
@@ -326,7 +335,9 @@
                                         <input type="hidden" id="editCourseID" name="courseID">
                                         <div class="modal-body">
                                             <div class="section">
-                                                <h6 class="section-title"><i class="fas fa-info-circle"></i> Thông Tin Khóa Học</h6>
+                                                <h6 class="section-title">
+                                                    <i class="fas fa-info-circle"></i> Thông Tin Khóa Học
+                                                </h6>
                                                 <div class="form-group">
                                                     <label for="editTitle">Tên Khóa Học <span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control" id="editTitle" name="title" required />
@@ -359,14 +370,18 @@
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="editImageUrl">URL Hình Ảnh</label>
+                                                    <label for="editImageUrl">URL Hình Ảnh <span class="optional-label">(Tùy chọn)</span></label>
                                                     <input type="url" class="form-control" id="editImageUrl" name="imageUrl" />
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Hủy</button>
-                                            <button type="submit" class="btn btn-submit">Cập Nhật</button>
+                                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                                <i class="fas fa-times"></i> Hủy
+                                            </button>
+                                            <button type="submit" class="btn btn-submit">
+                                                <i class="fas fa-save"></i> Cập Nhật
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -378,12 +393,16 @@
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="blockCourseModalLabel"><i class="fas fa-lock"></i> Xác Nhận Khóa/Mở Khóa Khóa Học</h5>
+                                        <h5 class="modal-title" id="blockCourseModalLabel">
+                                            <i class="fas fa-lock"></i> Xác Nhận Khóa/Mở Khóa Khóa Học
+                                        </h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="warning-section">
-                                            <h6 class="warning-title"><i class="fas fa-exclamation-triangle"></i> Cảnh Báo</h6>
+                                            <h6 class="warning-title">
+                                                <i class="fas fa-exclamation-triangle"></i> Cảnh Báo
+                                            </h6>
                                             <div class="info-item">
                                                 Bạn có chắc chắn muốn <span id="blockCourseAction">khóa</span> khóa học 
                                                 <strong><span id="blockCourseTitle"></span></strong> (ID: <strong><span id="blockCourseId"></span></strong>)?
@@ -394,12 +413,14 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Hủy</button>
+                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                            <i class="fas fa-times"></i> Hủy
+                                        </button>
                                         <form action="${pageContext.request.contextPath}/admin/courses" method="POST" style="display: inline;">
                                             <input type="hidden" name="action" value="block">
                                             <input type="hidden" id="blockCourseIdInput" name="id" />
                                             <input type="hidden" id="blockCourseStatusInput" name="isActive" />
-                                            <button type="submit" class="btn btn-confirm-block">
+                                            <button type="submit" class="btn btn-confirm-delete">
                                                 <i class="fas fa-lock"></i> Xác Nhận
                                             </button>
                                         </form>
@@ -413,7 +434,6 @@
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets/js/admin/manaCourses.js"></script>
         <script>
             // JavaScript functions for modal handling
             function viewCourse(courseId) {
@@ -471,7 +491,7 @@
                 document.getElementById('blockCourseAction').textContent = isActive ? 'khóa' : 'mở khóa';
                 
                 // Update button text and icon
-                const confirmBtn = document.querySelector('#blockCourseModal .btn-confirm-block');
+                const confirmBtn = document.querySelector('#blockCourseModal .btn-confirm-delete');
                 if (confirmBtn) {
                     confirmBtn.innerHTML = isActive ? '<i class="fas fa-lock"></i> Khóa' : '<i class="fas fa-unlock"></i> Mở Khóa';
                 }
@@ -480,25 +500,15 @@
                 modal.show();
             }
 
-            // Event listeners for modal buttons
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('.btn-view')) {
-                    const courseId = e.target.closest('.btn-view').getAttribute('data-course-id');
-                    viewCourse(courseId);
-                }
-                
-                if (e.target.closest('.btn-edit')) {
-                    const courseId = e.target.closest('.btn-edit').getAttribute('data-course-id');
-                    editCourse(courseId);
-                }
-                
-                if (e.target.closest('.btn-delete')) {
-                    const button = e.target.closest('.btn-delete');
-                    const courseId = button.getAttribute('data-course-id');
-                    const title = button.getAttribute('data-course-title');
-                    const isActive = button.getAttribute('data-is-active') === 'true';
-                    blockCourse(courseId, title, isActive);
-                }
+            // Auto-dismiss alerts after 5 seconds
+            document.addEventListener('DOMContentLoaded', function() {
+                const alerts = document.querySelectorAll(".alert");
+                alerts.forEach((alert) => {
+                    setTimeout(() => {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }, 5000);
+                });
             });
         </script>
 

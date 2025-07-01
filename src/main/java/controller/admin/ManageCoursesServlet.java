@@ -79,8 +79,12 @@ public class ManageCoursesServlet extends HttpServlet {
             } else {
                 // List courses with search, pagination, filter
                 String keyword = req.getParameter("keyword");
-                String category = req.getParameter("category");
+                String status = req.getParameter("status");
+                String feeFromStr = req.getParameter("feeFrom");
+                String feeToStr = req.getParameter("feeTo");
+                String startDate = req.getParameter("startDate");
                 String pageStr = req.getParameter("page");
+                
                 int page = 1;
                 if (pageStr != null) {
                     try { 
@@ -93,19 +97,29 @@ public class ManageCoursesServlet extends HttpServlet {
                 List<Course> courses;
                 int totalCourses = 0;
                 
-                if (keyword != null && !keyword.trim().isEmpty() && category != null && !category.trim().isEmpty()) {
-                    courses = courseService.searchCoursesByCategory(keyword.trim(), category.trim());
-                    totalCourses = courses.size();
-                } else if (keyword != null && !keyword.trim().isEmpty()) {
-                    courses = courseService.searchCourses(keyword.trim());
-                    totalCourses = courses.size();
-                } else if (category != null && !category.trim().isEmpty()) {
-                    courses = courseService.getCoursesByCategory(category.trim());
-                    totalCourses = courses.size();
-                } else {
-                    courses = courseService.getCoursesWithPaging(page, pageSize);
-                    totalCourses = courseService.countAllCourses();
+                // Apply filters
+                Double feeFrom = null;
+                Double feeTo = null;
+                Boolean isActive = null;
+                
+                if (feeFromStr != null && !feeFromStr.trim().isEmpty()) {
+                    try {
+                        feeFrom = Double.parseDouble(feeFromStr);
+                    } catch (NumberFormatException ignored) {}
                 }
+                
+                if (feeToStr != null && !feeToStr.trim().isEmpty()) {
+                    try {
+                        feeTo = Double.parseDouble(feeToStr);
+                    } catch (NumberFormatException ignored) {}
+                }
+                
+                if (status != null && !status.trim().isEmpty()) {
+                    isActive = Boolean.parseBoolean(status);
+                }
+                
+                courses = courseService.getCoursesWithFilters(keyword, isActive, feeFrom, feeTo, startDate, page, pageSize);
+                totalCourses = courseService.countCoursesWithFilters(keyword, isActive, feeFrom, feeTo, startDate);
                 
                 int totalPages = (int) Math.ceil((double) totalCourses / pageSize);
                 
@@ -114,7 +128,10 @@ public class ManageCoursesServlet extends HttpServlet {
                 req.setAttribute("totalPages", totalPages);
                 req.setAttribute("totalCourses", totalCourses);
                 req.setAttribute("keyword", keyword);
-                req.setAttribute("category", category);
+                req.setAttribute("status", status);
+                req.setAttribute("feeFrom", feeFromStr);
+                req.setAttribute("feeTo", feeToStr);
+                req.setAttribute("startDate", startDate);
                 
                 req.getRequestDispatcher("/view/admin/manageCourses.jsp").forward(req, resp);
             }

@@ -20,8 +20,8 @@
                 <%@ include file="sidebar.jsp" %>
                 <div class="main-content">
                     <div class="content-wrapper">
-
-                        <%                            request.setAttribute("pageTitle", "Quản Lý Thông Báo");
+                        <%                            
+                            request.setAttribute("pageTitle", "Quản Lý Thông Báo");
                             request.setAttribute("showAddButton", true);
                             request.setAttribute("addButtonText", "Thêm Thông Báo");
                             request.setAttribute("addModalTarget", "createNotificationModal");
@@ -47,10 +47,10 @@
 
                         <!-- Enhanced Filter Section -->
                         <div class="filter-section">
-                            <form action="${pageContext.request.contextPath}/admin/notifications" method="GET" class="row g-3">
-                                <div class="col-md-4">
-                                    <label for="typeFilter" class="form-label">
-                                        <i class="fas fa-tags"></i> Loại Thông Báo:
+                            <form action="${pageContext.request.contextPath}/admin/notifications" method="GET" class="filter-form">
+                                <div class="filter-group">
+                                    <label for="typeFilter">
+                                        <i class="fas fa-tag"></i> Loại Thông Báo:
                                     </label>
                                     <select class="form-select" id="typeFilter" name="type">
                                         <option value="">Tất cả</option>
@@ -59,9 +59,8 @@
                                         <option value="Thông báo hệ thống" ${param.type == 'Thông báo hệ thống' ? 'selected' : ''}>Thông báo hệ thống</option>
                                     </select>
                                 </div>
-
-                                <div class="col-md-4">
-                                    <label for="recipientFilter" class="form-label">
+                                <div class="filter-group">
+                                    <label for="recipientFilter">
                                         <i class="fas fa-users"></i> Đối Tượng:
                                     </label>
                                     <select class="form-select" id="recipientFilter" name="recipient">
@@ -75,97 +74,79 @@
                                         <option value="Giảng viên" ${param.recipient == 'Giảng viên' ? 'selected' : ''}>Giảng viên</option>
                                     </select>
                                 </div>
-
-                                <div class="col-md-4">
-                                    <label for="search" class="form-label">
-                                        <i class="fas fa-search"></i> Tìm kiếm:
-                                    </label>
-                                    <input type="text" class="form-control" id="search" name="search" placeholder="Tiêu đề, nội dung..." value="${param.search}" />
-                                </div>
-
-                                <div class="col-md-4">
-                                    <label for="sendDateFromFilter" class="form-label">
-                                        <i class="fas fa-calendar-alt"></i> Từ ngày:
+                                <div class="filter-group">
+                                    <label for="sendDateFromFilter">
+                                        <i class="fas fa-calendar-alt"></i> Từ Ngày:
                                     </label>
                                     <input type="date" class="form-control" id="sendDateFromFilter" name="sendDateFrom" value="${param.sendDateFrom}" />
                                 </div>
-
-                                <div class="col-md-4">
-                                    <label for="sendDateToFilter" class="form-label">
-                                        <i class="fas fa-calendar-check"></i> Đến ngày:
+                                <div class="filter-group">
+                                    <label for="sendDateToFilter">
+                                        <i class="fas fa-calendar-check"></i> Đến Ngày:
                                     </label>
                                     <input type="date" class="form-control" id="sendDateToFilter" name="sendDateTo" value="${param.sendDateTo}" />
                                 </div>
-
-                                <div class="col-md-4 d-flex align-items-end">
-                                    <button type="submit" class="btn btn-primary me-2">
+                                <div class="filter-group">
+                                    <label for="searchFilter">
+                                        <i class="fas fa-search"></i> Tìm Kiếm:
+                                    </label>
+                                    <input type="text" class="form-control" id="searchFilter" name="search" placeholder="Tiêu đề, nội dung, ID..." value="${param.search}" />
+                                </div>
+                                <div class="filter-actions">
+                                    <button type="submit" class="btn btn-filter">
                                         <i class="fas fa-filter"></i> Lọc
                                     </button>
-                                    <a href="${pageContext.request.contextPath}/admin/notifications" class="btn btn-secondary">
-                                        <i class="fas fa-refresh"></i> Đặt lại
+                                    <a href="${pageContext.request.contextPath}/admin/notifications" class="btn btn-reset">
+                                        <i class="fas fa-refresh"></i> Đặt Lại
                                     </a>
                                 </div>
                             </form>
                         </div>
 
-                        <!-- Notification Table -->
+                        <!-- Notifications Table -->
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th><i class="fas fa-id-card"></i> ID</th>
+                                        <th><i class="fas fa-hashtag"></i> ID</th>
                                         <th><i class="fas fa-heading"></i> TIÊU ĐỀ</th>
-                                        <th><i class="fas fa-tags"></i> LOẠI THÔNG BÁO</th>
-                                        <th><i class="fas fa-align-left"></i> NỘI DUNG</th>
+                                        <th><i class="fas fa-tag"></i> LOẠI</th>
                                         <th><i class="fas fa-users"></i> ĐỐI TƯỢNG</th>
-                                        <th><i class="fas fa-calendar"></i> NGÀY GỬI</th>
+                                        <th><i class="fas fa-calendar-alt"></i> NGÀY GỬI</th>
                                         <th><i class="fas fa-cogs"></i> HÀNH ĐỘNG</th>
                                     </tr>
                                 </thead>
-                                <tbody id="notificationTableBody">
+                                <tbody>
                                     <c:forEach var="notification" items="${notifications}">
-                                        <tr data-notification-id="${notification.id}">
-                                            <td><strong>NOT${String.format("%03d", notification.id)}</strong></td>
-                                            <td><strong>${notification.title}</strong></td>
+                                        <tr>
+                                            <td><strong>${notification.id}</strong></td>
+                                            <td>
+                                                <strong>${notification.title}</strong>
+                                                <c:if test="${fn:length(notification.content) > 50}">
+                                                    <br><small class="text-muted">${fn:substring(notification.content, 0, 50)}...</small>
+                                                </c:if>
+                                            </td>
                                             <td>
                                                 <span class="badge" style="background: linear-gradient(135deg, #17a2b8, #20c997);">
                                                     ${notification.type}
                                                 </span>
                                             </td>
                                             <td>
-                                                <c:choose>
-                                                    <c:when test="${fn:length(notification.content) > 50}">
-                                                        ${fn:substring(notification.content, 0, 50)}...
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        ${notification.content}
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                            <td>
-                                                <span class="badge" style="background: linear-gradient(135deg, #6f42c1, #8e6bc1);">
+                                                <span class="badge" style="background: linear-gradient(135deg, #6f42c1, #e83e8c);">
                                                     ${notification.recipient}
                                                 </span>
                                             </td>
-                                            <td><fmt:formatDate value="${notification.sendDate}" pattern="dd/MM/yyyy"/></td>
                                             <td>
-                                                <button class="btn btn-view btn-sm btn-action" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#viewNotificationModal"
-                                                        data-notification-id="${notification.id}">
+                                                <fmt:formatDate value="${notification.sendDate}" pattern="dd/MM/yyyy"/>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-view btn-sm btn-action" onclick="viewNotification(${notification.id})">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="btn btn-edit btn-sm btn-action" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#editNotificationModal"
-                                                        data-notification-id="${notification.id}">
+                                                <button class="btn btn-edit btn-sm btn-action" onclick="editNotification(${notification.id})">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <button class="btn btn-delete btn-sm btn-action" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#deleteNotificationModal"
-                                                        data-notification-id="${notification.id}"
-                                                        data-title="${notification.title}">
+                                                <button class="btn btn-delete btn-sm btn-action" onclick="deleteNotification(${notification.id}, '${notification.title}')">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </td>
@@ -177,61 +158,13 @@
 
                         <!-- Pagination -->
                         <div class="pagination" id="pagination">
-                            <c:if test="${currentPage > 1}">
-                                <a href="${pageContext.request.contextPath}/admin/notifications?page=${currentPage - 1}&search=${param.search}&type=${param.type}" class="btn btn-pagination">
-                                    <i class="fas fa-chevron-left"></i> Trước
-                                </a>
-                            </c:if>
+                            <button id="prevPage" ${currentPage <= 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">
+                                <i class="fas fa-chevron-left"></i> Trước
+                            </button>
                             <span id="pageInfo">Trang ${currentPage} / ${totalPages}</span>
-                            <c:if test="${currentPage < totalPages}">
-                                <a href="${pageContext.request.contextPath}/admin/notifications?page=${currentPage + 1}&search=${param.search}&type=${param.type}" class="btn btn-pagination">
-                                    Sau <i class="fas fa-chevron-right"></i>
-                                </a>
-                            </c:if>
-                        </div>
-
-                        <!-- View Notification Modal -->
-                        <div class="modal fade view-notification-modal" id="viewNotificationModal" tabindex="-1" aria-labelledby="viewNotificationModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="viewNotificationModalLabel"><i class="fas fa-bell"></i> Chi tiết thông báo</h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="section">
-                                            <h6 class="section-title"><i class="fas fa-info-circle"></i> Thông tin thông báo</h6>
-                                            <div class="info-item">
-                                                <span class="info-label">ID:</span>
-                                                <span class="info-value" id="modalNotificationId"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Tiêu đề:</span>
-                                                <span class="info-value" id="modalTitle"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Loại thông báo:</span>
-                                                <span class="info-value" id="modalType"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Nội dung:</span>
-                                                <span class="info-value" id="modalContent"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Đối tượng:</span>
-                                                <span class="info-value" id="modalRecipient"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Ngày gửi:</span>
-                                                <span class="info-value" id="modalSendDate"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Đóng</button>
-                                    </div>
-                                </div>
-                            </div>
+                            <button id="nextPage" ${currentPage >= totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">
+                                Sau <i class="fas fa-chevron-right"></i>
+                            </button>
                         </div>
 
                         <!-- Create Notification Modal -->
@@ -239,52 +172,105 @@
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="createNotificationModalLabel"><i class="fas fa-plus"></i> Tạo thông báo mới</h5>
+                                        <h5 class="modal-title" id="createNotificationModalLabel"><i class="fas fa-plus-circle"></i> Tạo Thông Báo Mới</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form id="createNotificationForm" action="${pageContext.request.contextPath}/admin/notifications" method="POST">
+                                    <form action="${pageContext.request.contextPath}/admin/notifications" method="POST">
                                         <input type="hidden" name="action" value="add">
                                         <div class="modal-body">
-                                            <div class="form-group">
-                                                <label for="createTitle">Tiêu đề <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="createTitle" name="title" placeholder="Nhập tiêu đề thông báo..." required />
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="createType">Loại thông báo <span class="text-danger">*</span></label>
-                                                <select class="form-select" id="createType" name="type" required>
-                                                    <option value="" disabled selected>Chọn loại thông báo</option>
-                                                    <option value="Sự kiện">Sự kiện</option>
-                                                    <option value="Cập nhật khóa học">Cập nhật khóa học</option>
-                                                    <option value="Thông báo hệ thống">Thông báo hệ thống</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="createContent">Nội dung <span class="text-danger">*</span></label>
-                                                <textarea class="form-control" id="createContent" name="content" placeholder="Nhập nội dung thông báo..." required></textarea>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="createRecipient">Đối tượng <span class="text-danger">*</span></label>
-                                                <select class="form-select" id="createRecipient" name="recipient" required>
-                                                    <option value="" disabled selected>Chọn đối tượng</option>
-                                                    <option value="Tất cả học viên">Tất cả học viên</option>
-                                                    <option value="Học viên N5">Học viên N5</option>
-                                                    <option value="Học viên N4">Học viên N4</option>
-                                                    <option value="Học viên N3">Học viên N3</option>
-                                                    <option value="Học viên N2">Học viên N2</option>
-                                                    <option value="Học viên N1">Học viên N1</option>
-                                                    <option value="Giảng viên">Giảng viên</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="createSendDate">Ngày gửi <span class="text-danger">*</span></label>
-                                                <input type="date" class="form-control" id="createSendDate" name="sendDate" required />
+                                            <div class="section">
+                                                <h6 class="section-title">
+                                                    <i class="fas fa-bell"></i> Thông Tin Thông Báo
+                                                </h6>
+                                                <div class="form-group">
+                                                    <label for="createTitle">Tiêu đề <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="createTitle" name="title" placeholder="Nhập tiêu đề thông báo" required />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="createContent">Nội dung <span class="text-danger">*</span></label>
+                                                    <textarea class="form-control" id="createContent" name="content" rows="5" placeholder="Nhập nội dung thông báo" required></textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="createType">Loại thông báo</label>
+                                                    <select class="form-select" id="createType" name="type">
+                                                        <option value="Sự kiện">Sự kiện</option>
+                                                        <option value="Cập nhật khóa học">Cập nhật khóa học</option>
+                                                        <option value="Thông báo hệ thống">Thông báo hệ thống</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="createRecipient">Đối tượng</label>
+                                                    <select class="form-select" id="createRecipient" name="recipient">
+                                                        <option value="Tất cả học viên">Tất cả học viên</option>
+                                                        <option value="Học viên N5">Học viên N5</option>
+                                                        <option value="Học viên N4">Học viên N4</option>
+                                                        <option value="Học viên N3">Học viên N3</option>
+                                                        <option value="Học viên N2">Học viên N2</option>
+                                                        <option value="Học viên N1">Học viên N1</option>
+                                                        <option value="Giảng viên">Giảng viên</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="createSendDate">Ngày gửi</label>
+                                                    <input type="date" class="form-control" id="createSendDate" name="sendDate" />
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Hủy</button>
-                                            <button type="submit" class="btn btn-submit">Tạo</button>
+                                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                                <i class="fas fa-times"></i> Hủy
+                                            </button>
+                                            <button type="submit" class="btn btn-submit">
+                                                <i class="fas fa-plus"></i> Tạo Thông Báo
+                                            </button>
                                         </div>
                                     </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- View Notification Modal -->
+                        <div class="modal fade view-notification-modal" id="viewNotificationModal" tabindex="-1" aria-labelledby="viewNotificationModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="viewNotificationModalLabel"><i class="fas fa-bell"></i> Chi Tiết Thông Báo</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="section">
+                                            <h6 class="section-title"><i class="fas fa-info-circle"></i> Thông Tin Thông Báo</h6>
+                                            <div class="info-item">
+                                                <span class="info-label">ID:</span>
+                                                <span class="info-value" id="viewNotificationId"></span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Tiêu đề:</span>
+                                                <span class="info-value" id="viewNotificationTitle"></span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Loại:</span>
+                                                <span class="info-value" id="viewNotificationType"></span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Đối tượng:</span>
+                                                <span class="info-value" id="viewNotificationRecipient"></span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Ngày gửi:</span>
+                                                <span class="info-value" id="viewNotificationSendDate"></span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Nội dung:</span>
+                                                <span class="info-value" id="viewNotificationContent"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                            <i class="fas fa-times"></i> Đóng
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -294,47 +280,54 @@
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="editNotificationModalLabel"><i class="fas fa-edit"></i> Chỉnh sửa thông báo</h5>
+                                        <h5 class="modal-title" id="editNotificationModalLabel"><i class="fas fa-edit"></i> Chỉnh Sửa Thông Báo</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form id="editNotificationForm" action="${pageContext.request.contextPath}/admin/notifications" method="POST">
+                                    <form action="${pageContext.request.contextPath}/admin/notifications" method="POST">
                                         <input type="hidden" name="action" value="edit">
                                         <input type="hidden" id="editNotificationId" name="notificationId">
                                         <div class="modal-body">
-                                            <div class="form-group">
-                                                <label for="editTitle">Tiêu đề <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="editTitle" name="title" placeholder="Nhập tiêu đề thông báo..." required />
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="editType">Loại thông báo <span class="text-danger">*</span></label>
-                                                <select class="form-select" id="editType" name="type" required>
-                                                    <option value="" disabled>Chọn loại thông báo</option>
-                                                    <option value="Sự kiện">Sự kiện</option>
-                                                    <option value="Cập nhật khóa học">Cập nhật khóa học</option>
-                                                    <option value="Thông báo hệ thống">Thông báo hệ thống</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="editContent">Nội dung <span class="text-danger">*</span></label>
-                                                <textarea class="form-control" id="editContent" name="content" placeholder="Nhập nội dung thông báo..." required></textarea>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="editRecipient">Đối tượng <span class="text-danger">*</span></label>
-                                                <select class="form-select" id="editRecipient" name="recipient" required>
-                                                    <option value="" disabled>Chọn đối tượng</option>
-                                                    <option value="Tất cả học viên">Tất cả học viên</option>
-                                                    <option value="Học viên N5">Học viên N5</option>
-                                                    <option value="Học viên N4">Học viên N4</option>
-                                                    <option value="Học viên N3">Học viên N3</option>
-                                                    <option value="Học viên N2">Học viên N2</option>
-                                                    <option value="Học viên N1">Học viên N1</option>
-                                                    <option value="Giảng viên">Giảng viên</option>
-                                                </select>
+                                            <div class="section">
+                                                <h6 class="section-title">
+                                                    <i class="fas fa-bell"></i> Thông Tin Thông Báo
+                                                </h6>
+                                                <div class="form-group">
+                                                    <label for="editTitle">Tiêu đề <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="editTitle" name="title" required />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editContent">Nội dung <span class="text-danger">*</span></label>
+                                                    <textarea class="form-control" id="editContent" name="content" rows="5" required></textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editType">Loại thông báo</label>
+                                                    <select class="form-select" id="editType" name="type">
+                                                        <option value="Sự kiện">Sự kiện</option>
+                                                        <option value="Cập nhật khóa học">Cập nhật khóa học</option>
+                                                        <option value="Thông báo hệ thống">Thông báo hệ thống</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editRecipient">Đối tượng</label>
+                                                    <select class="form-select" id="editRecipient" name="recipient">
+                                                        <option value="Tất cả học viên">Tất cả học viên</option>
+                                                        <option value="Học viên N5">Học viên N5</option>
+                                                        <option value="Học viên N4">Học viên N4</option>
+                                                        <option value="Học viên N3">Học viên N3</option>
+                                                        <option value="Học viên N2">Học viên N2</option>
+                                                        <option value="Học viên N1">Học viên N1</option>
+                                                        <option value="Giảng viên">Giảng viên</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Hủy</button>
-                                            <button type="submit" class="btn btn-submit">Cập nhật</button>
+                                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                                <i class="fas fa-times"></i> Hủy
+                                            </button>
+                                            <button type="submit" class="btn btn-submit">
+                                                <i class="fas fa-save"></i> Cập Nhật
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -346,27 +339,30 @@
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="deleteNotificationModalLabel"><i class="fas fa-trash"></i> Xác nhận xóa thông báo</h5>
+                                        <h5 class="modal-title" id="deleteNotificationModalLabel"><i class="fas fa-trash"></i> Xác Nhận Xóa Thông Báo</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="warning-section">
-                                            <h6 class="warning-title"><i class="fas fa-exclamation-triangle"></i> Cảnh báo</h6>
+                                            <h6 class="warning-title"><i class="fas fa-exclamation-triangle"></i> Cảnh Báo</h6>
                                             <div class="info-item">
-                                                Bạn có chắc chắn muốn xóa thông báo 
-                                                <strong><span id="deleteNotificationTitle"></span></strong> (ID: <strong><span id="deleteNotificationId"></span></strong>)?
+                                                Bạn có chắc chắn muốn xóa thông báo <strong><span id="deleteNotificationTitle"></span></strong> (ID: <strong><span id="deleteNotificationId"></span></strong>)?
                                             </div>
                                             <div class="warning-text">
-                                                Hành động này không thể hoàn tác. Vui lòng xác nhận.
+                                                Hành động này không thể hoàn tác. Thông báo sẽ bị xóa vĩnh viễn khỏi hệ thống.
                                             </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Hủy</button>
+                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                            <i class="fas fa-times"></i> Hủy
+                                        </button>
                                         <form action="${pageContext.request.contextPath}/admin/notifications" method="POST" style="display: inline;">
                                             <input type="hidden" name="action" value="delete">
-                                            <input type="hidden" id="deleteNotificationIdInput" name="notificationId">
-                                            <button type="submit" class="btn btn-confirm-delete">Xóa</button>
+                                            <input type="hidden" id="deleteNotificationIdInput" name="notificationId" />
+                                            <button type="submit" class="btn btn-confirm-delete">
+                                                <i class="fas fa-trash"></i> Xóa
+                                            </button>
                                         </form>
                                     </div>
                                 </div>
@@ -376,82 +372,66 @@
                 </div>
             </div>
         </div>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <script>
             // JavaScript functions for modal handling
-            function viewNotification(notificationId) {
-                fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + notificationId)
-                        .then(response => response.json())
-                        .then(data => {
-                            document.getElementById('modalNotificationId').textContent = 'NOT' + String(data.id).padStart(3, '0');
-                            document.getElementById('modalTitle').textContent = data.title;
-                            document.getElementById('modalType').textContent = data.type;
-                            document.getElementById('modalContent').textContent = data.content;
-                            document.getElementById('modalRecipient').textContent = data.recipient;
-                            document.getElementById('modalSendDate').textContent = new Date(data.sendDate).toLocaleDateString('vi-VN');
+            function viewNotification(id) {
+                fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + id)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('viewNotificationId').textContent = data.id;
+                        document.getElementById('viewNotificationTitle').textContent = data.title;
+                        document.getElementById('viewNotificationType').textContent = data.type;
+                        document.getElementById('viewNotificationRecipient').textContent = data.recipient;
+                        document.getElementById('viewNotificationSendDate').textContent = new Date(data.sendDate).toLocaleDateString('vi-VN');
+                        document.getElementById('viewNotificationContent').textContent = data.content;
 
-                            var modal = new bootstrap.Modal(document.getElementById('viewNotificationModal'));
-                            modal.show();
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Có lỗi xảy ra khi tải thông tin thông báo');
-                        });
+                        var modal = new bootstrap.Modal(document.getElementById('viewNotificationModal'));
+                        modal.show();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra khi tải thông tin thông báo');
+                    });
             }
 
-            function editNotification(notificationId) {
-                fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + notificationId)
-                        .then(response => response.json())
-                        .then(data => {
-                            document.getElementById('editNotificationId').value = data.id;
-                            document.getElementById('editTitle').value = data.title;
-                            document.getElementById('editType').value = data.type;
-                            document.getElementById('editContent').value = data.content;
-                            document.getElementById('editRecipient').value = data.recipient;
+            function editNotification(id) {
+                fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + id)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('editNotificationId').value = data.id;
+                        document.getElementById('editTitle').value = data.title;
+                        document.getElementById('editContent').value = data.content;
+                        document.getElementById('editType').value = data.type;
+                        document.getElementById('editRecipient').value = data.recipient;
 
-                            var modal = new bootstrap.Modal(document.getElementById('editNotificationModal'));
-                            modal.show();
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Có lỗi xảy ra khi tải thông tin thông báo');
-                        });
+                        var modal = new bootstrap.Modal(document.getElementById('editNotificationModal'));
+                        modal.show();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra khi tải thông tin thông báo');
+                    });
             }
 
-            function deleteNotification(notificationId, title) {
-                document.getElementById('deleteNotificationId').textContent = 'NOT' + String(notificationId).padStart(3, '0');
+            function deleteNotification(id, title) {
                 document.getElementById('deleteNotificationTitle').textContent = title;
-                document.getElementById('deleteNotificationIdInput').value = notificationId;
+                document.getElementById('deleteNotificationId').textContent = id;
+                document.getElementById('deleteNotificationIdInput').value = id;
 
                 var modal = new bootstrap.Modal(document.getElementById('deleteNotificationModal'));
                 modal.show();
             }
 
-            // Event listeners for modal buttons
-            document.addEventListener('click', function (e) {
-                if (e.target.closest('.btn-view')) {
-                    const notificationId = e.target.closest('.btn-view').getAttribute('data-notification-id');
-                    viewNotification(notificationId);
-                }
+            function goToPage(page) {
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('page', page);
+                window.location.href = '${pageContext.request.contextPath}/admin/notifications?' + urlParams.toString();
+            }
 
-                if (e.target.closest('.btn-edit')) {
-                    const notificationId = e.target.closest('.btn-edit').getAttribute('data-notification-id');
-                    editNotification(notificationId);
-                }
-
-                if (e.target.closest('.btn-delete')) {
-                    const button = e.target.closest('.btn-delete');
-                    const notificationId = button.getAttribute('data-notification-id');
-                    const title = button.getAttribute('data-title');
-                    deleteNotification(notificationId, title);
-                }
-            });
-
-            // Set default send date to today for create modal
-            document.addEventListener('DOMContentLoaded', function () {
-                document.getElementById('createSendDate').value = new Date().toISOString().split('T')[0];
-
-                // Auto-dismiss alerts after 5 seconds
+            // Auto-dismiss alerts after 5 seconds
+            document.addEventListener('DOMContentLoaded', function() {
                 const alerts = document.querySelectorAll(".alert");
                 alerts.forEach((alert) => {
                     setTimeout(() => {
@@ -461,6 +441,5 @@
                 });
             });
         </script>
-        <script src="${pageContext.request.contextPath}/assets/js/admin/manaNotifications.js"></script>
     </body>
 </html>
