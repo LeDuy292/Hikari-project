@@ -1,3 +1,4 @@
+
 package dao;
 
 import java.sql.Connection;
@@ -15,19 +16,22 @@ import org.slf4j.LoggerFactory;
 public class CourseDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(CourseDAO.class);
-    private Connection con;
+    private final Connection con;
 
     public CourseDAO() {
         DBContext dBContext = new DBContext();
         try {
             con = dBContext.getConnection();
+            if (con == null) {
+                throw new SQLException("Failed to establish database connection");
+            }
             logger.info("CourseDAO: Database connection established successfully.");
         } catch (Exception e) {
             logger.error("CourseDAO: Error connecting to database: {}", e.getMessage(), e);
+            throw new RuntimeException("Database connection failed", e);
         }
     }
 
-    // Lấy tất cả khóa học
     public List<Course> getAll() {
         String sql = "SELECT * FROM Courses";
         List<Course> list = new ArrayList<>();
@@ -43,7 +47,6 @@ public class CourseDAO {
         return list;
     }
 
-    // Thêm mới khóa học
     public void addCourse(Course course) {
         String sql = "INSERT INTO Courses (courseID, title, description, fee, duration, startDate, endDate, isActive, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pre = con.prepareStatement(sql)) {
@@ -63,7 +66,6 @@ public class CourseDAO {
         }
     }
 
-    // Lấy khóa học theo ID
     public Course getCourseByID(String id) {
         String sql = "SELECT * FROM Courses WHERE courseID = ?";
         Course course = null;
@@ -83,7 +85,6 @@ public class CourseDAO {
         return course;
     }
 
-    // Sửa thông tin khóa học
     public void editCourse(Course course) {
         String sql = "UPDATE Courses SET title = ?, description = ?, fee = ?, duration = ?, startDate = ?, endDate = ?, isActive = ?, imageUrl = ? WHERE courseID = ?";
         try (PreparedStatement pre = con.prepareStatement(sql)) {
@@ -103,7 +104,6 @@ public class CourseDAO {
         }
     }
 
-    // Xóa khóa học
     public void deleteCourse(String courseID) {
         String sql = "DELETE FROM Courses WHERE courseID = ?";
         try (PreparedStatement pre = con.prepareStatement(sql)) {
@@ -115,7 +115,6 @@ public class CourseDAO {
         }
     }
 
-    // Đếm tổng số khóa học
     public int countAllCourses() {
         String sql = "SELECT COUNT(*) FROM Courses";
         int count = 0;
@@ -131,7 +130,6 @@ public class CourseDAO {
         return count;
     }
 
-    // Đếm số khóa học đang hoạt động
     public int countAllCoursesActive() {
         String sql = "SELECT COUNT(*) FROM Courses WHERE isActive = 1";
         int count = 0;
@@ -147,7 +145,6 @@ public class CourseDAO {
         return count;
     }
 
-    // Tìm kiếm khóa học theo từ khóa và category
     public List<Course> searchCourses(String searchKeyword, String category) {
         List<Course> courses = new ArrayList<>();
         String sql = "SELECT * FROM Courses WHERE (title LIKE ? OR description LIKE ?) AND category = ? AND isActive = TRUE";
@@ -167,7 +164,6 @@ public class CourseDAO {
         return courses;
     }
 
-    // Tìm kiếm khóa học theo từ khóa tất cả category
     public List<Course> searchCoursesAllCategories(String searchKeyword) {
         List<Course> courses = new ArrayList<>();
         String sql = "SELECT * FROM Courses WHERE (title LIKE ? OR description LIKE ?) AND isActive = TRUE";
@@ -186,7 +182,6 @@ public class CourseDAO {
         return courses;
     }
 
-    // Lấy tất cả khóa học theo category
     public List<Course> getAllCoursesByCategory(String category) {
         List<Course> courses = new ArrayList<>();
         String sql = "SELECT * FROM Courses WHERE category = ? AND isActive = TRUE";
@@ -204,7 +199,6 @@ public class CourseDAO {
         return courses;
     }
 
-    // Phân trang danh sách khóa học
     public List<Course> getCoursesWithPaging(int offset, int limit) {
         List<Course> courses = new ArrayList<>();
         String sql = "SELECT * FROM Courses ORDER BY startDate DESC LIMIT ? OFFSET ?";
@@ -223,7 +217,6 @@ public class CourseDAO {
         return courses;
     }
 
-    // Đóng kết nối
     public void closeConnection() {
         try {
             if (con != null && !con.isClosed()) {
@@ -235,7 +228,6 @@ public class CourseDAO {
         }
     }
 
-    // Hàm tiện ích chuyển đổi ResultSet sang Course
     private Course mapResultSetToCourse(ResultSet resultSet) throws SQLException {
         String courseID = resultSet.getString("CourseID");
         String title = resultSet.getString("title");
@@ -246,18 +238,6 @@ public class CourseDAO {
         Date endDate = resultSet.getDate("endDate");
         boolean isActive = resultSet.getBoolean("isActive");
         String imageUrl = resultSet.getString("imageUrl");
-        // Có thể bổ sung các trường khác nếu cần
         return new Course(courseID, title, description, fee, duration, startDate, endDate, isActive, imageUrl);
-    }
-
-    // Main test
-    public static void main(String[] args) {
-        CourseDAO dao = new CourseDAO();
-        List<Course> listCourse = dao.getAll();
-        System.out.println(listCourse);
-        System.out.println("Test:");
-        Course c = dao.getCourseByID("CO001");
-        System.out.println(c);
-        dao.closeConnection();
     }
 }
