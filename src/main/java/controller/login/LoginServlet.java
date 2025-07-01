@@ -56,6 +56,15 @@ public class LoginServlet extends HttpServlet {
                         else if((user.getRole()).equals("Coordinator")){
                             response.sendRedirect(request.getContextPath() + "/view/coordinator/home.jsp");
                         }
+                        else if((user.getRole()).equals("Admin")){
+                            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+                        }
+                        else if((user.getRole()).equals("Teacher")){
+                            response.sendRedirect(request.getContextPath() + "/view/teacher/manageCourse.jsp");
+                        }
+                         else {
+                            response.sendRedirect(request.getContextPath() + "/view/student/home.jsp");
+                        }
                     } catch (Exception e) {
                         session.invalidate();
                         request.setAttribute("error", "Lỗi đăng nhập: " + e.getMessage());

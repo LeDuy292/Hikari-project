@@ -5,6 +5,7 @@ import model.UserAccount;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Random;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class UserService {
@@ -29,10 +30,13 @@ public class UserService {
         if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
             user.setFullName(user.getUsername());
         }
-        user.setRole("Student");
+        // Set default role to "Student" if role is null or empty (for login page)
+        if (user.getRole() == null || user.getRole().trim().isEmpty()) {
+            user.setRole("Student");
+        }
         boolean isRegistered = userDAO.registerUser(user);
         if (isRegistered) {
-            LOGGER.info("User registered successfully: " + user.getUsername());
+            LOGGER.info("User registered successfully: " + user.getUsername() + " with role: " + user.getRole());
         } else {
             LOGGER.severe("User registration failed for: " + user.getUsername());
         }
@@ -47,9 +51,12 @@ public class UserService {
         UserAccount user = userDAO.authenticateUser(username, password);
         if (user != null) {
             UserAccount fullUser = userDAO.findByUsername(username);
-            if (fullUser != null) {
+            if (fullUser != null && fullUser.getIsActive()) {
                 LOGGER.info("User logged in successfully: " + username);
                 return fullUser;
+            } else {
+                LOGGER.warning("Login failed: User account is inactive for username: " + username);
+                return null;
             }
         }
         LOGGER.warning("Login failed for username: " + username);
@@ -69,7 +76,7 @@ public class UserService {
         user.setOtp(otp);
         user.setOtpExpiry(new Date(System.currentTimeMillis() + 10 * 60 * 1000));
         userDAO.updateOtp(user);
-        LOGGER.info("OTP generated for userNum: " + user.getUserID()+ ", OTP: " + otp);
+        LOGGER.info("OTP generated for userNum: " + user.getUserID() + ", OTP: " + otp);
     }
 
     public UserAccount findByOtp(String otp) throws ClassNotFoundException, SQLException {
@@ -104,11 +111,65 @@ public class UserService {
         LOGGER.info("User profile updated for userNum: " + user.getUserID());
     }
 
-    public UserAccount findByUserNum(String UserID) throws ClassNotFoundException, SQLException {
-        UserAccount user = userDAO.findByUserNum(UserID);
+    public UserAccount findByUserNum(String userID) throws ClassNotFoundException, SQLException {
+        UserAccount user = userDAO.findByUserNum(userID);
         if (user == null) {
-            LOGGER.info("No user found for userNum: " + UserID);
+            LOGGER.info("No user found for userNum: " + userID);
         }
         return user;
+    }
+
+    public List<UserAccount> getAllUsers() throws ClassNotFoundException, SQLException {
+        return userDAO.getAllUsers();
+    }
+
+    public List<UserAccount> getUsersByRole(String role) throws ClassNotFoundException, SQLException {
+        if (role == null || role.trim().isEmpty()) {
+            throw new IllegalArgumentException("Role không được để trống");
+        }
+        return userDAO.getUsersByRole(role);
+    }
+
+    public void updateUserStatus(String userID, boolean isActive) throws ClassNotFoundException, SQLException {
+        if (userID == null || userID.trim().isEmpty()) {
+            throw new IllegalArgumentException("User ID không được để trống");
+        }
+        userDAO.updateUserStatus(userID, isActive);
+    }
+
+
+    public void updateUserInfo(UserAccount user) throws ClassNotFoundException, SQLException {
+        if (user == null || user.getUserID() == null) {
+            throw new IllegalArgumentException("Thông tin người dùng không hợp lệ");
+        }
+        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Username không được để trống");
+        }
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email không được để trống");
+        }
+        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Họ tên không được để trống");
+        }
+        userDAO.updateUserProfile(user);
+        LOGGER.info("User information updated for: " + user.getUserID());
+    }
+
+    public String generateNewUserID() throws ClassNotFoundException, SQLException {
+        String prefix = "U";
+        int maxNumber = 0;
+        List<UserAccount> users = userDAO.getAllUsers();
+        for (UserAccount user : users) {
+            String userID = user.getUserID();
+            if (userID != null && userID.startsWith(prefix)) {
+                try {
+                    int number = Integer.parseInt(userID.substring(prefix.length()));
+                    maxNumber = Math.max(maxNumber, number);
+                } catch (NumberFormatException ignored) {
+                    // Ignore invalid IDs
+                }
+            }
+        }
+        return String.format("%s%03d", prefix, maxNumber + 1);
     }
 }

@@ -117,4 +117,3 @@
 
       // Initial pagination setup
       updatePagination();
- 
