@@ -127,9 +127,4 @@ public class Course {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
-
-    @Override
-    public String toString() {
-        return "Course{" + "courseID=" + courseID + ", title=" + title + ", description=" + description + ", fee=" + fee + ", duration=" + duration + ", startDate=" + startDate + ", endDate=" + endDate + ", isActive=" + isActive + ", imageUrl=" + imageUrl + ", classCount=" + classCount + '}';
-    }
 }
