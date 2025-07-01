@@ -19,36 +19,75 @@
                 <%@ include file="sidebar.jsp" %>
                 <div class="main-content">
                     <div class="content-wrapper">
-
                         <%                  
                             request.setAttribute("pageTitle", "Quản Lý Thanh Toán");
-                            request.setAttribute("showAddButton", true);
-                            request.setAttribute("addBtnIcon", "fa-plus");
-                            request.setAttribute("pageIcon", "fa-bell");
+                            request.setAttribute("showAddButton", false);
+                            request.setAttribute("pageIcon", "fa-credit-card");
                             request.setAttribute("showNotification", false);
                         %>
-                        <%@ include file="headerAdmin.jsp" %>F
+                        <%@ include file="headerAdmin.jsp" %>
 
-                        <!-- Filter Section -->
+                        <!-- Messages -->
+                        <c:if test="${not empty message}">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle"></i> ${message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        </c:if>
+                        <c:if test="${not empty error}">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle"></i> ${error}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        </c:if>
+
+                        <!-- Enhanced Filter Section -->
                         <div class="filter-section">
-                            <div class="filter-row">
-                                <label for="statusFilter">Trạng Thái:</label>
-                                <select class="form-select" id="statusFilter" onchange="filterPayments()">
-                                    <option value="">Tất cả</option>
-                                    <option value="Completed">Thành Công</option>
-                                    <option value="Failed">Thất Bại</option>
-                                    <option value="Pending">Đang Chờ</option>
-                                </select>
-                                <label for="paymentDateFilter">Ngày Thanh Toán:</label>
-                                <input type="date" class="form-control" id="paymentDateFilter" onchange="filterPayments()" />
-                                <label for="minAmountFilter">Khoảng Tiền (VND):</label>
-                                <input type="number" class="form-control" id="minAmountFilter" placeholder="Tối thiểu" min="0" onchange="filterPayments()" />
-                                <input type="number" class="form-control" id="maxAmountFilter" placeholder="Tối đa" min="0" onchange="filterPayments()" />
-                            </div>
-                            <div class="search-row">
-                                <label for="search">Tìm Kiếm:</label>
-                                <input type="text" class="form-control" id="search" placeholder="Tìm theo ID hoặc người thanh toán..." onkeyup="filterPayments()" />
-                            </div>
+                            <form action="${pageContext.request.contextPath}/admin/payments" method="GET" class="filter-form">
+                                <div class="filter-group">
+                                    <label for="statusFilter">
+                                        <i class="fas fa-toggle-on"></i> Trạng Thái:
+                                    </label>
+                                    <select class="form-select" id="statusFilter" name="status">
+                                        <option value="">Tất cả</option>
+                                        <option value="Completed" ${param.status == 'Completed' ? 'selected' : ''}>Thành Công</option>
+                                        <option value="Failed" ${param.status == 'Failed' ? 'selected' : ''}>Thất Bại</option>
+                                        <option value="Pending" ${param.status == 'Pending' ? 'selected' : ''}>Đang Chờ</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="paymentDateFilter">
+                                        <i class="fas fa-calendar-alt"></i> Ngày Thanh Toán:
+                                    </label>
+                                    <input type="date" class="form-control" id="paymentDateFilter" name="date" value="${param.date}" />
+                                </div>
+                                <div class="filter-group">
+                                    <label for="minAmountFilter">
+                                        <i class="fas fa-money-bill"></i> Từ Số Tiền:
+                                    </label>
+                                    <input type="number" class="form-control" id="minAmountFilter" name="minAmount" placeholder="VND" min="0" value="${param.minAmount}" />
+                                </div>
+                                <div class="filter-group">
+                                    <label for="maxAmountFilter">
+                                        <i class="fas fa-money-bill-wave"></i> Đến Số Tiền:
+                                    </label>
+                                    <input type="number" class="form-control" id="maxAmountFilter" name="maxAmount" placeholder="VND" min="0" value="${param.maxAmount}" />
+                                </div>
+                                <div class="filter-group">
+                                    <label for="searchFilter">
+                                        <i class="fas fa-search"></i> Tìm Kiếm:
+                                    </label>
+                                    <input type="text" class="form-control" id="searchFilter" name="search" placeholder="ID, người thanh toán..." value="${param.search}" />
+                                </div>
+                                <div class="filter-actions">
+                                    <button type="submit" class="btn btn-filter">
+                                        <i class="fas fa-filter"></i> Lọc
+                                    </button>
+                                    <a href="${pageContext.request.contextPath}/admin/payments" class="btn btn-reset">
+                                        <i class="fas fa-refresh"></i> Đặt Lại
+                                    </a>
+                                </div>
+                            </form>
                         </div>
 
                         <!-- Payments Table -->
@@ -56,37 +95,55 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>NGƯỜI THANH TOÁN</th>
-                                        <th>KHÓA HỌC</th>
-                                        <th>SỐ TIỀN</th>
-                                        <th>TRẠNG THÁI</th>
-                                        <th>NGÀY THANH TOÁN</th>
-                                        <th>HÀNH ĐỘNG</th>
+                                        <th><i class="fas fa-hashtag"></i> ID</th>
+                                        <th><i class="fas fa-user"></i> NGƯỜI THANH TOÁN</th>
+                                        <th><i class="fas fa-book"></i> KHÓA HỌC</th>
+                                        <th><i class="fas fa-money-bill"></i> SỐ TIỀN</th>
+                                        <th><i class="fas fa-toggle-on"></i> TRẠNG THÁI</th>
+                                        <th><i class="fas fa-calendar-alt"></i> NGÀY THANH TOÁN</th>
+                                        <th><i class="fas fa-cogs"></i> HÀNH ĐỘNG</th>
                                     </tr>
                                 </thead>
-                                <tbody id="paymentTableBody">
+                                <tbody>
                                     <c:forEach var="payment" items="${payments}">
                                         <tr>
-                                            <td>PAY${String.format("%03d", payment.id)}</td>
-                                            <td>${payment.studentName}</td>
+                                            <td><strong>PAY${String.format("%03d", payment.id)}</strong></td>
+                                            <td><strong>${payment.studentName}</strong></td>
                                             <td>${payment.courseName}</td>
-                                            <td><fmt:formatNumber value="${payment.amount}" type="currency" currencySymbol="₫"/></td>
                                             <td>
-                                                <span class="badge badge-${payment.paymentStatus.toLowerCase() == 'completed' ? 'success' : (payment.paymentStatus.toLowerCase() == 'failed' ? 'failed' : 'pending')}">
-                                                    ${payment.paymentStatus}
+                                                <span class="badge" style="background: linear-gradient(135deg, #28a745, #34ce57);">
+                                                    <fmt:formatNumber value="${payment.amount}" type="currency" currencySymbol="₫" groupingUsed="true"/>
                                                 </span>
                                             </td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${payment.paymentStatus.toLowerCase() == 'completed'}">
+                                                        <span class="badge badge-active">
+                                                            <i class="fas fa-check-circle"></i> Thành Công
+                                                        </span>
+                                                    </c:when>
+                                                    <c:when test="${payment.paymentStatus.toLowerCase() == 'failed'}">
+                                                        <span class="badge badge-inactive">
+                                                            <i class="fas fa-times-circle"></i> Thất Bại
+                                                        </span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="badge" style="background: linear-gradient(135deg, #f39c12, #ffb347);">
+                                                            <i class="fas fa-clock"></i> Đang Chờ
+                                                        </span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
                                             <td><fmt:formatDate value="${payment.paymentDate}" pattern="dd/MM/yyyy"/></td>
-                                            <td class="actions">
+                                            <td>
                                                 <button class="btn btn-view btn-sm btn-action" onclick="viewPayment(${payment.id})">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
                                                 <c:if test="${payment.paymentStatus == 'Pending'}">
-                                                    <button class="btn btn-edit btn-sm btn-action" onclick="updatePaymentStatus(${payment.id}, 'Completed')">
+                                                    <button class="btn btn-edit btn-sm btn-action" onclick="updatePaymentStatus(${payment.id}, 'Completed')" title="Duyệt thanh toán">
                                                         <i class="fas fa-check"></i>
                                                     </button>
-                                                    <button class="btn btn-delete btn-sm btn-action" onclick="updatePaymentStatus(${payment.id}, 'Failed')">
+                                                    <button class="btn btn-delete btn-sm btn-action" onclick="updatePaymentStatus(${payment.id}, 'Failed')" title="Từ chối thanh toán">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 </c:if>
@@ -99,13 +156,13 @@
 
                         <!-- Pagination -->
                         <div class="pagination" id="pagination">
-                            <c:if test="${currentPage > 1}">
-                                <a href="?page=${currentPage - 1}" class="btn btn-outline-primary">Trước</a>
-                            </c:if>
-                            <span>Trang ${currentPage} / ${totalPages}</span>
-                            <c:if test="${currentPage < totalPages}">
-                                <a href="?page=${currentPage + 1}" class="btn btn-outline-primary">Sau</a>
-                            </c:if>
+                            <button id="prevPage" ${currentPage <= 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">
+                                <i class="fas fa-chevron-left"></i> Trước
+                            </button>
+                            <span id="pageInfo">Trang ${currentPage} / ${totalPages}</span>
+                            <button id="nextPage" ${currentPage >= totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">
+                                Sau <i class="fas fa-chevron-right"></i>
+                            </button>
                         </div>
 
                         <!-- View Payment Modal -->
@@ -157,7 +214,9 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Đóng</button>
+                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                            <i class="fas fa-times"></i> Đóng
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -169,76 +228,69 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <script>
-                                  function viewPayment(paymentId) {
-                                      fetch('${pageContext.request.contextPath}/admin/payments?action=view&id=' + paymentId)
-                                              .then(response => response.json())
-                                              .then(data => {
-                                                  document.getElementById('viewPaymentId').textContent = 'PAY' + String(data.id).padStart(3, '0');
-                                                  document.getElementById('viewStudentName').textContent = data.studentName;
-                                                  document.getElementById('viewAmount').textContent = new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(data.amount);
-                                                  document.getElementById('viewStatus').innerHTML = '<span class="badge badge-' + data.paymentStatus.toLowerCase() + '">' + data.paymentStatus + '</span>';
-                                                  document.getElementById('viewPaymentMethod').textContent = data.paymentMethod;
-                                                  document.getElementById('viewPaymentDate').textContent = new Date(data.paymentDate).toLocaleDateString('vi-VN');
-                                                  document.getElementById('viewTransactionID').textContent = data.transactionID || 'N/A';
-                                                  document.getElementById('viewCourseName').textContent = data.courseName;
+            function viewPayment(paymentId) {
+                fetch('${pageContext.request.contextPath}/admin/payments?action=view&id=' + paymentId)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('viewPaymentId').textContent = 'PAY' + String(data.id).padStart(3, '0');
+                        document.getElementById('viewStudentName').textContent = data.studentName;
+                        document.getElementById('viewAmount').textContent = new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(data.amount);
+                        document.getElementById('viewStatus').innerHTML = '<span class="badge badge-' + data.paymentStatus.toLowerCase() + '">' + data.paymentStatus + '</span>';
+                        document.getElementById('viewPaymentMethod').textContent = data.paymentMethod;
+                        document.getElementById('viewPaymentDate').textContent = new Date(data.paymentDate).toLocaleDateString('vi-VN');
+                        document.getElementById('viewTransactionID').textContent = data.transactionID || 'N/A';
+                        document.getElementById('viewCourseName').textContent = data.courseName;
 
-                                                  var modal = new bootstrap.Modal(document.getElementById('viewPaymentModal'));
-                                                  modal.show();
-                                              })
-                                              .catch(error => {
-                                                  console.error('Error:', error);
-                                                  alert('Có lỗi xảy ra khi tải thông tin thanh toán');
-                                              });
-                                  }
+                        var modal = new bootstrap.Modal(document.getElementById('viewPaymentModal'));
+                        modal.show();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra khi tải thông tin thanh toán');
+                    });
+            }
 
-                                  function updatePaymentStatus(paymentId, status) {
-                                      if (confirm('Bạn có chắc chắn muốn cập nhật trạng thái thanh toán?')) {
-                                          const formData = new FormData();
-                                          formData.append('action', 'updateStatus');
-                                          formData.append('paymentId', paymentId);
-                                          formData.append('status', status);
+            function updatePaymentStatus(paymentId, status) {
+                if (confirm('Bạn có chắc chắn muốn cập nhật trạng thái thanh toán?')) {
+                    const formData = new FormData();
+                    formData.append('action', 'updateStatus');
+                    formData.append('paymentId', paymentId);
+                    formData.append('status', status);
 
-                                          fetch('${pageContext.request.contextPath}/admin/payments', {
-                                              method: 'POST',
-                                              body: formData
-                                          })
-                                                  .then(response => {
-                                                      if (response.ok) {
-                                                          location.reload();
-                                                      } else {
-                                                          alert('Có lỗi xảy ra khi cập nhật trạng thái');
-                                                      }
-                                                  })
-                                                  .catch(error => {
-                                                      console.error('Error:', error);
-                                                      alert('Có lỗi xảy ra khi cập nhật trạng thái');
-                                                  });
-                                      }
-                                  }
+                    fetch('${pageContext.request.contextPath}/admin/payments', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        } else {
+                            alert('Có lỗi xảy ra khi cập nhật trạng thái');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra khi cập nhật trạng thái');
+                    });
+                }
+            }
 
-                                  function filterPayments() {
-                                      // Client-side filtering logic can be implemented here
-                                      // For now, we'll reload the page with filter parameters
-                                      const status = document.getElementById('statusFilter').value;
-                                      const date = document.getElementById('paymentDateFilter').value;
-                                      const minAmount = document.getElementById('minAmountFilter').value;
-                                      const maxAmount = document.getElementById('maxAmountFilter').value;
-                                      const search = document.getElementById('search').value;
+            function goToPage(page) {
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('page', page);
+                window.location.href = '${pageContext.request.contextPath}/admin/payments?' + urlParams.toString();
+            }
 
-                                      let url = '${pageContext.request.contextPath}/admin/payments?';
-                                      if (status)
-                                          url += 'status=' + encodeURIComponent(status) + '&';
-                                      if (date)
-                                          url += 'date=' + encodeURIComponent(date) + '&';
-                                      if (minAmount)
-                                          url += 'minAmount=' + encodeURIComponent(minAmount) + '&';
-                                      if (maxAmount)
-                                          url += 'maxAmount=' + encodeURIComponent(maxAmount) + '&';
-                                      if (search)
-                                          url += 'search=' + encodeURIComponent(search) + '&';
-
-                                      window.location.href = url;
-                                  }
+            // Auto-dismiss alerts after 5 seconds
+            document.addEventListener('DOMContentLoaded', function() {
+                const alerts = document.querySelectorAll(".alert");
+                alerts.forEach((alert) => {
+                    setTimeout(() => {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }, 5000);
+                });
+            });
         </script>
     </body>
 </html>

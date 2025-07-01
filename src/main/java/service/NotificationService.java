@@ -14,6 +14,17 @@ public class NotificationService {
         return notificationDAO.getAllNotifications();
     }
 
+    public List<Notification> getNotificationsWithFilters(String type, String recipient, String search, String sendDateFrom, String sendDateTo, int page, int pageSize) throws SQLException {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+        int offset = (page - 1) * pageSize;
+        return notificationDAO.getNotificationsWithFilters(type, recipient, search, sendDateFrom, sendDateTo, offset, pageSize);
+    }
+
+    public int countNotificationsWithFilters(String type, String recipient, String search, String sendDateFrom, String sendDateTo) throws SQLException {
+        return notificationDAO.countNotificationsWithFilters(type, recipient, search, sendDateFrom, sendDateTo);
+    }
+
     public void addNotification(Notification notification) throws SQLException {
         if (notification == null || notification.getTitle() == null || notification.getTitle().trim().isEmpty()) {
             throw new IllegalArgumentException("Tiêu đề thông báo không được để trống");

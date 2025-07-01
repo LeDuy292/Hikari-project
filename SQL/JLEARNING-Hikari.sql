@@ -3,7 +3,9 @@ CREATE DATABASE JLEARNING;
 DROP DATABASE IF EXISTS JLEARNING;
 USE JLEARNING;
 
--- Update UserAccount table
+
+select * from UserAccount
+	-- Update UserAccount table
 CREATE TABLE UserAccount (
     userID VARCHAR(10) PRIMARY KEY CHECK (userID REGEXP '^U[0-9]{3}$') , 
     username VARCHAR(255) NOT NULL,
@@ -15,8 +17,33 @@ CREATE TABLE UserAccount (
     profilePicture VARCHAR(255),
     phone VARCHAR(20),
     birthDate DATE 
-	
 );
+
+ALTER TABLE UserAccount
+ADD COLUMN isActive BOOLEAN DEFAULT 1;
+
+select * from UserAccount
+INSERT INTO UserAccount (userID, fullName, username, email, password, role, profilePicture, phone, birthDate, registrationDate) VALUES
+('U018', 'Nguyễn Văn A', 'a123', 'a123@gmail.com', 'password123', 'Student', '18.jpg', '0900000001', '1990-01-01', '2025-01-10'),
+('U019', 'Nguyễn Văn B', 'b123', 'b123@gmail.com', 'password123', 'Teacher', '19.jpg', '0900000002', '1988-02-02', '2025-01-22'),
+('U020', 'Nguyễn Văn C', 'c123', 'c123@gmail.com', 'password123', 'Student', '20.jpg', '0900000003', '1991-03-03', '2025-02-05'),
+('U021', 'Nguyễn Văn D', 'd123', 'd123@gmail.com', 'password123', 'Coordinator', '21.jpg', '0900000004', '1992-04-04', '2025-02-15'),
+('U022', 'Nguyễn Văn E', 'e123', 'e123@gmail.com', 'password123', 'Admin', '22.jpg', '0900000005', '1989-05-05', '2025-02-28'),
+('U023', 'Nguyễn Văn F', 'f123', 'f123@gmail.com', 'password123', 'Student', '23.jpg', '0900000006', '1993-06-06', '2025-03-03'),
+('U024', 'Nguyễn Văn G', 'g123', 'g123@gmail.com', 'password123', 'Teacher', '24.jpg', '0900000007', '1987-07-07', '2025-03-10'),
+('U025', 'Nguyễn Văn H', 'h123', 'h123@gmail.com', 'password123', 'Student', '25.jpg', '0900000008', '1994-08-08', '2025-03-22'),
+('U026', 'Nguyễn Văn I', 'i123', 'i123@gmail.com', 'password123', 'Coordinator', '26.jpg', '0900000009', '1995-09-09', '2025-04-01'),
+('U027', 'Nguyễn Văn J', 'j123', 'j123@gmail.com', 'password123', 'Admin', '27.jpg', '0900000010', '1996-10-10', '2025-04-10'),
+('U028', 'Nguyễn Văn K', 'k123', 'k123@gmail.com', 'password123', 'Student', '28.jpg', '0900000011', '1997-11-11', '2025-04-18'),
+('U029', 'Nguyễn Văn L', 'l123', 'l123@gmail.com', 'password123', 'Teacher', '29.jpg', '0900000012', '1998-12-12', '2025-04-25'),
+('U030', 'Nguyễn Văn M', 'm123', 'm123@gmail.com', 'password123', 'Student', '30.jpg', '0900000013', '1999-01-01', '2025-05-02'),
+('U031', 'Nguyễn Văn N', 'n123', 'n123@gmail.com', 'password123', 'Student', '31.jpg', '0900000014', '1985-02-02', '2025-05-10'),
+('U032', 'Nguyễn Văn O', 'o123', 'o123@gmail.com', 'password123', 'Teacher', '32.jpg', '0900000015', '1986-03-03', '2025-05-18'),
+('U033', 'Nguyễn Văn P', 'p123', 'p123@gmail.com', 'password123', 'Coordinator', '33.jpg', '0900000016', '1987-04-04', '2025-05-20'),
+('U034', 'Nguyễn Văn Q', 'q123', 'q123@gmail.com', 'password123', 'Admin', '34.jpg', '0900000017', '1988-05-05', '2025-05-25'),
+('U035', 'Nguyễn Văn R', 'r123', 'r123@gmail.com', 'password123', 'Student', '35.jpg', '0900000018', '1990-06-06', '2025-01-05'),
+('U036', 'Nguyễn Văn S', 's123', 's123@gmail.com', 'password123', 'Teacher', '36.jpg', '0900000019', '1991-07-07', '2025-02-12'),
+('U037', 'Nguyễn Văn T', 't1234', 't1234@gmail.com', 'password123', 'Student', '37.jpg', '0900000020', '1992-08-08', '2025-03-25');
 
 -- Update Student table
 CREATE TABLE Student (
@@ -607,6 +634,9 @@ INSERT INTO UserAccount (userID, fullName, username, email, password, role, prof
     ('U015', 'Lý Thị An', 'an123', 'an@gmail.com', 'password123', 'Student', '15.jpg', '0934567891', '1991-05-28'),
     ('U016', 'Cao Thị Yến', 'yen123', 'yen@gmail.com', 'password123', 'Teacher', '16.jpg', '0945678902', '1982-03-25'),
     ('U017', 'Đinh Văn Sơn', 'son123', 'son@gmail.com', 'password123', 'Teacher', '17.jpg', '0956789013', '1984-07-12');
+    
+    
+
 -- 2. Student (10 records)
 INSERT INTO Student (studentID, userID, enrollmentDate, vote) VALUES
     ('S001', 'U001', '2024-01-15', 5),
@@ -842,6 +872,9 @@ INSERT INTO Announcement (title, content, postedDate, postedBy) VALUES
     ('Khai Giảng Lớp Hội Thoại', 'Khai giảng lớp luyện hội thoại tiếng Nhật', '2024-07-01', 'U004'),
     ('Thông Báo Bảo Trì Hệ Thống', 'Hệ thống sẽ bảo trì từ 2h-4h sáng ngày 15/6', '2024-06-10', 'U005');
 
+    INSERT INTO Announcement (title, content, postedDate, postedBy) VALUES
+    ('Khai Giảng Khóa N5 Tháng 6', 'Thông báo khai giảng khóa học tiếng Nhật N5 vào ngày 25/06/2025', '2025-06-25', 'U004');
+
 -- 16. Discount (7 records - incomplete in original, adjusted to match available courseIDs)
 INSERT INTO Discount (code, courseID, discountPercent, startDate, endDate, isActive) VALUES
     ('NEWBIE2024', 'CO001', 20, '2024-01-01', '2024-03-31', TRUE),
@@ -952,4 +985,18 @@ INSERT INTO course_info (course_id, overview, objectives, level_description, tui
     ('CO008', 1, 'Lịch sử Nhật Bản', 'Tìm hiểu lịch sử cổ đại.', '2 tuần'),
     ('CO009', 1, 'Keigo cơ bản', 'Học kính ngữ trong công việc.', '3 tuần'),
     ('CO010', 1, 'Nghe N3 cơ bản', 'Luyện nghe từ vựng và hội thoại.', '2 tuần');
+    
+	select * from Payment
+    
+	INSERT INTO Payment (studentID, enrollmentID, amount, paymentMethod, paymentStatus, paymentDate, transactionID) VALUES
+    ('S001', 'E001', 1600000.00, 'Credit Card', 'Complete', '2025-01-15 10:00:00', 'TXN001'),
+    ('S002', 'E002', 2125000.00, 'Bank Transfer', 'Complete', '2025-02-20 12:30:00', 'TXN002'),
+    ('S003', 'E003', 1600000.00, 'Cash', 'Pending', '2025-03-10 09:15:00', 'TXN003'),
+    ('S004', 'E004', 2250000.00, 'Credit Card', 'Complete', '2025-04-05 14:45:00', 'TXN004'),
+    ('S005', 'E005', 2125000.00, 'Bank Transfer', 'Cancel', '2025-05-12 11:20:00', 'TXN005'),
+    ('S006', 'E006', 2450000.00, 'Credit Card', 'Complete', '2025-06-18 16:00:00', 'TXN006'),
+    ('S007', 'E007', 2250000.00, 'Cash', 'Pending', '2025-02-22 08:30:00', 'TXN007'),
+    ('S008', 'E008', 3600000.00, 'Bank Transfer', 'Complete', '2025-06-08 13:10:00', 'TXN008'),
+    ('S009', 'E009', 1600000.00, 'Credit Card', 'Complete', '2025-01-14 15:25:00', 'TXN009'),
+    ('S010', 'E010', 1080000.00, 'Bank Transfer', 'Pending', '2025-2-25 10:50:00', 'TXN010');
     

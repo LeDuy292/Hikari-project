@@ -1,7 +1,4 @@
-/*
- * Click .nb://SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click .nb://SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
+
 package controller.login;
 
 import dao.UserDAO;

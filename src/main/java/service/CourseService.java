@@ -77,6 +77,19 @@ public class CourseService {
         return courseDAO.getCoursesWithPaging(offset, pageSize);
     }
 
+    // Lấy danh sách khóa học với bộ lọc
+    public List<Course> getCoursesWithFilters(String keyword, Boolean isActive, Double feeFrom, Double feeTo, String startDate, int page, int pageSize) throws SQLException {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+        int offset = (page - 1) * pageSize;
+        return courseDAO.getCoursesWithFilters(keyword, isActive, feeFrom, feeTo, startDate, offset, pageSize);
+    }
+
+    // Đếm số khóa học với bộ lọc
+    public int countCoursesWithFilters(String keyword, Boolean isActive, Double feeFrom, Double feeTo, String startDate) throws SQLException {
+        return courseDAO.countCoursesWithFilters(keyword, isActive, feeFrom, feeTo, startDate);
+    }
+
     // Đếm tổng số khóa học
     public int countAllCourses() throws SQLException {
         return courseDAO.countAllCourses();

@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 @WebServlet("/admin/users")
 public class ManageUsersServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(ManageUsersServlet.class.getName());
     private final UserService userService = new UserService();
     private final UserDAO userDAO = new UserDAO();
 
@@ -47,21 +48,19 @@ public class ManageUsersServlet extends HttpServlet {
             } else {
                 // Default: load all users
                 List<UserAccount> users = userService.getAllUsers();
+                if (users == null || users.isEmpty()) {
+                    LOGGER.warning("No users retrieved from database");
+                    req.setAttribute("error", "Không có người dùng nào được tìm thấy");
+                }
                 req.setAttribute("users", users);
                 req.getRequestDispatcher("/view/admin/manageUsers.jsp").forward(req, resp);
             }
         } catch (Exception e) {
-            try {
-                e.printStackTrace();
-                req.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
-                List<UserAccount> users = userService.getAllUsers();
-                req.setAttribute("users", users);
-                req.getRequestDispatcher("/view/admin/manageUsers.jsp").forward(req, resp);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(ManageUsersServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SQLException ex) {
-                Logger.getLogger(ManageUsersServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            LOGGER.severe("Error processing request: " + e.getMessage());
+            e.printStackTrace();
+            req.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            req.setAttribute("users", null); // Set to null to avoid passing invalid data
+            req.getRequestDispatcher("/view/admin/manageUsers.jsp").forward(req, resp);
         }
     }
 
@@ -85,6 +84,7 @@ public class ManageUsersServlet extends HttpServlet {
     private void handleFilterUsers(HttpServletRequest req, HttpServletResponse resp) 
             throws ServletException, IOException, SQLException, ClassNotFoundException {
         String role = req.getParameter("role");
+        String status = req.getParameter("status");
         String dateFrom = req.getParameter("dateFrom");
         String dateTo = req.getParameter("dateTo");
         String nameSearch = req.getParameter("nameSearch");
@@ -99,11 +99,16 @@ public class ManageUsersServlet extends HttpServlet {
             }
         }
 
-        List<UserAccount> users = userDAO.getFilteredUsers(role, null, dateFrom, dateTo, nameSearch, minCourses);
+        List<UserAccount> users = userDAO.getFilteredUsers(role, status, dateFrom, dateTo, nameSearch, minCourses);
+        if (users == null || users.isEmpty()) {
+            LOGGER.warning("No users found for filter criteria");
+            req.setAttribute("error", "Không tìm thấy người dùng theo tiêu chí lọc");
+        }
         req.setAttribute("users", users);
         
         // Keep filter values for form
         req.setAttribute("selectedRole", role);
+        req.setAttribute("selectedStatus", status);
         req.setAttribute("selectedDateFrom", dateFrom);
         req.setAttribute("selectedDateTo", dateTo);
         req.setAttribute("selectedNameSearch", nameSearch);
@@ -121,6 +126,11 @@ public class ManageUsersServlet extends HttpServlet {
             users = userDAO.getFilteredUsers(null, null, null, null, searchTerm, 0);
         } else {
             users = userService.getAllUsers();
+        }
+        
+        if (users == null || users.isEmpty()) {
+            LOGGER.warning("No users found for search term: " + searchTerm);
+            req.setAttribute("error", "Không tìm thấy người dùng theo từ khóa tìm kiếm");
         }
         
         req.setAttribute("users", users);
@@ -154,6 +164,7 @@ public class ManageUsersServlet extends HttpServlet {
                     resp.sendRedirect(req.getContextPath() + "/admin/users?error=Hành động không hợp lệ");
             }
         } catch (Exception e) {
+            LOGGER.severe("Error processing POST request: " + e.getMessage());
             e.printStackTrace();
             resp.sendRedirect(req.getContextPath() + "/admin/users?error=" + java.net.URLEncoder.encode(e.getMessage(), "UTF-8"));
         }
@@ -214,9 +225,9 @@ public class ManageUsersServlet extends HttpServlet {
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(password);
-        user.setRole(role); // Set the selected role
+        user.setRole(role);
         user.setPhone(phone);
-        user.setIsActive(true); // Default to active
+        user.setIsActive(true);
         
         // Parse birth date
         if (birthDateStr != null && !birthDateStr.trim().isEmpty()) {
@@ -280,7 +291,7 @@ public class ManageUsersServlet extends HttpServlet {
         existingUser.setFullName(fullName);
         existingUser.setUsername(username);
         existingUser.setEmail(email);
-        existingUser.setRole(role); // Update role
+        existingUser.setRole(role);
         existingUser.setPhone(phone);
         
         // Update password only if provided
