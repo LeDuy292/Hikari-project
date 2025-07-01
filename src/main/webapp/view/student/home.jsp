@@ -19,7 +19,7 @@
     
     <div class="main-container">
         <!-- Include Header -->
-        <%@ include file="header.jsp" %>
+       <%@ include file="header.jsp" %>
         
         <!-- Main Content -->
         <main class="main-content">
