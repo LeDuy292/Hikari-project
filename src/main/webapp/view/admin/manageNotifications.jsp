@@ -1,4 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -17,357 +20,349 @@
                 <%@ include file="sidebar.jsp" %>
                 <div class="main-content">
                     <div class="content-wrapper">
-                        <div class="header">
-                            <h2 class="header-title">Quản Lý Thông Báo</h2>
-                            <div class="header-actions">
-                                <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#createNotificationModal">
-                                    <i class="fas fa-plus"></i> Thêm Thông Báo
-                                </button>
-                                <div class="user-profile">
-                                    <img src="img/dashborad/defaultLogoAdmin.png" alt="Ảnh đại diện" class="avatar" />
-                                    <div class="user-info">
-                                        <span class="user-name">Xin chào, Quản lý</span>
-                                        <a href="/LogoutServlet" class="logout-btn">
-                                            <i class="fas fa-sign-out-alt"></i>
-                                            Đăng xuất
-                                        </a>
-                                    </div>
-                                </div>
+                        <%                            
+                            request.setAttribute("pageTitle", "Quản Lý Thông Báo");
+                            request.setAttribute("showAddButton", true);
+                            request.setAttribute("addButtonText", "Thêm Thông Báo");
+                            request.setAttribute("addModalTarget", "createNotificationModal");
+                            request.setAttribute("addBtnIcon", "fa-plus");
+                            request.setAttribute("pageIcon", "fa-bell");
+                            request.setAttribute("showNotification", false);
+                        %>
+                        <%@ include file="headerAdmin.jsp" %>
+
+                        <!-- Messages -->
+                        <c:if test="${not empty message}">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle"></i> ${message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
-                        </div>
-                        <!-- Filter Section -->
+                        </c:if>
+                        <c:if test="${not empty error}">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle"></i> ${error}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        </c:if>
+
+                        <!-- Enhanced Filter Section -->
                         <div class="filter-section">
-                            <div class="filter-row">
-                                <label for="typeFilter">Loại thông báo:</label>
-                                <select class="form-select" id="typeFilter">
-                                    <option value="">Tất cả</option>
-                                    <option value="Sự kiện">Sự kiện</option>
-                                    <option value="Cập nhật khóa học">Cập nhật khóa học</option>
-                                    <option value="Thông báo hệ thống">Thông báo hệ thống</option>
-                                </select>
-                                <label for="sendDateFilter">Ngày gửi:</label>
-                                <input type="date" class="form-control" id="sendDateFilter"></input>
-                                <label for="search">Tìm kiếm:</label>
-                                <input type="text" class="form-control" id="search" placeholder="Tìm theo tiêu đề hoặc nội dung..."></input>
-                            </div>
+                            <form action="${pageContext.request.contextPath}/admin/notifications" method="GET" class="filter-form">
+                                <div class="filter-group">
+                                    <label for="typeFilter">
+                                        <i class="fas fa-tag"></i> Loại Thông Báo:
+                                    </label>
+                                    <select class="form-select" id="typeFilter" name="type">
+                                        <option value="">Tất cả</option>
+                                        <option value="Sự kiện" ${param.type == 'Sự kiện' ? 'selected' : ''}>Sự kiện</option>
+                                        <option value="Cập nhật khóa học" ${param.type == 'Cập nhật khóa học' ? 'selected' : ''}>Cập nhật khóa học</option>
+                                        <option value="Thông báo hệ thống" ${param.type == 'Thông báo hệ thống' ? 'selected' : ''}>Thông báo hệ thống</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="recipientFilter">
+                                        <i class="fas fa-users"></i> Đối Tượng:
+                                    </label>
+                                    <select class="form-select" id="recipientFilter" name="recipient">
+                                        <option value="">Tất cả</option>
+                                        <option value="Tất cả học viên" ${param.recipient == 'Tất cả học viên' ? 'selected' : ''}>Tất cả học viên</option>
+                                        <option value="Học viên N5" ${param.recipient == 'Học viên N5' ? 'selected' : ''}>Học viên N5</option>
+                                        <option value="Học viên N4" ${param.recipient == 'Học viên N4' ? 'selected' : ''}>Học viên N4</option>
+                                        <option value="Học viên N3" ${param.recipient == 'Học viên N3' ? 'selected' : ''}>Học viên N3</option>
+                                        <option value="Học viên N2" ${param.recipient == 'Học viên N2' ? 'selected' : ''}>Học viên N2</option>
+                                        <option value="Học viên N1" ${param.recipient == 'Học viên N1' ? 'selected' : ''}>Học viên N1</option>
+                                        <option value="Giảng viên" ${param.recipient == 'Giảng viên' ? 'selected' : ''}>Giảng viên</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="sendDateFromFilter">
+                                        <i class="fas fa-calendar-alt"></i> Từ Ngày:
+                                    </label>
+                                    <input type="date" class="form-control" id="sendDateFromFilter" name="sendDateFrom" value="${param.sendDateFrom}" />
+                                </div>
+                                <div class="filter-group">
+                                    <label for="sendDateToFilter">
+                                        <i class="fas fa-calendar-check"></i> Đến Ngày:
+                                    </label>
+                                    <input type="date" class="form-control" id="sendDateToFilter" name="sendDateTo" value="${param.sendDateTo}" />
+                                </div>
+                                <div class="filter-group">
+                                    <label for="searchFilter">
+                                        <i class="fas fa-search"></i> Tìm Kiếm:
+                                    </label>
+                                    <input type="text" class="form-control" id="searchFilter" name="search" placeholder="Tiêu đề, nội dung, ID..." value="${param.search}" />
+                                </div>
+                                <div class="filter-actions">
+                                    <button type="submit" class="btn btn-filter">
+                                        <i class="fas fa-filter"></i> Lọc
+                                    </button>
+                                    <a href="${pageContext.request.contextPath}/admin/notifications" class="btn btn-reset">
+                                        <i class="fas fa-refresh"></i> Đặt Lại
+                                    </a>
+                                </div>
+                            </form>
                         </div>
-                        <!-- Notification Table -->
+
+                        <!-- Notifications Table -->
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>TIÊU ĐỀ</th>
-                                        <th>LOẠI THÔNG BÁO</th>
-                                        <th>NỘI DUNG</th>
-                                        <th>NGÀY GỬI</th>
-                                        <th>HÀNH ĐỘNG</th>
+                                        <th><i class="fas fa-hashtag"></i> ID</th>
+                                        <th><i class="fas fa-heading"></i> TIÊU ĐỀ</th>
+                                        <th><i class="fas fa-tag"></i> LOẠI</th>
+                                        <th><i class="fas fa-users"></i> ĐỐI TƯỢNG</th>
+                                        <th><i class="fas fa-calendar-alt"></i> NGÀY GỬI</th>
+                                        <th><i class="fas fa-cogs"></i> HÀNH ĐỘNG</th>
                                     </tr>
                                 </thead>
-                                <tbody id="notificationTableBody">
-                                    <tr data-notification-id="NOT001">
-                                        <td>NOT001</td>
-                                        <td>Khóa học N5 mới</td>
-                                        <td>Cập nhật khóa học</td>
-                                        <td>Khóa học Tiếng Nhật Sơ cấp N5 mới sẽ bắt đầu vào 01/06/2025...</td>
-                                        <td>2025-05-01</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT001"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT001"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT001" data-title="Khóa học N5 mới"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT002">
-                                        <td>NOT002</td>
-                                        <td>Đăng ký JLPT N3</td>
-                                        <td>Sự kiện</td>
-                                        <td>Hạn đăng ký thi JLPT N3 là 30/06/2025. Đăng ký ngay tại J-Learning...</td>
-                                        <td>2025-05-02</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT002"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT002"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT002" data-title="Đăng ký JLPT N3"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT003">
-                                        <td>NOT003</td>
-                                        <td>Lễ hội Hanami 2025</td>
-                                        <td>Sự kiện</td>
-                                        <td>Tham gia lớp học làm bánh Mochi tại lễ hội Hanami vào 15/06/2025...</td>
-                                        <td>2025-05-03</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT003"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT003"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT003" data-title="Lễ hội Hanami 2025"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT004">
-                                        <td>NOT004</td>
-                                        <td>Bảo trì hệ thống</td>
-                                        <td>Thông báo hệ thống</td>
-                                        <td>Hệ thống J-Learning sẽ bảo trì từ 00:00 đến 02:00 ngày 10/05/2025...</td>
-                                        <td>2025-05-04</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT004"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT004"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT004" data-title="Bảo trì hệ thống"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT005">
-                                        <td>NOT005</td>
-                                        <td>Lớp học Trà đạo</td>
-                                        <td>Sự kiện</td>
-                                        <td>Tham gia lớp học Trà đạo Nhật Bản vào 20/06/2025 tại HIKARI...</td>
-                                        <td>2025-05-05</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT005"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT005"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT005" data-title="Lớp học Trà đạo"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT006">
-                                        <td>NOT006</td>
-                                        <td>Khóa học Kanji N4</td>
-                                        <td>Cập nhật khóa học</td>
-                                        <td>Khóa học Kanji N4 mới đã được cập nhật với tài liệu mới...</td>
-                                        <td>2025-05-06</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT006"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT006"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT006" data-title="Khóa học Kanji N4"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT007">
-                                        <td>NOT007</td>
-                                        <td>Hội thảo JLPT N2</td>
-                                        <td>Sự kiện</td>
-                                        <td>Hội thảo ôn thi JLPT N2 sẽ diễn ra vào 25/06/2025...</td>
-                                        <td>2025-05-07</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT007"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT007"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT007" data-title="Hội thảo JLPT N2"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT008">
-                                        <td>NOT008</td>
-                                        <td>Cập nhật ứng dụng</td>
-                                        <td>Thông báo hệ thống</td>
-                                        <td>Ứng dụng J-Learning đã được cập nhật phiên bản 2.1.0...</td>
-                                        <td>2025-05-08</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT008"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT008"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT008" data-title="Cập nhật ứng dụng"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT009">
-                                        <td>NOT009</td>
-                                        <td>Lớp hội thoại N3</td>
-                                        <td>Cập nhật khóa học</td>
-                                        <td>Lớp hội thoại N3 mới sẽ khai giảng vào 01/07/2025...</td>
-                                        <td>2025-05-09</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT009"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT009"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT009" data-title="Lớp hội thoại N3"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr data-notification-id="NOT010">
-                                        <td>NOT010</td>
-                                        <td>Cuộc thi Kanji 2025</td>
-                                        <td>Sự kiện</td>
-                                        <td>Đăng ký cuộc thi Kanji toàn quốc 2025 tại HIKARI...</td>
-                                        <td>2025-05-10</td>
-                                        <td>
-                                            <button class="btn btn-view btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#viewNotificationModal" data-notification-id="NOT010"><i class="fas fa-eye"></i></button>
-                                            <button class="btn btn-edit btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#editNotificationModal" data-notification-id="NOT010"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete btn-sm btn-action" data-bs-toggle="modal" data-bs-target="#blockNotificationModal" data-notification-id="NOT010" data-title="Cuộc thi Kanji 2025"><i class="fas fa-lock"></i></button>
-                                        </td>
-                                    </tr>
+                                <tbody>
+                                    <c:forEach var="notification" items="${notifications}">
+                                        <tr>
+                                            <td><strong>${notification.id}</strong></td>
+                                            <td>
+                                                <strong>${notification.title}</strong>
+                                                <c:if test="${fn:length(notification.content) > 50}">
+                                                    <br><small class="text-muted">${fn:substring(notification.content, 0, 50)}...</small>
+                                                </c:if>
+                                            </td>
+                                            <td>
+                                                <span class="badge" style="background: linear-gradient(135deg, #17a2b8, #20c997);">
+                                                    ${notification.type}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge" style="background: linear-gradient(135deg, #6f42c1, #e83e8c);">
+                                                    ${notification.recipient}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <fmt:formatDate value="${notification.sendDate}" pattern="dd/MM/yyyy"/>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-view btn-sm btn-action" onclick="viewNotification(${notification.id})">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-edit btn-sm btn-action" onclick="editNotification(${notification.id})">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-delete btn-sm btn-action" onclick="deleteNotification(${notification.id}, '${notification.title}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
                                 </tbody>
                             </table>
                         </div>
+
                         <!-- Pagination -->
                         <div class="pagination" id="pagination">
-                            <button id="prevPage" disabled>Trước</button>
-                            <span id="pageInfo"></span>
-                            <button id="nextPage">Sau</button>
+                            <button id="prevPage" ${currentPage <= 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">
+                                <i class="fas fa-chevron-left"></i> Trước
+                            </button>
+                            <span id="pageInfo">Trang ${currentPage} / ${totalPages}</span>
+                            <button id="nextPage" ${currentPage >= totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">
+                                Sau <i class="fas fa-chevron-right"></i>
+                            </button>
                         </div>
-                        <!-- View Notification Modal -->
-                        <div class="modal fade view-notification-modal" id="viewNotificationModal" tabindex="-1" aria-labelledby="viewNotificationModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="viewNotificationModalLabel"><i class="fas fa-bell"></i> Chi tiết thông báo</h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="section">
-                                            <h6 class="section-title"><i class="fas fa-info-circle"></i> Thông tin thông báo</h6>
-                                            <div class="info-item">
-                                                <span class="info-label">ID:</span>
-                                                <span class="info-value" id="modalNotificationId"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Tiêu đề:</span>
-                                                <span class="info-value" id="modalTitle"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Loại thông báo:</span>
-                                                <span class="info-value" id="modalType"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Nội dung:</span>
-                                                <span class="info-value" id="modalContent"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Ngày gửi:</span>
-                                                <span class="info-value" id="modalSendDate"></span>
-                                            </div>
-                                            <div class="info-item">
-                                                <span class="info-label">Đối tượng:</span>
-                                                <span class="info-value" id="modalRecipient"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Đóng</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                         <!-- Create Notification Modal -->
                         <div class="modal fade create-notification-modal" id="createNotificationModal" tabindex="-1" aria-labelledby="createNotificationModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="createNotificationModalLabel"><i class="fas fa-plus"></i> Tạo thông báo mới</h5>
+                                        <h5 class="modal-title" id="createNotificationModalLabel"><i class="fas fa-plus-circle"></i> Tạo Thông Báo Mới</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form id="createNotificationForm">
+                                    <form action="${pageContext.request.contextPath}/admin/notifications" method="POST">
+                                        <input type="hidden" name="action" value="add">
                                         <div class="modal-body">
-                                            <div class="form-group">
-                                                <label for="createTitle">Tiêu đề <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="createTitle" name="title" placeholder="Nhập tiêu đề thông báo..." required></input>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="createType">Loại thông báo <span class="text-danger">*</span></label>
-                                                <select class="form-select" id="createType" name="type" required>
-                                                    <option value="" disabled selected>Chọn loại thông báo</option>
-                                                    <option value="Sự kiện">Sự kiện</option>
-                                                    <option value="Cập nhật khóa học">Cập nhật khóa học</option>
-                                                    <option value="Thông báo hệ thống">Thông báo hệ thống</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="createContent">Nội dung <span class="text-danger">*</span></label>
-                                                <textarea class="form-control" id="createContent" name="content" placeholder="Nhập nội dung thông báo..." required></textarea>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="createRecipient">Đối tượng <span class="text-danger">*</span></label>
-                                                <select class="form-select" id="createRecipient" name="recipient" required>
-                                                    <option value="" disabled selected>Chọn đối tượng</option>
-                                                    <option value="Tất cả học viên">Tất cả học viên</option>
-                                                    <option value="Học viên N5">Học viên N5</option>
-                                                    <option value="Học viên N4">Học viên N4</option>
-                                                    <option value="Học viên N3">Học viên N3</option>
-                                                    <option value="Học viên N2">Học viên N2</option>
-                                                    <option value="Học viên N1">Học viên N1</option>
-                                                    <option value="Giảng viên">Giảng viên</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="createSendDate">Ngày gửi <span class="text-danger">*</span></label>
-                                                <input type="date" class="form-control" id="createSendDate" name="sendDate" required></input>
+                                            <div class="section">
+                                                <h6 class="section-title">
+                                                    <i class="fas fa-bell"></i> Thông Tin Thông Báo
+                                                </h6>
+                                                <div class="form-group">
+                                                    <label for="createTitle">Tiêu đề <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="createTitle" name="title" placeholder="Nhập tiêu đề thông báo" required />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="createContent">Nội dung <span class="text-danger">*</span></label>
+                                                    <textarea class="form-control" id="createContent" name="content" rows="5" placeholder="Nhập nội dung thông báo" required></textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="createType">Loại thông báo</label>
+                                                    <select class="form-select" id="createType" name="type">
+                                                        <option value="Sự kiện">Sự kiện</option>
+                                                        <option value="Cập nhật khóa học">Cập nhật khóa học</option>
+                                                        <option value="Thông báo hệ thống">Thông báo hệ thống</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="createRecipient">Đối tượng</label>
+                                                    <select class="form-select" id="createRecipient" name="recipient">
+                                                        <option value="Tất cả học viên">Tất cả học viên</option>
+                                                        <option value="Học viên N5">Học viên N5</option>
+                                                        <option value="Học viên N4">Học viên N4</option>
+                                                        <option value="Học viên N3">Học viên N3</option>
+                                                        <option value="Học viên N2">Học viên N2</option>
+                                                        <option value="Học viên N1">Học viên N1</option>
+                                                        <option value="Giảng viên">Giảng viên</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="createSendDate">Ngày gửi</label>
+                                                    <input type="date" class="form-control" id="createSendDate" name="sendDate" />
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Hủy</button>
-                                            <button type="submit" class="btn btn-submit">Tạo</button>
+                                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                                <i class="fas fa-times"></i> Hủy
+                                            </button>
+                                            <button type="submit" class="btn btn-submit">
+                                                <i class="fas fa-plus"></i> Tạo Thông Báo
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- View Notification Modal -->
+                        <div class="modal fade view-notification-modal" id="viewNotificationModal" tabindex="-1" aria-labelledby="viewNotificationModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="viewNotificationModalLabel"><i class="fas fa-bell"></i> Chi Tiết Thông Báo</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="section">
+                                            <h6 class="section-title"><i class="fas fa-info-circle"></i> Thông Tin Thông Báo</h6>
+                                            <div class="info-item">
+                                                <span class="info-label">ID:</span>
+                                                <span class="info-value" id="viewNotificationId"></span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Tiêu đề:</span>
+                                                <span class="info-value" id="viewNotificationTitle"></span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Loại:</span>
+                                                <span class="info-value" id="viewNotificationType"></span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Đối tượng:</span>
+                                                <span class="info-value" id="viewNotificationRecipient"></span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Ngày gửi:</span>
+                                                <span class="info-value" id="viewNotificationSendDate"></span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Nội dung:</span>
+                                                <span class="info-value" id="viewNotificationContent"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                            <i class="fas fa-times"></i> Đóng
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Edit Notification Modal -->
                         <div class="modal fade edit-notification-modal" id="editNotificationModal" tabindex="-1" aria-labelledby="editNotificationModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="editNotificationModalLabel"><i class="fas fa-edit"></i> Chỉnh sửa thông báo</h5>
+                                        <h5 class="modal-title" id="editNotificationModalLabel"><i class="fas fa-edit"></i> Chỉnh Sửa Thông Báo</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form action="/EditNotificationServlet" method="POST">
+                                    <form action="${pageContext.request.contextPath}/admin/notifications" method="POST">
+                                        <input type="hidden" name="action" value="edit">
+                                        <input type="hidden" id="editNotificationId" name="notificationId">
                                         <div class="modal-body">
-                                            <input type="hidden" id="editNotificationId" name="notificationId"></input>
-                                            <div class="form-group">
-                                                <label for="editTitle">Tiêu đề <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="editTitle" name="title" placeholder="Nhập tiêu đề thông báo..." required></input>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="editType">Loại thông báo <span class="text-danger">*</span></label>
-                                                <select class="form-select" id="editType" name="type" required>
-                                                    <option value="" disabled>Chọn loại thông báo</option>
-                                                    <option value="Sự kiện">Sự kiện</option>
-                                                    <option value="Cập nhật khóa học">Cập nhật khóa học</option>
-                                                    <option value="Thông báo hệ thống">Thông báo hệ thống</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="editContent">Nội dung <span class="text-danger">*</span></label>
-                                                <textarea class="form-control" id="editContent" name="content" placeholder="Nhập nội dung thông báo..." required></textarea>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="editRecipient">Đối tượng <span class="text-danger">*</span></label>
-                                                <select class="form-select" id="editRecipient" name="recipient" required>
-                                                    <option value="" disabled>Chọn đối tượng</option>
-                                                    <option value="Tất cả học viên">Tất cả học viên</option>
-                                                    <option value="Học viên N5">Học viên N5</option>
-                                                    <option value="Học viên N4">Học viên N4</option>
-                                                    <option value="Học viên N3">Học viên N3</option>
-                                                    <option value="Học viên N2">Học viên N2</option>
-                                                    <option value="Học viên N1">Học viên N1</option>
-                                                    <option value="Giảng viên">Giảng viên</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="editSendDate">Ngày gửi <span class="text-danger">*</span></label>
-                                                <input type="date" class="form-control" id="editSendDate" name="sendDate" required></input>
+                                            <div class="section">
+                                                <h6 class="section-title">
+                                                    <i class="fas fa-bell"></i> Thông Tin Thông Báo
+                                                </h6>
+                                                <div class="form-group">
+                                                    <label for="editTitle">Tiêu đề <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="editTitle" name="title" required />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editContent">Nội dung <span class="text-danger">*</span></label>
+                                                    <textarea class="form-control" id="editContent" name="content" rows="5" required></textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editType">Loại thông báo</label>
+                                                    <select class="form-select" id="editType" name="type">
+                                                        <option value="Sự kiện">Sự kiện</option>
+                                                        <option value="Cập nhật khóa học">Cập nhật khóa học</option>
+                                                        <option value="Thông báo hệ thống">Thông báo hệ thống</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="editRecipient">Đối tượng</label>
+                                                    <select class="form-select" id="editRecipient" name="recipient">
+                                                        <option value="Tất cả học viên">Tất cả học viên</option>
+                                                        <option value="Học viên N5">Học viên N5</option>
+                                                        <option value="Học viên N4">Học viên N4</option>
+                                                        <option value="Học viên N3">Học viên N3</option>
+                                                        <option value="Học viên N2">Học viên N2</option>
+                                                        <option value="Học viên N1">Học viên N1</option>
+                                                        <option value="Giảng viên">Giảng viên</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Hủy</button>
-                                            <button type="submit" class="btn btn-submit">Cập nhật</button>
+                                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                                <i class="fas fa-times"></i> Hủy
+                                            </button>
+                                            <button type="submit" class="btn btn-submit">
+                                                <i class="fas fa-save"></i> Cập Nhật
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
-                        <!-- Block Notification Modal -->
-                        <div class="modal fade block-notification-modal" id="blockNotificationModal" tabindex="-1" aria-labelledby="blockNotificationModalLabel" aria-hidden="true">
+
+                        <!-- Delete Notification Modal -->
+                        <div class="modal fade delete-notification-modal" id="deleteNotificationModal" tabindex="-1" aria-labelledby="deleteNotificationModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="blockNotificationModalLabel"><i class="fas fa-lock"></i> Xác nhận khóa thông báo</h5>
+                                        <h5 class="modal-title" id="deleteNotificationModalLabel"><i class="fas fa-trash"></i> Xác Nhận Xóa Thông Báo</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="warning-section">
-                                            <h6 class="warning-title"><i class="fas fa-exclamation-triangle"></i> Cảnh báo</h6>
+                                            <h6 class="warning-title"><i class="fas fa-exclamation-triangle"></i> Cảnh Báo</h6>
                                             <div class="info-item">
-                                                Bạn có chắc chắn muốn khóa thông báo <span id="blockNotificationId"></span> với tiêu đề "<span id="blockTitle"></span>"?
+                                                Bạn có chắc chắn muốn xóa thông báo <strong><span id="deleteNotificationTitle"></span></strong> (ID: <strong><span id="deleteNotificationId"></span></strong>)?
                                             </div>
                                             <div class="warning-text">
-                                                Hành động này sẽ tạm thời vô hiệu hóa thông báo. Vui lòng xác nhận.
+                                                Hành động này không thể hoàn tác. Thông báo sẽ bị xóa vĩnh viễn khỏi hệ thống.
                                             </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Hủy</button>
-                                        <form action="/BlockNotificationServlet" method="POST">
-                                            <input type="hidden" id="blockNotificationIdInput" name="notificationId"></input>
-                                            <button type="submit" class="btn btn-confirm-block">Khóa</button>
+                                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                            <i class="fas fa-times"></i> Hủy
+                                        </button>
+                                        <form action="${pageContext.request.contextPath}/admin/notifications" method="POST" style="display: inline;">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" id="deleteNotificationIdInput" name="notificationId" />
+                                            <button type="submit" class="btn btn-confirm-delete">
+                                                <i class="fas fa-trash"></i> Xóa
+                                            </button>
                                         </form>
                                     </div>
                                 </div>
@@ -377,7 +372,74 @@
                 </div>
             </div>
         </div>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets/js/admin/manaNotifications.js"></script>
+        <script>
+            // JavaScript functions for modal handling
+            function viewNotification(id) {
+                fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + id)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('viewNotificationId').textContent = data.id;
+                        document.getElementById('viewNotificationTitle').textContent = data.title;
+                        document.getElementById('viewNotificationType').textContent = data.type;
+                        document.getElementById('viewNotificationRecipient').textContent = data.recipient;
+                        document.getElementById('viewNotificationSendDate').textContent = new Date(data.sendDate).toLocaleDateString('vi-VN');
+                        document.getElementById('viewNotificationContent').textContent = data.content;
+
+                        var modal = new bootstrap.Modal(document.getElementById('viewNotificationModal'));
+                        modal.show();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra khi tải thông tin thông báo');
+                    });
+            }
+
+            function editNotification(id) {
+                fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + id)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('editNotificationId').value = data.id;
+                        document.getElementById('editTitle').value = data.title;
+                        document.getElementById('editContent').value = data.content;
+                        document.getElementById('editType').value = data.type;
+                        document.getElementById('editRecipient').value = data.recipient;
+
+                        var modal = new bootstrap.Modal(document.getElementById('editNotificationModal'));
+                        modal.show();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra khi tải thông tin thông báo');
+                    });
+            }
+
+            function deleteNotification(id, title) {
+                document.getElementById('deleteNotificationTitle').textContent = title;
+                document.getElementById('deleteNotificationId').textContent = id;
+                document.getElementById('deleteNotificationIdInput').value = id;
+
+                var modal = new bootstrap.Modal(document.getElementById('deleteNotificationModal'));
+                modal.show();
+            }
+
+            function goToPage(page) {
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('page', page);
+                window.location.href = '${pageContext.request.contextPath}/admin/notifications?' + urlParams.toString();
+            }
+
+            // Auto-dismiss alerts after 5 seconds
+            document.addEventListener('DOMContentLoaded', function() {
+                const alerts = document.querySelectorAll(".alert");
+                alerts.forEach((alert) => {
+                    setTimeout(() => {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }, 5000);
+                });
+            });
+        </script>
     </body>
 </html>
