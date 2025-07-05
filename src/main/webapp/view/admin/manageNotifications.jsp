@@ -20,8 +20,7 @@
                 <%@ include file="sidebar.jsp" %>
                 <div class="main-content">
                     <div class="content-wrapper">
-                        <%                            
-                            request.setAttribute("pageTitle", "Quản Lý Thông Báo");
+                        <%                            request.setAttribute("pageTitle", "Quản Lý Thông Báo");
                             request.setAttribute("showAddButton", true);
                             request.setAttribute("addButtonText", "Thêm Thông Báo");
                             request.setAttribute("addModalTarget", "createNotificationModal");
@@ -32,15 +31,15 @@
                         <%@ include file="headerAdmin.jsp" %>
 
                         <!-- Messages -->
-                        <c:if test="${not empty message}">
+                        <c:if test="${not empty param.message}">
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <i class="fas fa-check-circle"></i> ${message}
+                                <i class="fas fa-check-circle"></i> ${param.message}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         </c:if>
-                        <c:if test="${not empty error}">
+                        <c:if test="${not empty param.error}">
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="fas fa-exclamation-circle"></i> ${error}
+                                <i class="fas fa-exclamation-circle"></i> ${param.error}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         </c:if>
@@ -65,14 +64,12 @@
                                     </label>
                                     <select class="form-select" id="recipientFilter" name="recipient">
                                         <option value="">Tất cả</option>
-                                        <option value="Tất cả học viên" ${param.recipient == 'Tất cả học viên' ? 'selected' : ''}>Tất cả học viên</option>
-                                        <option value="Học viên N5" ${param.recipient == 'Học viên N5' ? 'selected' : ''}>Học viên N5</option>
-                                        <option value="Học viên N4" ${param.recipient == 'Học viên N4' ? 'selected' : ''}>Học viên N4</option>
-                                        <option value="Học viên N3" ${param.recipient == 'Học viên N3' ? 'selected' : ''}>Học viên N3</option>
-                                        <option value="Học viên N2" ${param.recipient == 'Học viên N2' ? 'selected' : ''}>Học viên N2</option>
-                                        <option value="Học viên N1" ${param.recipient == 'Học viên N1' ? 'selected' : ''}>Học viên N1</option>
+                                        <option value="Học viên" ${param.recipient == 'Học viên' ? 'selected' : ''}>Học viên</option>
                                         <option value="Giảng viên" ${param.recipient == 'Giảng viên' ? 'selected' : ''}>Giảng viên</option>
+                                        <option value="Điều phối viên" ${param.recipient == 'Điều phối viên' ? 'selected' : ''}>Điều phối viên</option>
+                                        <option value="Quản trị viên" ${param.recipient == 'Quản trị viên' ? 'selected' : ''}>Quản trị viên</option>
                                     </select>
+
                                 </div>
                                 <div class="filter-group">
                                     <label for="sendDateFromFilter">
@@ -117,55 +114,72 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach var="notification" items="${notifications}">
-                                        <tr>
-                                            <td><strong>${notification.id}</strong></td>
-                                            <td>
-                                                <strong>${notification.title}</strong>
-                                                <c:if test="${fn:length(notification.content) > 50}">
-                                                    <br><small class="text-muted">${fn:substring(notification.content, 0, 50)}...</small>
-                                                </c:if>
-                                            </td>
-                                            <td>
-                                                <span class="badge" style="background: linear-gradient(135deg, #17a2b8, #20c997);">
-                                                    ${notification.type}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span class="badge" style="background: linear-gradient(135deg, #6f42c1, #e83e8c);">
-                                                    ${notification.recipient}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <fmt:formatDate value="${notification.sendDate}" pattern="dd/MM/yyyy"/>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-view btn-sm btn-action" onclick="viewNotification(${notification.id})">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="btn btn-edit btn-sm btn-action" onclick="editNotification(${notification.id})">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button class="btn btn-delete btn-sm btn-action" onclick="deleteNotification(${notification.id}, '${notification.title}')">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
+                                    <c:choose>
+                                        <c:when test="${empty notifications}">
+                                            <tr>
+                                                <td colspan="6" class="text-center">
+                                                    <i class="fas fa-inbox"></i> Không có thông báo nào
+                                                </td>
+                                            </tr>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:forEach var="notification" items="${notifications}">
+                                                <tr>
+                                                    <td><strong>${notification.id}</strong></td>
+                                                    <td>
+                                                        <strong>${notification.title}</strong>
+                                                        <c:if test="${fn:length(notification.content) > 50}">
+                                                            <br><small class="text-muted">${fn:substring(notification.content, 0, 50)}...</small>
+                                                        </c:if>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge" style="background: linear-gradient(135deg, #17a2b8, #20c997);">
+                                                            ${notification.type}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge" style="background: linear-gradient(135deg, #6f42c1, #e83e8c);">
+                                                            ${notification.recipient}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <fmt:formatDate value="${notification.sendDate}" pattern="dd/MM/yyyy"/>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-view btn-sm btn-action" onclick="viewNotification(${notification.id})">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        <button class="btn btn-edit btn-sm btn-action" onclick="editNotification(${notification.id})">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button class="btn btn-delete btn-sm btn-action" onclick="deleteNotification(${notification.id}, '${fn:escapeXml(notification.title)}')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </tbody>
                             </table>
                         </div>
 
                         <!-- Pagination -->
-                        <div class="pagination" id="pagination">
-                            <button id="prevPage" ${currentPage <= 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">
-                                <i class="fas fa-chevron-left"></i> Trước
-                            </button>
-                            <span id="pageInfo">Trang ${currentPage} / ${totalPages}</span>
-                            <button id="nextPage" ${currentPage >= totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">
-                                Sau <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
+                        <c:if test="${totalPages > 1}">
+                            <div class="pagination" id="pagination">
+                                <c:if test="${currentPage > 1}">
+                                    <button onclick="goToPage(${currentPage - 1})">
+                                        <i class="fas fa-chevron-left"></i> Trước
+                                    </button>
+                                </c:if>
+                                <span id="pageInfo">Trang ${currentPage} / ${totalPages}</span>
+                                <c:if test="${currentPage < totalPages}">
+                                    <button onclick="goToPage(${currentPage + 1})">
+                                        Sau <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </c:if>
+                            </div>
+                        </c:if>
 
                         <!-- Create Notification Modal -->
                         <div class="modal fade create-notification-modal" id="createNotificationModal" tabindex="-1" aria-labelledby="createNotificationModalLabel" aria-hidden="true">
@@ -201,13 +215,11 @@
                                                 <div class="form-group">
                                                     <label for="createRecipient">Đối tượng</label>
                                                     <select class="form-select" id="createRecipient" name="recipient">
-                                                        <option value="Tất cả học viên">Tất cả học viên</option>
-                                                        <option value="Học viên N5">Học viên N5</option>
-                                                        <option value="Học viên N4">Học viên N4</option>
-                                                        <option value="Học viên N3">Học viên N3</option>
-                                                        <option value="Học viên N2">Học viên N2</option>
-                                                        <option value="Học viên N1">Học viên N1</option>
+                                                        <option value="Tất cả">Tất cả</option>
+                                                        <option value="Học viên">Học viên</option>
                                                         <option value="Giảng viên">Giảng viên</option>
+                                                        <option value="Điều phối viên">Điều phối viên</option>
+                                                        <option value="Quản trị viên">Quản trị viên</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
@@ -310,13 +322,11 @@
                                                 <div class="form-group">
                                                     <label for="editRecipient">Đối tượng</label>
                                                     <select class="form-select" id="editRecipient" name="recipient">
-                                                        <option value="Tất cả học viên">Tất cả học viên</option>
-                                                        <option value="Học viên N5">Học viên N5</option>
-                                                        <option value="Học viên N4">Học viên N4</option>
-                                                        <option value="Học viên N3">Học viên N3</option>
-                                                        <option value="Học viên N2">Học viên N2</option>
-                                                        <option value="Học viên N1">Học viên N1</option>
-                                                        <option value="Giảng viên">Giảng viên</option>
+                                                        <option value="">Tất cả</option>
+                                                        <option value="Học viên" ${param.recipient == 'Học viên' ? 'selected' : ''}>Học viên</option>
+                                                        <option value="Giảng viên" ${param.recipient == 'Giảng viên' ? 'selected' : ''}>Giảng viên</option>
+                                                        <option value="Điều phối viên" ${param.recipient == 'Điều phối viên' ? 'selected' : ''}>Điều phối viên</option>
+                                                        <option value="Quản trị viên" ${param.recipient == 'Quản trị viên' ? 'selected' : ''}>Quản trị viên</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -349,7 +359,7 @@
                                                 Bạn có chắc chắn muốn xóa thông báo <strong><span id="deleteNotificationTitle"></span></strong> (ID: <strong><span id="deleteNotificationId"></span></strong>)?
                                             </div>
                                             <div class="warning-text">
-                                                Hành động này không thể hoàn tác. Thông báo sẽ bị xóa vĩnh viễn khỏi hệ thống.
+                                                Hành động này không thể hoàn tác. Thông báo sẽ bị ẩn khỏi hệ thống.
                                             </div>
                                         </div>
                                     </div>
@@ -375,71 +385,82 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <script>
-            // JavaScript functions for modal handling
-            function viewNotification(id) {
-                fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + id)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('viewNotificationId').textContent = data.id;
-                        document.getElementById('viewNotificationTitle').textContent = data.title;
-                        document.getElementById('viewNotificationType').textContent = data.type;
-                        document.getElementById('viewNotificationRecipient').textContent = data.recipient;
-                        document.getElementById('viewNotificationSendDate').textContent = new Date(data.sendDate).toLocaleDateString('vi-VN');
-                        document.getElementById('viewNotificationContent').textContent = data.content;
+                                        // Set default send date to today for create modal
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const today = new Date().toISOString().split('T')[0];
+                                            document.getElementById('createSendDate').value = today;
 
-                        var modal = new bootstrap.Modal(document.getElementById('viewNotificationModal'));
-                        modal.show();
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Có lỗi xảy ra khi tải thông tin thông báo');
-                    });
-            }
+                                            // Auto-dismiss alerts after 5 seconds
+                                            const alerts = document.querySelectorAll(".alert");
+                                            alerts.forEach((alert) => {
+                                                setTimeout(() => {
+                                                    const bsAlert = new bootstrap.Alert(alert);
+                                                    bsAlert.close();
+                                                }, 5000);
+                                            });
+                                        });
 
-            function editNotification(id) {
-                fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + id)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('editNotificationId').value = data.id;
-                        document.getElementById('editTitle').value = data.title;
-                        document.getElementById('editContent').value = data.content;
-                        document.getElementById('editType').value = data.type;
-                        document.getElementById('editRecipient').value = data.recipient;
+                                        // JavaScript functions for modal handling
+                                        function viewNotification(id) {
+                                            fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + id)
+                                                    .then(response => response.json())
+                                                    .then(data => {
+                                                        document.getElementById('viewNotificationId').textContent = data.id;
+                                                        document.getElementById('viewNotificationTitle').textContent = data.title;
+                                                        document.getElementById('viewNotificationType').textContent = data.type;
+                                                        document.getElementById('viewNotificationRecipient').textContent = data.recipient;
+                                                        document.getElementById('viewNotificationSendDate').textContent = formatDate(data.sendDate);
+                                                        document.getElementById('viewNotificationContent').textContent = data.content;
 
-                        var modal = new bootstrap.Modal(document.getElementById('editNotificationModal'));
-                        modal.show();
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Có lỗi xảy ra khi tải thông tin thông báo');
-                    });
-            }
+                                                        var modal = new bootstrap.Modal(document.getElementById('viewNotificationModal'));
+                                                        modal.show();
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('Error:', error);
+                                                        alert('Có lỗi xảy ra khi tải thông tin thông báo');
+                                                    });
+                                        }
 
-            function deleteNotification(id, title) {
-                document.getElementById('deleteNotificationTitle').textContent = title;
-                document.getElementById('deleteNotificationId').textContent = id;
-                document.getElementById('deleteNotificationIdInput').value = id;
+                                        function editNotification(id) {
+                                            fetch('${pageContext.request.contextPath}/admin/notifications?action=view&id=' + id)
+                                                    .then(response => response.json())
+                                                    .then(data => {
+                                                        document.getElementById('editNotificationId').value = data.id;
+                                                        document.getElementById('editTitle').value = data.title;
+                                                        document.getElementById('editContent').value = data.content;
+                                                        document.getElementById('editType').value = data.type;
+                                                        document.getElementById('editRecipient').value = data.targetAudience;
 
-                var modal = new bootstrap.Modal(document.getElementById('deleteNotificationModal'));
-                modal.show();
-            }
+                                                        var modal = new bootstrap.Modal(document.getElementById('editNotificationModal'));
+                                                        modal.show();
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('Error:', error);
+                                                        alert('Có lỗi xảy ra khi tải thông tin thông báo');
+                                                    });
+                                        }
 
-            function goToPage(page) {
-                const urlParams = new URLSearchParams(window.location.search);
-                urlParams.set('page', page);
-                window.location.href = '${pageContext.request.contextPath}/admin/notifications?' + urlParams.toString();
-            }
+                                        function deleteNotification(id, title) {
+                                            document.getElementById('deleteNotificationTitle').textContent = title;
+                                            document.getElementById('deleteNotificationId').textContent = id;
+                                            document.getElementById('deleteNotificationIdInput').value = id;
 
-            // Auto-dismiss alerts after 5 seconds
-            document.addEventListener('DOMContentLoaded', function() {
-                const alerts = document.querySelectorAll(".alert");
-                alerts.forEach((alert) => {
-                    setTimeout(() => {
-                        const bsAlert = new bootstrap.Alert(alert);
-                        bsAlert.close();
-                    }, 5000);
-                });
-            });
+                                            var modal = new bootstrap.Modal(document.getElementById('deleteNotificationModal'));
+                                            modal.show();
+                                        }
+
+                                        function goToPage(page) {
+                                            const urlParams = new URLSearchParams(window.location.search);
+                                            urlParams.set('page', page);
+                                            window.location.href = '${pageContext.request.contextPath}/admin/notifications?' + urlParams.toString();
+                                        }
+
+                                        function formatDate(dateString) {
+                                            if (!dateString)
+                                                return 'Chưa cập nhật';
+                                            const date = new Date(dateString);
+                                            return date.toLocaleDateString('vi-VN');
+                                        }
         </script>
     </body>
 </html>
