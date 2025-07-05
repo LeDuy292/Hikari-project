@@ -18,7 +18,7 @@
                 <%@ include file="sidebar.jsp" %>
                 <div class="main-content">
                     <div class="content-wrapper">
-                        <%                            
+                        <%
                             request.setAttribute("pageTitle", "Quản Lý Khóa Học");
                             request.setAttribute("showAddButton", true);
                             request.setAttribute("addButtonText", "Thêm Khóa Học");
@@ -451,6 +451,5 @@
             const contextPath = '${pageContext.request.contextPath}';
         </script>
         <script src="${pageContext.request.contextPath}/assets/js/admin/manaCourses.js"></script>
-
     </body>
 </html>
