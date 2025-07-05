@@ -1,0 +1,83 @@
+/* Commitments styles */
+.commitments-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.commitments-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.commitment-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.commitment-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 25px rgba(255, 145, 0, 0.2);
+}
+
+.commitment-image {
+  width: 100%;
+  height: 160px;
+}
+
+.commitment-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.commitment-content {
+  padding: 20px;
+  border-left: 4px solid #ff9800;
+}
+
+.commitment-content i {
+  margin-bottom: 1rem;
+}
+
+.commitment-content h3 {
+  margin-bottom: 0.75rem;
+  color: #1a202c;
+  font-family: 'Inter', sans-serif;
+}
+
+.commitment-content p {
+  color: #4a5568;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .commitments-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .commitment-image {
+    height: 140px;
+  }
+}
+
+@media (max-width: 768px) {
+  .commitment-content h3 {
+    font-size: 18px;
+  }
+
+  .commitment-content p {
+    font-size: 14px;
+  }
+
+  .commitment-image {
+    height: 120px;
+  }
+}
