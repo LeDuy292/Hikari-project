@@ -215,4 +215,3 @@ function truncateText(text, maxLength) {
   return text.substring(0, maxLength) + "..."
 
 }
-
