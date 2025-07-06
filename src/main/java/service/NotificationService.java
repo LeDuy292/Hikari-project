@@ -26,24 +26,14 @@ public class NotificationService {
     }
 
     public void addNotification(Notification notification) throws SQLException {
-        if (notification == null || notification.getTitle() == null || notification.getTitle().trim().isEmpty()) {
-            throw new IllegalArgumentException("Tiêu đề thông báo không được để trống");
-        }
-        if (notification.getContent() == null || notification.getContent().trim().isEmpty()) {
-            throw new IllegalArgumentException("Nội dung thông báo không được để trống");
-        }
+        validateNotification(notification);
         notificationDAO.addNotification(notification);
     }
 
     public void updateNotification(Notification notification) throws SQLException {
-        if (notification == null || notification.getId() <= 0) {
+        validateNotification(notification);
+        if (notification.getId() <= 0) {
             throw new IllegalArgumentException("ID thông báo không hợp lệ");
-        }
-        if (notification.getTitle() == null || notification.getTitle().trim().isEmpty()) {
-            throw new IllegalArgumentException("Tiêu đề thông báo không được để trống");
-        }
-        if (notification.getContent() == null || notification.getContent().trim().isEmpty()) {
-            throw new IllegalArgumentException("Nội dung thông báo không được để trống");
         }
         notificationDAO.updateNotification(notification);
     }
@@ -59,6 +49,28 @@ public class NotificationService {
         if (id <= 0) {
             throw new IllegalArgumentException("ID thông báo không hợp lệ");
         }
-        return notificationDAO.getNotificationById(id);
+        Notification notification = notificationDAO.getNotificationById(id);
+        if (notification == null) {
+            throw new IllegalArgumentException("Không tìm thấy thông báo");
+        }
+        return notification;
+    }
+
+    private void validateNotification(Notification notification) {
+        if (notification == null) {
+            throw new IllegalArgumentException("Dữ liệu thông báo không hợp lệ");
+        }
+        if (notification.getTitle() == null || notification.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Tiêu đề thông báo không được để trống");
+        }
+        if (notification.getContent() == null || notification.getContent().trim().isEmpty()) {
+            throw new IllegalArgumentException("Nội dung thông báo không được để trống");
+        }
+        if (notification.getType() == null || notification.getType().trim().isEmpty()) {
+            throw new IllegalArgumentException("Loại thông báo không được để trống");
+        }
+        if (notification.getRecipient() == null || notification.getRecipient().trim().isEmpty()) {
+            notification.setRecipient("Tất cả");
+        }
     }
 }

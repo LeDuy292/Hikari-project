@@ -18,7 +18,7 @@
                 <%@ include file="sidebar.jsp" %>
                 <div class="main-content">
                     <div class="content-wrapper">
-                        <%                            
+                        <%
                             request.setAttribute("pageTitle", "Quản Lý Khóa Học");
                             request.setAttribute("showAddButton", true);
                             request.setAttribute("addButtonText", "Thêm Khóa Học");
@@ -164,7 +164,7 @@
                         <div class="pagination" id="pagination">
                             <c:choose>
                                 <c:when test="${currentPage > 1}">
-                                    <button onclick="window.location.href='${pageContext.request.contextPath}/admin/courses?page=${currentPage - 1}&keyword=${param.keyword}&status=${param.status}&feeFrom=${param.feeFrom}&feeTo=${param.feeTo}&startDate=${param.startDate}'">
+                                    <button onclick="window.location.href = '${pageContext.request.contextPath}/admin/courses?page=${currentPage - 1}&keyword=${param.keyword}&status=${param.status}&feeFrom=${param.feeFrom}&feeTo=${param.feeTo}&startDate=${param.startDate}'">
                                         <i class="fas fa-chevron-left"></i> Trước
                                     </button>
                                 </c:when>
@@ -174,12 +174,12 @@
                                     </button>
                                 </c:otherwise>
                             </c:choose>
-                            
+
                             <span id="pageInfo">Trang ${currentPage} / ${totalPages}</span>
-                            
+
                             <c:choose>
                                 <c:when test="${currentPage < totalPages}">
-                                    <button onclick="window.location.href='${pageContext.request.contextPath}/admin/courses?page=${currentPage + 1}&keyword=${param.keyword}&status=${param.status}&feeFrom=${param.feeFrom}&feeTo=${param.feeTo}&startDate=${param.startDate}'">
+                                    <button onclick="window.location.href = '${pageContext.request.contextPath}/admin/courses?page=${currentPage + 1}&keyword=${param.keyword}&status=${param.status}&feeFrom=${param.feeFrom}&feeTo=${param.feeTo}&startDate=${param.startDate}'">
                                         Sau <i class="fas fa-chevron-right"></i>
                                     </button>
                                 </c:when>
@@ -201,7 +201,7 @@
                                         </h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form action="${pageContext.request.contextPath}/admin/courses" method="POST">
+                                    <form id="addCourseForm" action="${pageContext.request.contextPath}/admin/courses" method="POST">
                                         <input type="hidden" name="action" value="add">
                                         <div class="modal-body">
                                             <div class="section">
@@ -210,11 +210,13 @@
                                                 </h6>
                                                 <div class="form-group">
                                                     <label for="courseID">ID Khóa Học <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" id="courseID" name="courseID" placeholder="Nhập ID khóa học" required />
+                                                    <input type="text" class="form-control" id="courseID" name="courseID" placeholder="Nhập ID khóa học (COxxx)" pattern="CO[0-9]{3}" required />
+                                                    <div class="invalid-feedback">ID khóa học phải có định dạng COxxx (ví dụ: CO001).</div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="title">Tên Khóa Học <span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control" id="title" name="title" placeholder="Nhập tên khóa học" required />
+                                                    <div class="invalid-feedback">Tên khóa học không được để trống.</div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="description">Mô Tả</label>
@@ -223,18 +225,22 @@
                                                 <div class="form-group">
                                                     <label for="fee">Học Phí (VND)</label>
                                                     <input type="number" class="form-control" id="fee" name="fee" min="0" placeholder="Nhập học phí" />
+                                                    <div class="invalid-feedback">Học phí phải là số không âm.</div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="duration">Thời Lượng (tuần)</label>
                                                     <input type="number" class="form-control" id="duration" name="duration" min="1" placeholder="Nhập thời lượng" />
+                                                    <div class="invalid-feedback">Thời lượng phải là số nguyên dương.</div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="startDate">Ngày Bắt Đầu</label>
                                                     <input type="date" class="form-control" id="startDate" name="startDate" />
+                                                    <div class="invalid-feedback">Ngày bắt đầu không hợp lệ.</div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="endDate">Ngày Kết Thúc</label>
                                                     <input type="date" class="form-control" id="endDate" name="endDate" />
+                                                    <div class="invalid-feedback">Ngày kết thúc phải sau ngày bắt đầu.</div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="isActive">Trạng Thái</label>
@@ -246,6 +252,7 @@
                                                 <div class="form-group">
                                                     <label for="imageUrl">URL Hình Ảnh <span class="optional-label">(Tùy chọn)</span></label>
                                                     <input type="url" class="form-control" id="imageUrl" name="imageUrl" placeholder="Nhập URL hình ảnh" />
+                                                    <div class="invalid-feedback">URL hình ảnh không hợp lệ.</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -330,7 +337,7 @@
                                         </h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <form action="${pageContext.request.contextPath}/admin/courses" method="POST">
+                                    <form id="editCourseForm" action="${pageContext.request.contextPath}/admin/courses" method="POST">
                                         <input type="hidden" name="action" value="edit">
                                         <input type="hidden" id="editCourseID" name="courseID">
                                         <div class="modal-body">
@@ -341,6 +348,7 @@
                                                 <div class="form-group">
                                                     <label for="editTitle">Tên Khóa Học <span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control" id="editTitle" name="title" required />
+                                                    <div class="invalid-feedback">Tên khóa học không được để trống.</div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="editDescription">Mô Tả</label>
@@ -349,18 +357,22 @@
                                                 <div class="form-group">
                                                     <label for="editFee">Học Phí (VND)</label>
                                                     <input type="number" class="form-control" id="editFee" name="fee" min="0" />
+                                                    <div class="invalid-feedback">Học phí phải là số không âm.</div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="editDuration">Thời Lượng (tuần)</label>
                                                     <input type="number" class="form-control" id="editDuration" name="duration" min="1" />
+                                                    <div class="invalid-feedback">Thời lượng phải là số nguyên dương.</div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="editStartDate">Ngày Bắt Đầu</label>
                                                     <input type="date" class="form-control" id="editStartDate" name="startDate" />
+                                                    <div class="invalid-feedback">Ngày bắt đầu không hợp lệ.</div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="editEndDate">Ngày Kết Thúc</label>
                                                     <input type="date" class="form-control" id="editEndDate" name="endDate" />
+                                                    <div class="invalid-feedback">Ngày kết thúc phải sau ngày bắt đầu.</div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="editIsActive">Trạng Thái</label>
@@ -372,6 +384,7 @@
                                                 <div class="form-group">
                                                     <label for="editImageUrl">URL Hình Ảnh <span class="optional-label">(Tùy chọn)</span></label>
                                                     <input type="url" class="form-control" id="editImageUrl" name="imageUrl" />
+                                                    <div class="invalid-feedback">URL hình ảnh không hợp lệ.</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -435,81 +448,8 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <script>
-            // JavaScript functions for modal handling
-            function viewCourse(courseId) {
-                // Send AJAX request to get course details
-                fetch('${pageContext.request.contextPath}/admin/courses?action=detail&id=' + courseId)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('viewCourseID').textContent = data.courseID;
-                        document.getElementById('viewCourseTitle').textContent = data.title;
-                        document.getElementById('viewCourseDescription').textContent = data.description || 'Không có mô tả';
-                        document.getElementById('viewCourseFee').textContent = new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(data.fee);
-                        document.getElementById('viewCourseDuration').textContent = data.duration + ' tuần';
-                        document.getElementById('viewCourseStartDate').textContent = new Date(data.startDate).toLocaleDateString('vi-VN');
-                        document.getElementById('viewCourseEndDate').textContent = new Date(data.endDate).toLocaleDateString('vi-VN');
-                        document.getElementById('viewCourseStatus').innerHTML = data.isActive ? '<span class="badge badge-active">Hoạt động</span>' : '<span class="badge badge-inactive">Không hoạt động</span>';
-
-                        var modal = new bootstrap.Modal(document.getElementById('viewCourseModal'));
-                        modal.show();
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Có lỗi xảy ra khi tải thông tin khóa học');
-                    });
-            }
-
-            function editCourse(courseId) {
-                // Send AJAX request to get course details for editing
-                fetch('${pageContext.request.contextPath}/admin/courses?action=detail&id=' + courseId)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('editCourseID').value = data.courseID;
-                        document.getElementById('editTitle').value = data.title;
-                        document.getElementById('editDescription').value = data.description || '';
-                        document.getElementById('editFee').value = data.fee;
-                        document.getElementById('editDuration').value = data.duration;
-                        document.getElementById('editStartDate').value = data.startDate;
-                        document.getElementById('editEndDate').value = data.endDate;
-                        document.getElementById('editIsActive').value = data.isActive.toString();
-                        document.getElementById('editImageUrl').value = data.imageUrl || '';
-
-                        var modal = new bootstrap.Modal(document.getElementById('editCourseModal'));
-                        modal.show();
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Có lỗi xảy ra khi tải thông tin khóa học');
-                    });
-            }
-
-            function blockCourse(courseId, title, isActive) {
-                document.getElementById('blockCourseTitle').textContent = title;
-                document.getElementById('blockCourseId').textContent = courseId;
-                document.getElementById('blockCourseIdInput').value = courseId;
-                document.getElementById('blockCourseStatusInput').value = isActive ? 'false' : 'true';
-                document.getElementById('blockCourseAction').textContent = isActive ? 'khóa' : 'mở khóa';
-                
-                // Update button text and icon
-                const confirmBtn = document.querySelector('#blockCourseModal .btn-confirm-delete');
-                if (confirmBtn) {
-                    confirmBtn.innerHTML = isActive ? '<i class="fas fa-lock"></i> Khóa' : '<i class="fas fa-unlock"></i> Mở Khóa';
-                }
-
-                var modal = new bootstrap.Modal(document.getElementById('blockCourseModal'));
-                modal.show();
-            }
-
-            // Auto-dismiss alerts after 5 seconds
-            document.addEventListener('DOMContentLoaded', function() {
-                const alerts = document.querySelectorAll(".alert");
-                alerts.forEach((alert) => {
-                    setTimeout(() => {
-                        const bsAlert = new bootstrap.Alert(alert);
-                        bsAlert.close();
-                    }, 5000);
-                });
-            });
+            const contextPath = '${pageContext.request.contextPath}';
         </script>
+        <script src="${pageContext.request.contextPath}/assets/js/admin/manaCourses.js"></script>
     </body>
 </html>

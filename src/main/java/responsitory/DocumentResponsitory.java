@@ -10,7 +10,12 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DocumentResponsitory implements Responsitory {
@@ -52,59 +57,64 @@ public class DocumentResponsitory implements Responsitory {
                 .build();
     }
 
-  @Override
-public String saveFile(Part part, String subDir) {
-    if (part == null || part.getSize() == 0) {
-        LOGGER.warning("Tệp tải lên rỗng hoặc không hợp lệ");
-        return null;
-    }
-    String fileName = part.getSubmittedFileName().replace(" ", "_");
-    String key = UPLOAD_DIR + subDir + "/" + fileName;
-
-    try {
-        String contentType = part.getContentType(); // Lấy từ Part
-        if (contentType == null) {
-            String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-            switch (extension) {
-                case "pdf":
-                    contentType = "application/pdf";
-                    break;
-                case "jpg":
-                case "jpeg":
-                    contentType = "image/jpg";
-                    break;
-                case "png":
-                    contentType = "image/png";
-                    break;
-                case "txt":
-                    contentType = "text/plain";
-                    break;
-                case "doc":
-                    contentType = "application/msword";
-                    break;
-                case "docx":
-                    contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-                    break;
-                default:
-                    contentType = "application/octet-stream";
-                    break;
-            }
+    @Override
+    public String saveFile(Part part, String subDir) {
+        if (part == null || part.getSize() == 0) {
+            LOGGER.warning("Tệp tải lên rỗng hoặc không hợp lệ");
+            return null;
         }
+        String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+        try {
+            fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString()).replace("+", "_");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(DocumentResponsitory.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String key = UPLOAD_DIR + subDir + "/" + fileName;
 
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .contentType(contentType) // Đặt Content-Type
-                .build();
-        s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(part.getInputStream(), part.getSize()));
-        String fileUrl = String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, key);
-        LOGGER.info("Tải lên S3 thành công: " + fileUrl);
-        return fileUrl;
-    } catch (IOException ex) {
-        LOGGER.severe("Lỗi tải lên S3: " + ex.getMessage());
-        return null;
+        try {
+            String contentType = part.getContentType(); // Lấy từ Part
+            if (contentType == null) {
+                String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+                switch (extension) {
+                    case "pdf":
+                        contentType = "application/pdf";
+                        break;
+                    case "jpg":
+                    case "jpeg":
+                        contentType = "image/jpg";
+                        break;
+                    case "png":
+                        contentType = "image/png";
+                        break;
+                    case "txt":
+                        contentType = "text/plain";
+                        break;
+                    case "doc":
+                        contentType = "application/msword";
+                        break;
+                    case "docx":
+                        contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                        break;
+                    default:
+                        contentType = "application/octet-stream";
+                        break;
+                }
+            }
+
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .contentType(contentType) // Đặt Content-Type
+                    .build();
+            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(part.getInputStream(), part.getSize()));
+            String fileUrl = String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, key);
+            LOGGER.info("Tải lên S3 thành công: " + fileUrl);
+            return fileUrl;
+        } catch (IOException ex) {
+            LOGGER.severe("Lỗi tải lên S3: " + ex.getMessage());
+            return null;
+        }
     }
-}
 
     @Override
     public void deleteFile(String fileUrl) {
