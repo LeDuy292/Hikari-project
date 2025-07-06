@@ -1,0 +1,676 @@
+/* Course Approval Page Styles */
+:root {
+    --primary-color: #FB9400;
+    --secondary-color: #34495e;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #f57c00;
+    --text-dark: #333333;
+    --text-light: #666666;
+    --bg-light: #f8f9fa;
+    --border-color: #dee2e6;
+    --white-color: #ffffff;
+}
+
+.content-wrapper {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    min-height: calc(100vh - 8rem);
+}
+
+/* Table Styles */
+.table {
+    margin-bottom: 0;
+    background-color: var(--white-color);
+    border-radius: 12px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.table thead th {
+    background-color: var(--bg-light);
+    border-bottom: 2px solid var(--border-color);
+    color: var(--text-dark);
+    font-weight: 600;
+    padding: 1.25rem 1rem;
+    white-space: nowrap;
+    height: 60px;
+}
+
+.table tbody td {
+    padding: 1.25rem 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+    height: 80px;
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: var(--bg-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Course Info */
+.course-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    font-size: 1.25rem;
+}
+
+.course-icon i {
+    color: var(--primary-color);
+}
+
+/* Instructor Info */
+.instructor-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.instructor-info img {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    object-fit: cover;
+}
+
+.instructor-info span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Student Count */
+.student-count {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.student-count i {
+    color: var(--primary-color);
+    min-width: 16px;
+}
+
+.student-count span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Status Badges */
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.bg-warning {
+    background-color: #fff3e0 !important;
+    color: rgb(0, 0, 0);
+}
+
+.bg-success {
+    background-color: #e8f5e9 !important;
+    color:  rgb(0, 0, 0);
+}
+
+.bg-danger {
+    background-color: #ffebee !important;
+    color:  rgb(0, 0, 0);
+}
+
+/* Action Buttons */
+.btn-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+}
+
+.btn-group .btn {
+    padding: 0.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    min-width: 36px;
+}
+
+.btn-group .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Video Modal */
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    background-color: var(--white-color);
+}
+
+.modal-header {
+    background-color: var(--bg-light);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.25rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.video-container {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #000;
+}
+
+.video-container video {
+    width: 100%;
+    border-radius: 12px;
+}
+
+/* Rating Stars */
+.rating {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.rating i {
+    cursor: pointer;
+    transition: color 0.2s ease;
+    color: var(--warning-color);
+}
+
+.rating i:hover {
+    color: #f1c40f;
+}
+
+/* Form Controls */
+.form-control {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(251, 148, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content-wrapper {
+        padding: 1rem;
+        margin-top: 60px;
+    }
+
+    .table-responsive {
+        margin: 0 -1rem;
+    }
+
+    .table thead {
+        display: none;
+    }
+
+    .table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        background-color: white;
+    }
+
+    .table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .table tbody td:last-child {
+        border-bottom: none;
+    }
+
+    .table tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .btn-group {
+        flex-wrap: wrap;
+    }
+
+    .btn-group .btn {
+        flex: 1;
+    }
+
+    .table tbody td {
+        height: auto;
+        min-height: 60px;
+        padding: 1rem;
+        white-space: normal;
+    }
+
+    .table tbody tr {
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .instructor-info, .student-count {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.table tbody tr {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Statistics Cards */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    background-color: var(--white-color);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.bg-warning {
+    background: linear-gradient(45deg, #f1c40f, #f39c12) !important;
+}
+
+.bg-success {
+    background: linear-gradient(45deg, #2ecc71, #27ae60) !important;
+}
+
+.bg-danger {
+    background: linear-gradient(45deg, #e74c3c, #c0392b) !important;
+}
+
+/* Approval List */
+.card-header {
+    background-color: var(--white-color);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem;
+    border-radius: 15px 15px 0 0;
+}
+
+.card-title {
+    color: var(--text-dark);
+    font-weight: 600;
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Search and Filter */
+.input-group {
+    box-shadow: 0 4px 12px rgba(251, 148, 0, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--white-color);
+    border: 1px solid #e3e6ed;
+    transition: box-shadow 0.2s;
+}
+
+.input-group:focus-within {
+    box-shadow: 0 0 0 2px var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-control {
+    border: none;
+    background: transparent;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    color: var(--text-dark);
+}
+
+.form-control:focus {
+    background: #fff3e0;
+    color: var(--primary-color);
+}
+
+.form-select {
+    border: 1px solid #e3e6ed;
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    color: var(--text-dark);
+    background-color: var(--white-color);
+    transition: all 0.2s;
+}
+
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(251, 148, 0, 0.1);
+}
+
+/* Approval Cards */
+.approval-card {
+    background-color: var(--white-color);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.approval-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.approval-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.approval-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.approval-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.status-pending {
+    background-color: #fff3e0;
+    color: var(--warning-color);
+}
+
+.status-approved {
+    background-color: #e8f5e9;
+    color: var(--success-color);
+}
+
+.status-rejected {
+    background-color: #ffebee;
+    color: var(--danger-color);
+}
+
+.approval-info {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: var(--bg-light);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.info-item:hover {
+    background-color: #e9ecef;
+}
+
+.info-item i {
+    color: var(--primary-color);
+    font-size: 1.25rem;
+}
+
+.info-item span {
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.approval-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.approval-actions .btn {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.approval-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.btn-success:hover {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+    border-color: #c0392b;
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--white-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content-wrapper {
+        padding: 1rem;
+        margin-top: 60px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .card-header .d-flex {
+        width: 100%;
+    }
+
+    .input-group {
+        flex-direction: column;
+        border-radius: 10px;
+    }
+
+    .form-control {
+        padding: 0.75rem 1rem;
+    }
+
+    .form-select {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .approval-info {
+        grid-template-columns: 1fr;
+    }
+
+    .approval-actions {
+        flex-direction: column;
+    }
+
+    .approval-actions .btn {
+        width: 100%;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.approval-card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Table styles */
+.table th {
+    background-color: var(--bg-light);
+    font-weight: 600;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Modal styles */
+.modal-content {
+    border-radius: 12px;
+    background-color: var(--white-color);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .approval-info {
+        grid-template-columns: 1fr;
+    }
+
+    .approval-actions {
+        flex-direction: column;
+    }
+
+    .approval-actions .btn {
+        width: 100%;
+    }
+
+    .table-responsive {
+        margin: 0 -1.5rem;
+    }
+}
+
+/* Sidebar Layout Fix */
+.main-content {
+    flex: 1;
+    padding: 32px;
+    margin-left: 320px;
+    background-color: #f1f5f9;
+}
+
+@media (max-width: 991.98px) {
+    .main-content {
+        margin-left: 60px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+/* Header styles */
+/*.header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem 2rem;
+}*/
+
