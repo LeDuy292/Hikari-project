@@ -20,6 +20,7 @@ public class NotificationDAO {
         List<Notification> notifications = new ArrayList<>();
         String sql = "SELECT a.*, u.fullName as postedByName FROM Announcement a " +
                     "LEFT JOIN UserAccount u ON a.postedBy = u.userID " +
+                    "WHERE a.isActive = TRUE " +
                     "ORDER BY a.postedDate DESC";
 
         try (Connection conn = dbContext.getConnection();
@@ -27,12 +28,7 @@ public class NotificationDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Notification notification = new Notification();
-                notification.setId(rs.getInt("id"));
-                notification.setTitle(rs.getString("title"));
-                notification.setContent(rs.getString("content"));
-                notification.setCreatedDate(rs.getTimestamp("postedDate"));
-                notification.setPostedBy(rs.getString("postedBy"));
+                Notification notification = mapResultSetToNotification(rs);
                 notifications.add(notification);
             }
         } catch (SQLException e) {
@@ -42,10 +38,14 @@ public class NotificationDAO {
         return notifications;
     }
 
-    public List<Notification> getNotificationsWithFilters(String type, String recipient, String search, String sendDateFrom, String sendDateTo, int offset, int limit) throws SQLException {
+    public List<Notification> getNotificationsWithFilters(String type, String recipient, String search, 
+            String sendDateFrom, String sendDateTo, int offset, int limit) throws SQLException {
         List<Notification> notifications = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT a.*, u.fullName as postedByName FROM Announcement a " +
-                                            "LEFT JOIN UserAccount u ON a.postedBy = u.userID WHERE 1=1");
+        StringBuilder sql = new StringBuilder(
+            "SELECT a.*, u.fullName as postedByName FROM Announcement a " +
+            "LEFT JOIN UserAccount u ON a.postedBy = u.userID " +
+            "WHERE a.isActive = TRUE"
+        );
         List<Object> params = new ArrayList<>();
 
         if (type != null && !type.trim().isEmpty()) {
@@ -89,15 +89,7 @@ public class NotificationDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Notification notification = new Notification();
-                    notification.setId(rs.getInt("id"));
-                    notification.setTitle(rs.getString("title"));
-                    notification.setContent(rs.getString("content"));
-                    notification.setType(rs.getString("type"));
-                    notification.setRecipient(rs.getString("recipient"));
-                    notification.setSendDate(rs.getDate("sendDate"));
-                    notification.setCreatedDate(rs.getTimestamp("postedDate"));
-                    notification.setPostedBy(rs.getString("postedBy"));
+                    Notification notification = mapResultSetToNotification(rs);
                     notifications.add(notification);
                 }
             }
@@ -108,8 +100,9 @@ public class NotificationDAO {
         return notifications;
     }
 
-    public int countNotificationsWithFilters(String type, String recipient, String search, String sendDateFrom, String sendDateTo) throws SQLException {
-        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Announcement a WHERE 1=1");
+    public int countNotificationsWithFilters(String type, String recipient, String search, 
+            String sendDateFrom, String sendDateTo) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Announcement a WHERE a.isActive = TRUE");
         List<Object> params = new ArrayList<>();
 
         if (type != null && !type.trim().isEmpty()) {
@@ -161,7 +154,8 @@ public class NotificationDAO {
     }
 
     public void addNotification(Notification notification) throws SQLException {
-        String sql = "INSERT INTO Announcement (title, content, type, recipient, sendDate, postedDate, postedBy) VALUES (?, ?, ?, ?, ?, NOW(), ?)";
+        String sql = "INSERT INTO Announcement (title, content, type, recipient, sendDate, postedDate, postedBy, isActive) " +
+                    "VALUES (?, ?, ?, ?, ?, NOW(), ?, TRUE)";
 
         try (Connection conn = dbContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -170,11 +164,13 @@ public class NotificationDAO {
             stmt.setString(2, notification.getContent());
             stmt.setString(3, notification.getType());
             stmt.setString(4, notification.getRecipient());
+            
             if (notification.getSendDate() != null) {
                 stmt.setDate(5, new java.sql.Date(notification.getSendDate().getTime()));
             } else {
                 stmt.setDate(5, new java.sql.Date(System.currentTimeMillis()));
             }
+            
             stmt.setString(6, notification.getPostedBy());
 
             int rowsAffected = stmt.executeUpdate();
@@ -190,7 +186,7 @@ public class NotificationDAO {
     }
 
     public void updateNotification(Notification notification) throws SQLException {
-        String sql = "UPDATE Announcement SET title = ?, content = ?, type = ?, recipient = ? WHERE id = ?";
+        String sql = "UPDATE Announcement SET title = ?, content = ?, type = ?, recipient = ? WHERE id = ? AND isActive = TRUE";
 
         try (Connection conn = dbContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -203,7 +199,7 @@ public class NotificationDAO {
 
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected == 0) {
-                throw new SQLException("Updating notification failed, no rows affected.");
+                throw new SQLException("Updating notification failed, notification not found or inactive.");
             }
 
             LOGGER.info("Notification updated successfully: " + notification.getId());
@@ -214,7 +210,7 @@ public class NotificationDAO {
     }
 
     public void deleteNotification(int id) throws SQLException {
-        String sql = "DELETE FROM Announcement WHERE id = ?";
+        String sql = "UPDATE Announcement SET isActive = FALSE WHERE id = ?";
 
         try (Connection conn = dbContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -223,7 +219,7 @@ public class NotificationDAO {
 
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected == 0) {
-                throw new SQLException("Deleting notification failed, no rows affected.");
+                throw new SQLException("Deleting notification failed, notification not found.");
             }
 
             LOGGER.info("Notification deleted successfully: " + id);
@@ -234,7 +230,9 @@ public class NotificationDAO {
     }
 
     public Notification getNotificationById(int id) throws SQLException {
-        String sql = "SELECT * FROM Announcement WHERE id = ?";
+        String sql = "SELECT a.*, u.fullName as postedByName FROM Announcement a " +
+                    "LEFT JOIN UserAccount u ON a.postedBy = u.userID " +
+                    "WHERE a.id = ? AND a.isActive = TRUE";
 
         try (Connection conn = dbContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -243,16 +241,7 @@ public class NotificationDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    Notification notification = new Notification();
-                    notification.setId(rs.getInt("id"));
-                    notification.setTitle(rs.getString("title"));
-                    notification.setContent(rs.getString("content"));
-                    notification.setType(rs.getString("type"));
-                    notification.setRecipient(rs.getString("recipient"));
-                    notification.setSendDate(rs.getDate("sendDate"));
-                    notification.setCreatedDate(rs.getTimestamp("postedDate"));
-                    notification.setPostedBy(rs.getString("postedBy"));
-                    return notification;
+                    return mapResultSetToNotification(rs);
                 }
             }
         } catch (SQLException e) {
@@ -260,5 +249,19 @@ public class NotificationDAO {
             throw e;
         }
         return null;
+    }
+
+    private Notification mapResultSetToNotification(ResultSet rs) throws SQLException {
+        Notification notification = new Notification();
+        notification.setId(rs.getInt("id"));
+        notification.setTitle(rs.getString("title"));
+        notification.setContent(rs.getString("content"));
+        notification.setType(rs.getString("type"));
+        notification.setRecipient(rs.getString("recipient"));
+        notification.setSendDate(rs.getDate("sendDate"));
+        notification.setCreatedDate(rs.getTimestamp("postedDate"));
+        notification.setPostedBy(rs.getString("postedBy"));
+        notification.setActive(rs.getBoolean("isActive"));
+        return notification;
     }
 }
