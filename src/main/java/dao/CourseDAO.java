@@ -10,18 +10,30 @@ import java.util.List;
 import model.Course;
 import responsitory.CourseReponsitory;
 import utils.DBContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CourseDAO {
 
+    private static final Logger logger = LoggerFactory.getLogger(CourseDAO.class);
+    private Connection con;
     private final CourseReponsitory rep = new CourseReponsitory();
 
-    // Lấy tất cả các khoá học
-    public List<Course> getAllCourse() {
+    public CourseDAO() {
+        DBContext dBContext = new DBContext();
+        try {
+            con = dBContext.getConnection();
+            logger.info("CourseDAO: Database connection established successfully.");
+        } catch (Exception e) {
+            logger.error("CourseDAO: Error connecting to database: {}", e.getMessage(), e);
+        }
+    }
+public List<Course> getAllCourse() {
         List<Course> courseList = new ArrayList<>();
         String sql = "SELECT * FROM courses";
 
-        try (Connection conn = new DBContext().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
+        try (
+             PreparedStatement pstmt = con.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -47,8 +59,8 @@ public class CourseDAO {
     // Đếm số lượng sinh viên đăng ký khóa học
     public int studentCount(String courseID) {
         String sql = "SELECT COUNT(*) AS total FROM Course_Enrollments WHERE courseID = ?";
-        try (Connection conn = new DBContext().getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
 
             pstmt.setString(1, courseID);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -61,25 +73,6 @@ public class CourseDAO {
         }
 
         return 0;
-import utils.DBContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class CourseDAO {
-
-    private static final Logger logger = LoggerFactory.getLogger(CourseDAO.class);
-    private Connection con;
-
-    public CourseDAO() {
-        DBContext dBContext = new DBContext();
-        try {
-            con = dBContext.getConnection();
-            logger.info("CourseDAO: Database connection established successfully.");
-        } catch (Exception e) {
-            logger.error("CourseDAO: Error connecting to database: {}", e.getMessage(), e);
-        }
-    }
-
     public List<Course> getAll() {
         String sql = "select * from Courses";
         List<Course> list = new ArrayList<>();
