@@ -30,8 +30,7 @@ public class CourseDAO {
     public List<Course> getAll() {
         String sql = "select * from Courses";
         List<Course> list = new ArrayList<>();
-        try (PreparedStatement pre = con.prepareStatement(sql);
-             ResultSet resultSet = pre.executeQuery()) {
+        try (PreparedStatement pre = con.prepareStatement(sql); ResultSet resultSet = pre.executeQuery()) {
             while (resultSet.next()) {
                 String courseID = resultSet.getString("CourseID");
                 String title = resultSet.getString("title");
@@ -114,9 +113,8 @@ public class CourseDAO {
         }
         return course;
     }
-    
-    // Removed the getCourseById(int id) method to enforce String usage.
 
+    // Removed the getCourseById(int id) method to enforce String usage.
     public void editCourse(Course course) {
         String sql = "UPDATE Courses\n"
                 + "   SET title = ?,\n"
@@ -151,8 +149,7 @@ public class CourseDAO {
     public int countAllCourses() {
         String sql = "SELECT COUNT(*) FROM Courses";
         int count = 0;
-        try (PreparedStatement pre = con.prepareStatement(sql);
-             ResultSet resultSet = pre.executeQuery()) {
+        try (PreparedStatement pre = con.prepareStatement(sql); ResultSet resultSet = pre.executeQuery()) {
             if (resultSet.next()) {
                 count = resultSet.getInt(1);
             }
@@ -166,8 +163,7 @@ public class CourseDAO {
     public int countAllCoursesActive() {
         String sql = "SELECT COUNT(*) FROM Courses WHERE Courses.isActive = 1";
         int count = 0;
-        try (PreparedStatement pre = con.prepareStatement(sql);
-             ResultSet resultSet = pre.executeQuery()) {
+        try (PreparedStatement pre = con.prepareStatement(sql); ResultSet resultSet = pre.executeQuery()) {
             if (resultSet.next()) {
                 count = resultSet.getInt(1);
             }
@@ -177,7 +173,7 @@ public class CourseDAO {
         }
         return count;
     }
-    
+
     public List<Course> searchCourses(String searchKeyword, String category) {
         List<Course> courses = new ArrayList<>();
         String sql = "SELECT * FROM Courses WHERE (title LIKE ? OR description LIKE ?) AND category = ? AND isActive = TRUE";
@@ -259,6 +255,149 @@ public class CourseDAO {
         return courses;
     }
 
+    //admin từ đây
+    //phần trang
+    public List<Course> getCoursesWithPaging(int offset, int limit) {
+        List<Course> courses = new ArrayList<>();
+        String sql = "SELECT * FROM Courses ORDER BY startDate DESC LIMIT ? OFFSET ?";
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
+            pre.setInt(1, limit);
+            pre.setInt(2, offset);
+            try (ResultSet resultSet = pre.executeQuery()) {
+                while (resultSet.next()) {
+                    String courseID = resultSet.getString("CourseID");
+                    String title = resultSet.getString("title");
+                    String description = resultSet.getString("description");
+                    double fee = resultSet.getDouble("fee");
+                    int duration = resultSet.getInt("duration");
+                    Date startDate = resultSet.getDate("startDate");
+                    Date endDate = resultSet.getDate("endDate");
+                    boolean isActive = resultSet.getBoolean("isActive");
+                    String imageUrl = resultSet.getString("imageUrl");
+
+                    Course course = new Course(courseID, title, description, fee, duration, startDate, endDate, isActive, imageUrl);
+                    courses.add(course);
+                }
+            }
+            logger.debug("CourseDAO: Retrieved {} courses with paging (offset {}, limit {}).", courses.size(), offset, limit);
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error getting courses with paging: {}", e.getMessage(), e);
+        }
+        return courses;
+    }
+
+    //lấy khóa học với bộ lọc
+    public List<Course> getCoursesWithFilters(String keyword, Boolean isActive, Double feeFrom, Double feeTo, String startDate, int offset, int limit) {
+        List<Course> courses = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Courses WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (title LIKE ? OR description LIKE ?)");
+            params.add("%" + keyword.trim() + "%");
+            params.add("%" + keyword.trim() + "%");
+        }
+
+        if (isActive != null) {
+            sql.append(" AND isActive = ?");
+            params.add(isActive);
+        }
+
+        if (feeFrom != null) {
+            sql.append(" AND fee >= ?");
+            params.add(feeFrom);
+        }
+
+        if (feeTo != null) {
+            sql.append(" AND fee <= ?");
+            params.add(feeTo);
+        }
+
+        if (startDate != null && !startDate.trim().isEmpty()) {
+            sql.append(" AND startDate >= ?");
+            params.add(startDate);
+        }
+
+        sql.append(" ORDER BY startDate DESC LIMIT ? OFFSET ?");
+        params.add(limit);
+        params.add(offset);
+
+        try (PreparedStatement pre = con.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                pre.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet resultSet = pre.executeQuery()) {
+                while (resultSet.next()) {
+                    String courseID = resultSet.getString("CourseID");
+                    String title = resultSet.getString("title");
+                    String description = resultSet.getString("description");
+                    double fee = resultSet.getDouble("fee");
+                    int duration = resultSet.getInt("duration");
+                    Date sDate = resultSet.getDate("startDate");
+                    Date eDate = resultSet.getDate("endDate");
+                    boolean active = resultSet.getBoolean("isActive");
+                    String imageUrl = resultSet.getString("imageUrl");
+
+                    Course course = new Course(courseID, title, description, fee, duration, sDate, eDate, active, imageUrl);
+                    courses.add(course);
+                }
+            }
+            logger.debug("CourseDAO: Retrieved {} courses with filters.", courses.size());
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error getting courses with filters: {}", e.getMessage(), e);
+        }
+        return courses;
+    }
+    
+    // Đếm khóa học với bộ lọc
+    public int countCoursesWithFilters(String keyword, Boolean isActive, Double feeFrom, Double feeTo, String startDate) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Courses WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (title LIKE ? OR description LIKE ?)");
+            params.add("%" + keyword.trim() + "%");
+            params.add("%" + keyword.trim() + "%");
+        }
+
+        if (isActive != null) {
+            sql.append(" AND isActive = ?");
+            params.add(isActive);
+        }
+
+        if (feeFrom != null) {
+            sql.append(" AND fee >= ?");
+            params.add(feeFrom);
+        }
+
+        if (feeTo != null) {
+            sql.append(" AND fee <= ?");
+            params.add(feeTo);
+        }
+
+        if (startDate != null && !startDate.trim().isEmpty()) {
+            sql.append(" AND startDate >= ?");
+            params.add(startDate);
+        }
+
+        int count = 0;
+        try (PreparedStatement pre = con.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                pre.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet resultSet = pre.executeQuery()) {
+                if (resultSet.next()) {
+                    count = resultSet.getInt(1);
+                }
+            }
+            logger.debug("CourseDAO: Counted {} courses with filters.", count);
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error counting courses with filters: {}", e.getMessage(), e);
+        }
+        return count;
+    }
+
+    //admin tới đây
     public void closeConnection() {
         try {
             if (con != null && !con.isClosed()) {
