@@ -7,6 +7,7 @@
         session.setAttribute("teacherID", teacherID);
     }
 %>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -94,7 +95,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="documentImage" class="form-label">Hình Ảnh</label>
-                            <input type="file" class="form-control" id="documentImage" name="imgUrl" accept="image/*" />
+                            <input type="file" class="form-control" id="documentImage" name="imageUrl" accept="image/*" />
                         </div>
                         <button type="submit" class="btn btn-primary">Lưu</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
