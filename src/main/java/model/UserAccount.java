@@ -6,54 +6,6 @@ package model;
 
 import java.time.LocalDate;
 
-/**
- *
- * @author ADMIN
- */
-public class UserAccount {
-
-    private int userNum;
-    private String userID;
-    private String username;
-    private String fullName;
-    private String email;
-    private String password;
-    private String role;
-    private LocalDate registrationDate;
-    private String profilePicture;
-    private String phone;
-    private LocalDate birthDate;
-
-    public UserAccount() {
-    }
-
-    public UserAccount(int userNum, String userID, String username, String fullName, String email, String password,
-            String role, LocalDate registrationDate, String profilePicture, String phone, LocalDate birthDate) {
-        this.userNum = userNum;
-        this.userID = userID;
-        this.username = username;
-        this.fullName = fullName;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.registrationDate = registrationDate;
-        this.profilePicture = profilePicture;
-        this.phone = phone;
-        this.birthDate = birthDate;
-    }
-
-    // Getters and Setters
-    public int getUserNum() {
-        return userNum;
-    }
-
-    public void setUserNum(int userNum) {
-        this.userNum = userNum;
-    }
-
-=======
-package model;
-
 import java.util.Date;
 
 public class UserAccount {
@@ -80,6 +32,23 @@ public class UserAccount {
     public UserAccount() {
     }
 
+
+    public UserAccount(int userNum, String userID, String username, String fullName, String email, String password,
+            String role, LocalDate registrationDate, String profilePicture, String phone, LocalDate birthDate) {
+        this.userNum = userNum;
+        this.userID = userID;
+        this.username = username;
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.registrationDate = registrationDate;
+        this.profilePicture = profilePicture;
+        this.phone = phone;
+        this.birthDate = birthDate;
+    }
+
+
     public UserAccount(String userID, String username, String email, String password, String role) {
         this.userID = userID;
         this.username = username;
@@ -87,6 +56,13 @@ public class UserAccount {
         this.password = password;
         this.role = role;
         this.isActive = true; // Default to active
+    }
+    public int getUserNum() {
+        return userNum;
+    }
+
+    public void setUserNum(int userNum) {
+        this.userNum = userNum;
     }
 
     // Getters and Setters
