@@ -20,19 +20,6 @@ public class Course {
     private Date endDate ; 
     private boolean isActive ; 
     private String imageUrl ;
-
- * @author LENOVO
- */
-public class Course {
-    private String courseID;
-    private String title;
-    private String description;
-    private double fee;
-    private int duration;
-    private Date startDate;
-    private Date endDate;
-    private boolean isActive;
-    private String imageUrl;
     private int classCount;
 
     public Course() {
