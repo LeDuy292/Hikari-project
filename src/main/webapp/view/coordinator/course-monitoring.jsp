@@ -1,7 +1,7 @@
 <%@page import="model.Course"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> 
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -22,7 +22,8 @@
                 width: 100%;
                 height: 100%;
                 background-color: rgba(0, 0, 0, 0.5);
-                z-index: 1000; /* Sửa: Đảm bảo hiển thị trên các phần tử khác */
+                /*z-index: 1000;  Sửa: Đảm bảo hiển thị trên các phần tử khác */
+                z-index: 2000; /* Tăng z-index để vượt qua sidebar */
                 justify-content: center;
                 align-items: center;
                 min-height: 100vh;
@@ -39,7 +40,8 @@
                 max-width: 600px;
                 position: relative;
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-                z-index: 1001; /* Sửa: Đảm bảo form hiển thị trên lớp phủ */
+                /*z-index: 1001;  Sửa: Đảm bảo form hiển thị trên lớp phủ */
+                z-index: 2001; /* Tăng z-index để hiển thị trên modal-overlay */
             }
 
             /* Sửa lỗi: Đảm bảo nút đóng hoạt động */
@@ -103,7 +105,7 @@
 
               /* Thay đổi: Cải thiện CSS cho thanh tìm kiếm và gợi ý */
             .course-card-header {
-                padding: 0;
+                padding: 4px 5px;
                 margin: 0;
             }
 
@@ -119,6 +121,7 @@
                 width: 320px;
                 padding: 0;
                 margin: 0;
+                margin-left: 65%;
                 z-index: 1150; /* Thay đổi: Tăng z-index cho search-container */
             }
 
@@ -243,7 +246,6 @@
                         <div class="col-12">
                             <div class="course-card-main">
                                 <div class="course-card-header">
-                                    <h5 class="course-card-title mb-0">Danh sách khóa học tiếng Nhật</h5>
                                     <div class="d-flex gap-2">
                                         <div class="search-container">
                                             <div class="search-input-group">
