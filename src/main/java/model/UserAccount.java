@@ -4,8 +4,6 @@
  */
 package model;
 
-import java.time.LocalDate;
-
 import java.util.Date;
 
 public class UserAccount {
@@ -112,18 +110,6 @@ public class UserAccount {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public LocalDate getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     public Date getRegistrationDate() {
