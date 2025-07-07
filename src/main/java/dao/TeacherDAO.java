@@ -8,11 +8,13 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Class;
 import model.Teacher;
 import utils.DBContext;
+
 
 /**
  *
@@ -194,5 +196,16 @@ public class TeacherDAO {
         System.out.println("Test assign:");
         boolean success = dao.assignTeacherToClass("CL001", "T002");
         System.out.println("Assign success: " + success);
+    }
+
+        public void closeConnection() {
+        try {
+            if (con != null && !con.isClosed()) {
+                con.close();
+//                logger.info("TeacherDAO: Database connection closed.");
+            }
+        } catch (SQLException e) {
+//            logger.error("TeacherDAO: Error closing connection: {}", e.getMessage(), e);
+        }
     }
 }
