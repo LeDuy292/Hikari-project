@@ -10,6 +10,7 @@
   --danger-color: #dc3545;
 }
 
+/* ----- Header Wrapper ----- */
 .header {
   display: flex;
   justify-content: space-between;
@@ -28,6 +29,7 @@
   box-shadow: 0 8px 25px rgba(74, 144, 226, 0.15);
 }
 
+/* ----- Header Title ----- */
 .header-title {
   font-size: 1.8rem;
   font-weight: 700;
@@ -43,12 +45,14 @@
   font-size: 1.5rem;
 }
 
+/* ----- Header Actions ----- */
 .header-actions {
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
+/* ----- Modern Add Button ----- */
 .btn-add {
   background: linear-gradient(135deg, var(--success-color), #20c997);
   color: white;
@@ -73,8 +77,14 @@
 
 .btn-add i {
   font-size: 1rem;
+  transition: transform 0.3s ease;
 }
 
+.btn-add:hover i {
+  transform: rotate(90deg);
+}
+
+/* ----- Notification Button ----- */
 .notification {
   position: relative;
 }
@@ -114,6 +124,7 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+/* ----- User Profile ----- */
 .user-profile {
   display: flex;
   align-items: center;
@@ -160,6 +171,7 @@
   font-size: 0.9rem;
 }
 
+/* ----- Responsive Styles ----- */
 @media (max-width: 1200px) {
   .header {
     flex-direction: column;
