@@ -1,3 +1,8 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
 package model;
 
 import java.util.Date;
@@ -6,10 +11,10 @@ public class UserAccount {
 
     private String userID;
     private String username;
+    private String fullName;
     private String email;
     private String password;
     private String role;
-    private String fullName;
     private Date registrationDate;
     private String profilePicture;
     private String phone;
@@ -35,6 +40,19 @@ public class UserAccount {
         this.isActive = true; // Default to active
     }
 
+    public UserAccount( String userID, String username, String fullName, String email, String password,
+            String role, Date registrationDate, String profilePicture, String phone, Date birthDate) {
+        this.userID = userID;
+        this.username = username;
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.registrationDate = registrationDate;
+        this.profilePicture = profilePicture;
+        this.phone = phone;
+        this.birthDate = birthDate;
+    }
     // Getters and Setters
     public String getUserID() {
         return userID;
@@ -50,6 +68,14 @@ public class UserAccount {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {
@@ -74,14 +100,6 @@ public class UserAccount {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     public Date getRegistrationDate() {
