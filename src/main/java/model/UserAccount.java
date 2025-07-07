@@ -102,14 +102,6 @@ public class UserAccount {
         this.role = role;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
     public Date getRegistrationDate() {
         return registrationDate;
     }
