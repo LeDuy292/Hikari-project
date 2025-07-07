@@ -57,11 +57,11 @@ public class NextEditCourseServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-           int id = Integer.parseInt(request.getParameter("id"));
+//           int id = Integer.parseInt(request.getParameter("id"));
+             String courseID = request.getParameter("id");
         //find student by id qua DAO
         CourseDAO dao = new CourseDAO();
-        Course course = dao.getCourseByID(id);
-        
+        Course course = dao.getCourseByID(courseID);
         request.setAttribute("course", course);
         request.getRequestDispatcher("view/coordinator/EditCourse.jsp").forward(request, response);
     }

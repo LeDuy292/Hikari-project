@@ -38,21 +38,32 @@ public class LoginServlet extends HttpServlet {
 
                         // Also store the full user object for compatibility with existing code
                         session.setAttribute("user", user);
+                        session.setAttribute("role", user.getRole());
                         session.setAttribute("userId", user.getUserID());
                         session.setAttribute("username", user.getUsername());
-
                         // Update session using existing SessionManager
                         sessionManager.updateSession(user, session);
                         
                         // Check if there's a redirect URL stored in session
                         String redirectUrl = (String) session.getAttribute("redirectUrl");
-                        if (redirectUrl != null) {
+                         if (redirectUrl != null) {
                             session.removeAttribute("redirectUrl");
                             System.out.println("Redirecting user to original URL: " + redirectUrl);
                             response.sendRedirect(redirectUrl);
-                        } else {
+                        } else if((user.getRole()).equals("Student")){
                             response.sendRedirect(request.getContextPath() + "/view/student/home.jsp");
+                        } 
+                        else if((user.getRole()).equals("Coordinator")){
+                            response.sendRedirect(request.getContextPath() + "/LoadDashboard");
                         }
+                         else if((user.getRole()).equals("Admin")){
+                            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+                        }
+                        else if((user.getRole()).equals("Teacher")){
+                            response.sendRedirect(request.getContextPath() + "/view/teacher/manageCourse.jsp");
+                        }
+                         else 
+                             response.sendRedirect(request.getContextPath() + "/view/student/home.jsp");
                     } catch (Exception e) {
                         session.invalidate();
                         request.setAttribute("error", "Lỗi đăng nhập: " + e.getMessage());

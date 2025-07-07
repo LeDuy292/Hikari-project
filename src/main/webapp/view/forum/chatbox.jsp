@@ -5,7 +5,11 @@
         <div class="chatbox-header">
             <div class="chatbox-title">
                 <i class="fas fa-robot"></i>
-                <span>AI Assistant</span>
+                <span>HIKARI AI</span>
+                <span class="status-indicator" id="status-indicator">
+                    <i class="fas fa-circle" style="color: #10b981; font-size: 8px;"></i>
+                    <span style="font-size: 10px; margin-left: 4px;">Enhanced</span>
+                </span>
             </div>
             <button onclick="toggleChatbox()" class="chatbox-close">
                 <i class="fas fa-times"></i>
@@ -41,8 +45,26 @@
                 <div class="welcome-icon">
                     <i class="fas fa-robot"></i>
                 </div>
-                <h3>Xin chào! 👋</h3>
-                <p>Tôi là AI Assistant, sẵn sàng hỗ trợ bạn học tiếng Nhật. Hãy đặt câu hỏi bất kỳ!</p>
+                <h3>Chào Mừng Bạn Đến Với HIKARI AI! 👋</h3>
+                <p>là trợ lý thông minh, sẵn sàng giải đáp mọi thắc mắc và hỗ trợ bạn 24/7!</p>
+                <div class="feature-highlight">
+                    <div class="feature-item">
+                        <i class="fas fa-search"></i>
+                        <span>Tìm kiếm thông minh, hiểu ý bạn ngay</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-database"></i>
+                        <span>Kiến thức sâu rộng, giải đáp chi tiết</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-brain"></i>
+                        <span>AI tiên tiến, luôn sẵn sàng hỗ trợ</span>
+                    </div>
+                </div>
+                <p><strong>Hãy thử những câu hỏi phổ biến:</strong></p>
+                <ul class="suggested-questions" id="suggested-questions">
+                    <!-- Suggested questions will be populated by JavaScript -->
+                </ul>
             </div>
             <%
                 }
@@ -53,11 +75,19 @@
                 <textarea 
                     id="userInput" 
                     rows="1" 
-                    placeholder="Nhập câu hỏi của bạn..." 
+                    placeholder="Nhập câu hỏi của bạn (VD: Học phí các khóa học như thế nào?)..." 
                     onkeypress="submitOnEnter(event)"
                     ></textarea>
-                <button onclick="sendMessage()" class="send-btn">
+                <button onclick="sendMessage()" class="send-btn" id="send-btn">
                     <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <div class="quick-actions">
+                <button onclick="loadSuggestions()" class="quick-btn">
+                    <i class="fas fa-lightbulb"></i> Gợi ý
+                </button>
+                <button onclick="clearChat()" class="quick-btn">
+                    <i class="fas fa-trash"></i> Xóa
                 </button>
             </div>
         </div>
@@ -67,9 +97,128 @@
 <button id="chatbox-toggle" onclick="toggleChatbox()">
     <i class="fas fa-comments"></i>
     <span class="toggle-text">AI Chat</span>
+    <span class="notification-badge" id="notification-badge" style="display: none;">1</span>
 </button>
 
 <style>
+    /* Enhanced styles for debugging */
+    .feature-highlight {
+        margin: 15px 0;
+        padding: 10px;
+        background: #f8fafc;
+        border-radius: 8px;
+        border-left: 4px solid #3b82f6;
+    }
+    
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 5px 0;
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+    
+    .feature-item i {
+        color: #3b82f6;
+        width: 16px;
+    }
+    
+    .test-btn {
+        background: #f59e0b !important;
+        color: white !important;
+    }
+    
+    .test-btn:hover {
+        background: #d97706 !important;
+    }
+    
+    .debug-info {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        z-index: 9999;
+        display: none;
+    }
+    
+    /* All existing styles remain the same */
+    .status-indicator {
+        display: flex;
+        align-items: center;
+        margin-left: 10px;
+    }
+    
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0;
+    }
+    
+    .feature-list li {
+        padding: 5px 0;
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+    
+    .database-info {
+        margin-top: 15px;
+        padding: 8px 12px;
+        background: #f1f5f9;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .quick-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+    }
+    
+    .quick-btn {
+        flex: 1;
+        padding: 6px 12px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+    
+    .quick-btn:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+    
+    .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #ef4444;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+    
     #chatbox-toggle {
         position: fixed;
         bottom: 2rem;
@@ -98,32 +247,12 @@
         background: linear-gradient(135deg, #2563eb, #1d4ed8);
     }
 
-    #chatbox-toggle .toggle-text {
-        display: none;
-    }
-
-    #chatbox-toggle:hover .toggle-text {
-        display: inline;
-        animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateX(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
     .chatbox-container {
         position: fixed;
         bottom: 6rem;
         right: 2rem;
-        width: 380px;
-        max-height: 600px;
+        width: 420px;
+        max-height: 700px;
         background: white;
         border-radius: 1rem;
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
@@ -133,17 +262,6 @@
         animation: slideUp 0.3s ease-out;
         border: 1px solid #e2e8f0;
         overflow: hidden;
-    }
-
-    @keyframes slideUp {
-        from {
-            transform: translateY(100px) scale(0.9);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-        }
     }
 
     .chatbox-header {
@@ -164,30 +282,9 @@
         font-size: 1rem;
     }
 
-    .chatbox-close {
-        background: none;
-        border: none;
-        color: white;
-        font-size: 1.125rem;
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-    }
-
-    .chatbox-close:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: scale(1.1);
-    }
-
     .chatbox-history {
         flex: 1;
-        max-height: 400px;
+        max-height: 500px;
         overflow-y: auto;
         padding: 1.5rem;
         background: #f8fafc;
@@ -196,26 +293,9 @@
         gap: 1rem;
     }
 
-    .chatbox-history::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .chatbox-history::-webkit-scrollbar-track {
-        background: #f1f5f9;
-    }
-
-    .chatbox-history::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 3px;
-    }
-
-    .chatbox-history::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-    }
-
     .welcome-message {
         text-align: center;
-        padding: 2rem 1rem;
+        padding: 1rem;
         color: #64748b;
     }
 
@@ -225,15 +305,30 @@
         margin-bottom: 1rem;
     }
 
-    .welcome-message h3 {
-        color: #1e293b;
-        margin-bottom: 0.5rem;
-        font-size: 1.125rem;
+    .suggested-questions {
+        list-style: none;
+        padding: 0;
+        margin: 1rem 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
     }
 
-    .welcome-message p {
-        line-height: 1.6;
+    .suggested-questions li {
+        background: #ffffff;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid #e2e8f0;
         font-size: 0.875rem;
+        text-align: left;
+    }
+
+    .suggested-questions li:hover {
+        background: #f1f5f9;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .chat-message {
@@ -241,17 +336,6 @@
         gap: 0.75rem;
         align-items: flex-start;
         animation: messageSlide 0.3s ease-out;
-    }
-
-    @keyframes messageSlide {
-        from {
-            transform: translateY(20px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
     }
 
     .message-avatar {
@@ -295,6 +379,7 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         border: 1px solid #e2e8f0;
         word-wrap: break-word;
+        white-space: pre-wrap;
     }
 
     .user-message .message-text {
@@ -360,86 +445,106 @@
         transform: scale(1.1);
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
-
-    .send-btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-    }
-
-    /* Loading animation */
-    .typing-indicator {
-        display: flex;
-        gap: 0.25rem;
-        padding: 1rem;
-        align-items: center;
-    }
-
-    .typing-dot {
-        width: 8px;
-        height: 8px;
-        background: #94a3b8;
-        border-radius: 50%;
-        animation: typing 1.4s infinite ease-in-out;
-    }
-
-    .typing-dot:nth-child(2) {
-        animation-delay: 0.2s;
-    }
-
-    .typing-dot:nth-child(3) {
-        animation-delay: 0.4s;
-    }
-
-    @keyframes typing {
-        0%, 60%, 100% {
-            transform: translateY(0);
-            opacity: 0.4;
-        }
-        30% {
-            transform: translateY(-10px);
-            opacity: 1;
-        }
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .chatbox-container {
-            width: calc(100vw - 2rem);
-            right: 1rem;
-            bottom: 5rem;
-            max-height: 70vh;
-        }
-
-        #chatbox-toggle {
-            right: 1rem;
-            bottom: 1rem;
-        }
-
-        .chatbox-history {
-            padding: 1rem;
-        }
-
-        .chatbox-input {
-            padding: 1rem;
-        }
-    }
 </style>
+
+<div id="debug-info" class="debug-info"></div>
 
 <script>
     let isTyping = false;
+    let qaCount = 0;
+    let debugMode = true; // Enable debug mode
+
+    function debugLog(message) {
+        if (debugMode) {
+            console.log('🔍 HIKARI DEBUG:', message);
+            const debugDiv = document.getElementById('debug-info');
+            if (debugDiv) {
+                debugDiv.innerHTML = message;
+                debugDiv.style.display = 'block';
+                setTimeout(() => {
+                    debugDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+    }
+
+
+    // Load database statistics
+    function loadDatabaseStats() {
+        fetch('chat?action=stats')
+            .then(response => response.json())
+            .then(data => {
+                qaCount = data.totalQA || 0;
+                document.getElementById('qa-count').textContent = qaCount.toLocaleString();
+                debugLog('Loaded ' + qaCount + ' Q&A pairs');
+            })
+            .catch(error => {
+                console.error('Error loading database stats:', error);
+                document.getElementById('qa-count').textContent = 'N/A';
+            });
+    }
+
+    // Load suggested questions
+    function loadSuggestions() {
+        fetch('chat?action=suggestions')
+            .then(response => response.json())
+            .then(data => {
+                const suggestedList = document.getElementById("suggested-questions");
+                suggestedList.innerHTML = "";
+                
+                if (data.suggestions && data.suggestions.length > 0) {
+                    data.suggestions.forEach(question => {
+                        const li = document.createElement("li");
+                        li.textContent = question;
+                        li.onclick = () => sendSuggestedMessage(question);
+                        suggestedList.appendChild(li);
+                    });
+                } else {
+                    populateDefaultSuggestions();
+                }
+            })
+            .catch(error => {
+                console.error('Error loading suggestions:', error);
+                populateDefaultSuggestions();
+            });
+    }
+
+    function populateDefaultSuggestions() {
+        const defaultSuggestions = [
+            "Học phí các khóa học như thế nào?",
+            "Hikari có những khóa học nào?",
+            "JLPT là gì?",
+            "Cách đăng ký khóa học trên Hikari?",
+            "Có mã giảm giá không?"
+        ];
+        
+        const suggestedList = document.getElementById("suggested-questions");
+        suggestedList.innerHTML = "";
+        
+        defaultSuggestions.forEach(question => {
+            const li = document.createElement("li");
+            li.textContent = question;
+            li.onclick = () => sendSuggestedMessage(question);
+            suggestedList.appendChild(li);
+        });
+    }
 
     function toggleChatbox() {
         var chatbox = document.getElementById("chatbox");
         var toggle = document.getElementById("chatbox-toggle");
+        var badge = document.getElementById("notification-badge");
 
         if (chatbox.style.display === "none") {
             chatbox.style.display = "block";
             toggle.innerHTML = '<i class="fas fa-times"></i>';
+            badge.style.display = "none";
             scrollToBottom();
-
-            // Auto-resize textarea
             autoResizeTextarea();
+            
+            if (document.querySelector('.welcome-message')) {
+                loadSuggestions();
+                loadDatabaseStats();
+            }
         } else {
             chatbox.style.display = "none";
             toggle.innerHTML = '<i class="fas fa-comments"></i><span class="toggle-text">AI Chat</span>';
@@ -450,16 +555,14 @@
         if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
             sendMessage();
-        } else if (event.key === "Enter" && event.shiftKey) {
-            // Allow new line with Shift+Enter
-            return true;
         }
     }
 
     function sendMessage() {
         var userInput = document.getElementById("userInput").value.trim();
-        if (!userInput || isTyping)
-            return;
+        if (!userInput || isTyping) return;
+
+        debugLog('Sending message: ' + userInput);
 
         // Add user message
         addMessage(userInput, 'user');
@@ -473,7 +576,7 @@
 
         // Send AJAX request
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "gemini", true);
+        xhr.open("POST", "chat", true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
@@ -482,11 +585,14 @@
                 if (xhr.status === 200) {
                     try {
                         var response = JSON.parse(xhr.responseText);
-                        addMessage(response.text, 'ai');
+                        debugLog('Response source: ' + response.source);
+                        addMessage(response.text, 'ai', response.source);
                     } catch (e) {
+                        debugLog('Error parsing response: ' + e.message);
                         addMessage("Xin lỗi, có lỗi xảy ra khi xử lý phản hồi.", 'ai');
                     }
                 } else {
+                    debugLog('HTTP Error: ' + xhr.status);
                     addMessage("Xin lỗi, không thể kết nối đến server. Vui lòng thử lại sau.", 'ai');
                 }
             }
@@ -494,7 +600,12 @@
         xhr.send("userInput=" + encodeURIComponent(userInput));
     }
 
-    function addMessage(text, type) {
+    function sendSuggestedMessage(question) {
+        document.getElementById("userInput").value = question;
+        sendMessage();
+    }
+
+    function addMessage(text, type, source) {
         var history = document.getElementById("chatbox-history");
 
         // Remove welcome message if exists
@@ -515,7 +626,7 @@
 
         var textDiv = document.createElement("div");
         textDiv.className = "message-text";
-        textDiv.textContent = text;
+        textDiv.innerHTML = text.replace(/\n/g, '<br>');
 
         contentDiv.appendChild(textDiv);
         messageDiv.appendChild(avatarDiv);
@@ -526,8 +637,7 @@
     }
 
     function showTypingIndicator() {
-        if (isTyping)
-            return;
+        if (isTyping) return;
         isTyping = true;
 
         var history = document.getElementById("chatbox-history");
@@ -539,13 +649,10 @@
             <div class="message-avatar">
                 <i class="fas fa-robot"></i>
             </div>
+        
             <div class="message-content">
                 <div class="message-text">
-                    <div class="typing-indicator">
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                    </div>
+                    <span class="typing-text">AI đang suy nghĩ...</span>
                 </div>
             </div>
         `;
@@ -559,6 +666,50 @@
         var typingIndicator = document.getElementById("typing-indicator");
         if (typingIndicator) {
             typingIndicator.remove();
+        }
+    }
+
+    function clearChat() {
+        if (confirm("Bạn có chắc muốn xóa toàn bộ lịch sử chat?")) {
+            var history = document.getElementById("chatbox-history");
+            history.innerHTML = `
+                <div class="welcome-message">
+                    <div class="welcome-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Xin chào! 👋</h3>
+                    <p>Tôi là AI HIKARI phiên bản nâng cấp với khả năng tìm kiếm thông minh!</p>
+                    <div class="feature-highlight">
+                        <div class="feature-item">
+                            <i class="fas fa-search"></i>
+                            <span>Tìm kiếm thông minh với từ đồng nghĩa</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-database"></i>
+                            <span>1500+ câu hỏi-đáp án chuyên sâu</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-brain"></i>
+                            <span>AI backup khi cần thiết</span>
+                        </div>
+                    </div>
+                    <p><strong>Hãy thử những câu hỏi phổ biến:</strong></p>
+                    <ul class="suggested-questions" id="suggested-questions">
+                    </ul>
+                    <div class="database-info">
+                        <i class="fas fa-database"></i>
+                        <span>Cơ sở dữ liệu: <span id="qa-count">${qaCount.toLocaleString()}</span> câu hỏi</span>
+                    </div>
+                </div>
+            `;
+            loadSuggestions();
+            
+            // Clear server session
+            fetch('chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'action=clear'
+            });
         }
     }
 
@@ -580,21 +731,13 @@
 
     // Initialize
     window.onload = function () {
+        loadDatabaseStats();
         if (document.getElementById("chatbox").style.display === "block") {
             scrollToBottom();
         }
-    };
-
-    // Close chatbox when clicking outside
-    document.addEventListener('click', function (event) {
-        var chatbox = document.getElementById("chatbox");
-        var toggle = document.getElementById("chatbox-toggle");
-
-        if (chatbox.style.display === "block" &&
-                !chatbox.contains(event.target) &&
-                !toggle.contains(event.target)) {
-            // Don't auto-close for better UX
-            // toggleChatbox();
+        if (document.querySelector('.welcome-message')) {
+            loadSuggestions();
         }
-    });
+        debugLog('Chatbox initialized with enhanced search');
+    };
 </script>

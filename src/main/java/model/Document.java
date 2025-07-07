@@ -14,6 +14,9 @@ public class Document {
     private Date uploadDate;
     private String uploadedBy;
 
+    public Document() {
+    }
+
     public Document(String classID , String title, String description, String fileUrl, String uploadedBy, String imgUrl) {
         this.classID= classID ; 
         this.title = title;
