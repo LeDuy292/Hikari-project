@@ -32,8 +32,6 @@
                             request.setAttribute("pageTitle", "Bảng Điều Khiển");
                             request.setAttribute("showAddButton", false);
                             request.setAttribute("pageIcon", "fa-tachometer-alt");
-                            request.setAttribute("showNotification", true);
-                            request.setAttribute("notificationCount", 3); // Example count
                         %>
                         <%@ include file="headerAdmin.jsp" %>
 
