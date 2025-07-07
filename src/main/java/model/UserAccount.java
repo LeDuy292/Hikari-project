@@ -3,8 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package model;
-
-import java.time.LocalDate;
+import java.util.Date;
 
 /**
  *
@@ -12,24 +11,22 @@ import java.time.LocalDate;
  */
 public class UserAccount {
 
-    private int userNum;
     private String userID;
     private String username;
     private String fullName;
     private String email;
     private String password;
     private String role;
-    private LocalDate registrationDate;
+    private Date registrationDate;
     private String profilePicture;
     private String phone;
-    private LocalDate birthDate;
+    private Date birthDate;
 
     public UserAccount() {
     }
 
-    public UserAccount(int userNum, String userID, String username, String fullName, String email, String password,
-            String role, LocalDate registrationDate, String profilePicture, String phone, LocalDate birthDate) {
-        this.userNum = userNum;
+    public UserAccount( String userID, String username, String fullName, String email, String password,
+            String role, Date registrationDate, String profilePicture, String phone, Date birthDate) {
         this.userID = userID;
         this.username = username;
         this.fullName = fullName;
@@ -40,15 +37,6 @@ public class UserAccount {
         this.profilePicture = profilePicture;
         this.phone = phone;
         this.birthDate = birthDate;
-    }
-
-    // Getters and Setters
-    public int getUserNum() {
-        return userNum;
-    }
-
-    public void setUserNum(int userNum) {
-        this.userNum = userNum;
     }
 
     public String getUserID() {
@@ -99,11 +87,11 @@ public class UserAccount {
         this.role = role;
     }
 
-    public LocalDate getRegistrationDate() {
+    public Date getRegistrationDate() {
         return registrationDate;
     }
 
-    public void setRegistrationDate(LocalDate registrationDate) {
+    public void setRegistrationDate(Date registrationDate) {
         this.registrationDate = registrationDate;
     }
 
@@ -123,11 +111,11 @@ public class UserAccount {
         this.phone = phone;
     }
 
-    public LocalDate getBirthDate() {
+    public Date getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(LocalDate birthDate) {
+    public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
     }
 }

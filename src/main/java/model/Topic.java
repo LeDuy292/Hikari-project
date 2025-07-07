@@ -52,4 +52,5 @@ public class Topic {
     public String getCourseId() {
         return courseId;
     }
+    
 }

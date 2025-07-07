@@ -2,7 +2,6 @@ package controller.course;
 
 import com.google.gson.Gson;
 import dao.AssignmentDAO;
-import dao.CourseDAO;
 import dao.DocumentDAO;
 import dao.LessonDAO;
 import dao.TopicDAO;

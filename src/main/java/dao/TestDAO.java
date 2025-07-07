@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestDAO {
-
     public int insertAndReturnId(Test test) {
         String sql = "INSERT INTO Test (jlptLevel, title, description,duration, totalMarks, totalQuestions,  isActive) "
                 + "VALUES (?, ?, ?, ?, ?, ? , ?)";

@@ -14,7 +14,6 @@ public class CourseDAO {
 
     private final CourseReponsitory rep = new CourseReponsitory();
 
-    // Lấy tất cả các khoá học
     public List<Course> getAllCourse() {
         List<Course> courseList = new ArrayList<>();
         String sql = "SELECT * FROM courses";
