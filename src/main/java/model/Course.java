@@ -10,16 +10,32 @@ import java.util.Date;
  *
  * @author ADMIN
  */
+
 public class Course {
-    private String courseID ; 
-    private String title ; 
-    private String description ; 
-    private double fee ; 
-    private int duration ;
-    private Date startDate ; 
-    private Date endDate ; 
-    private boolean isActive ; 
-    private String imageUrl ;
+    private String courseID;
+    private String title;
+    private String description;
+    private double fee;
+    private int duration;
+    private Date startDate;
+    private Date endDate;
+    private boolean isActive;
+    private String imageUrl;
+    private int classCount;
+
+    public Course() {
+    }
+
+    public Course(String courseID, String title, String description, double fee, int duration, Date startDate, Date endDate, boolean isActive) {
+        this.courseID = courseID;
+        this.title = title;
+        this.description = description;
+        this.fee = fee;
+        this.duration = duration;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isActive = isActive;
+    }
 
     public Course(String courseID, String title, String description, double fee, int duration, Date startDate, Date endDate, boolean isActive, String imageUrl) {
         this.courseID = courseID;
@@ -33,7 +49,7 @@ public class Course {
         this.imageUrl = imageUrl;
     }
 
-    public String getCourseID() {
+        public String getCourseID() {
         return courseID;
     }
 
@@ -97,6 +113,14 @@ public class Course {
         this.isActive = isActive;
     }
 
+    public int getClassCount() {
+        return classCount;
+    }
+
+    public void setClassCount(int classCount) {
+        this.classCount = classCount;
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -110,5 +134,5 @@ public class Course {
         return "Course{" + "courseID=" + courseID + ", title=" + title + ", description=" + description + ", fee=" + fee + ", duration=" + duration + ", startDate=" + startDate + ", endDate=" + endDate + ", isActive=" + isActive + ", imageUrl=" + imageUrl + '}';
     }
     
-    
+  
 }

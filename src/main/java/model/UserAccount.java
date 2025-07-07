@@ -2,13 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+
 package model;
+
 import java.util.Date;
 
-/**
- *
- * @author ADMIN
- */
 public class UserAccount {
 
     private String userID;
@@ -21,8 +19,25 @@ public class UserAccount {
     private String profilePicture;
     private String phone;
     private Date birthDate;
+    private String sessionId;
+    private String otp;
+    private Date otpExpiry;
+    private String resetToken;
+    private Date resetTokenExpiry;
+    private int courseCount;
+    private Boolean isActive;
 
+    // Constructors
     public UserAccount() {
+    }
+
+    public UserAccount(String userID, String username, String email, String password, String role) {
+        this.userID = userID;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.isActive = true; // Default to active
     }
 
     public UserAccount( String userID, String username, String fullName, String email, String password,
@@ -38,7 +53,7 @@ public class UserAccount {
         this.phone = phone;
         this.birthDate = birthDate;
     }
-
+    // Getters and Setters
     public String getUserID() {
         return userID;
     }
@@ -87,6 +102,14 @@ public class UserAccount {
         this.role = role;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
     public Date getRegistrationDate() {
         return registrationDate;
     }
@@ -117,5 +140,61 @@ public class UserAccount {
 
     public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+
+    public Date getOtpExpiry() {
+        return otpExpiry;
+    }
+
+    public void setOtpExpiry(Date otpExpiry) {
+        this.otpExpiry = otpExpiry;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public Date getResetTokenExpiry() {
+        return resetTokenExpiry;
+    }
+
+    public void setResetTokenExpiry(Date resetTokenExpiry) {
+        this.resetTokenExpiry = resetTokenExpiry;
+    }
+
+    public int getCourseCount() {
+        return courseCount;
+    }
+
+    public void setCourseCount(int courseCount) {
+        this.courseCount = courseCount;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 }
