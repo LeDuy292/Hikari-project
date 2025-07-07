@@ -17,14 +17,6 @@
                 ${addButtonText != null ? addButtonText : 'Thêm Mới'}
             </a>
         </c:if>
-        <c:if test="${showNotification != null && showNotification}">
-            <div class="notification">
-                <button class="btn-notification" data-bs-toggle="modal" data-bs-target="#notificationModal">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-count">${notificationCount != null ? notificationCount : 0}</span>
-                </button>
-            </div>
-        </c:if>
         <div class="user-profile">
             <img src="${pageContext.request.contextPath}/assets/img/dashborad/defaultAvatar.jpg" alt="User Avatar" class="avatar" />
             <div class="user-info">
