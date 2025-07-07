@@ -118,8 +118,6 @@ public class UserAccount {
         return registrationDate;
     }
 
-    public void setRegistrationDate(LocalDate registrationDate) {
-
     public String getFullName() {
         return fullName;
     }
