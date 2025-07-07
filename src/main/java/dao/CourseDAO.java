@@ -72,7 +72,7 @@ public List<Course> getAllCourse() {
             System.err.println("Error at studentCount: " + e.getMessage());
         }
 
-        return 0;
+        return 0;}
     public List<Course> getAll() {
         String sql = "select * from Courses";
         List<Course> list = new ArrayList<>();
