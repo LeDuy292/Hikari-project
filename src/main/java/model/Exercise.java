@@ -90,4 +90,5 @@ private List<Question> questions;
     public void setActive(boolean isActive) {
         this.isActive = isActive;
     }
+    
 }

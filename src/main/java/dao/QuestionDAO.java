@@ -9,7 +9,6 @@ import java.util.List;
 
 public class QuestionDAO {
 
-    // ✅ Thêm câu hỏi mới
     public void insertQuestion(Question q) throws SQLException {
         String sql = "INSERT INTO Question (" +
                      "questionText, optionA, optionB, optionC, optionD, correctOption, mark, " +
@@ -32,7 +31,6 @@ public class QuestionDAO {
         }
     }
 
-    // ✅ Cập nhật câu hỏi
     public void updateQuestion(Question q) throws SQLException {
         String sql = "UPDATE Question SET " +
                      "questionText = ?, optionA = ?, optionB = ?, optionC = ?, optionD = ?, " +

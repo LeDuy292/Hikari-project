@@ -28,7 +28,6 @@ public class UserAccountDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return users;
     }
 
