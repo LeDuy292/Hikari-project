@@ -231,7 +231,6 @@ document.addEventListener("click", (e) => {
                 throw new Error(data.message);
             }
 
-            // Lưu dữ liệu vào instance
             this.currentTest = data.test;
             this.currentResults = data.results;
             console.log(data.results);
