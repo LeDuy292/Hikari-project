@@ -1,5 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, model.forum.*, model.UserAccount, java.text.SimpleDateFormat, java.sql.Timestamp" %>
+<%!
+    public String escapeHtml(String input) {
+        if (input == null) return "";
+        return input.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("'", "&#39;");
+    }
+%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>

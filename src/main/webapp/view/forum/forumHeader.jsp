@@ -41,7 +41,7 @@ body {
     box-shadow: 0 2px 12px rgba(79, 140, 255, 0.07);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 9999       ;
 }
 
 .topbar .logo {
@@ -281,7 +281,7 @@ body {
             </div>
         </div>
     </nav>
-</div>
+</div>                 
 
 <script>
 function toggleDropdown() {
@@ -306,4 +306,3 @@ document.addEventListener('keydown', function(event) {
     }
 });
 </script>
-    

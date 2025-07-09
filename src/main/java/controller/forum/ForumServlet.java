@@ -52,9 +52,6 @@ public class ForumServlet extends HttpServlet {
         LOGGER.info("ForumServlet initialized");
     }
 
-    /**
-     * Check if user is authenticated using existing UserAuthentication utility
-     */
     private boolean checkAuthentication(HttpServletRequest request, HttpServletResponse response) 
             throws IOException {
         HttpSession session = request.getSession(false);
