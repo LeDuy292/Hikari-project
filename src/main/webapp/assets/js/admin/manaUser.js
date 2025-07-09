@@ -1,11 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/JavaScript.js to edit this template
- */
-// User Management JavaScript
-// Handles pagination, filtering, and modal interactions
 
-// Import Bootstrap
 const bootstrap = window.bootstrap
 
 // Pagination and filtering logic
@@ -165,7 +158,7 @@ document.addEventListener("click", (e) => {
     document.getElementById("viewBirthDate").textContent = formatDate(birthDate)
     document.getElementById("viewCourses").textContent = courses
     document.getElementById("viewCreatedDate").textContent = formatDate(createdDate)
-    document.getElementById("viewStatus").textContent = status
+    document.getElementById("viewStatus").innerHTML = getStatusBadge(status)
   }
 })
 
@@ -196,18 +189,25 @@ document.addEventListener("click", (e) => {
 
 // Block user modal handler
 document.addEventListener("click", (e) => {
-  if (e.target.closest(".btn-delete")) {
-    const button = e.target.closest(".btn-delete")
+  if (e.target.closest(".btn-block")) {
+    const button = e.target.closest(".btn-block")
 
     const userId = button.getAttribute("data-user-id")
     const fullName = button.getAttribute("data-full-name")
     const status = button.getAttribute("data-status")
+    const isActive = button.getAttribute("data-is-active") === "true"
 
     document.getElementById("blockUserId").textContent = userId
     document.getElementById("blockFullName").textContent = fullName
     document.getElementById("blockUserIdInput").value = userId
-    document.getElementById("blockStatusInput").value = status === "Hoạt Động" ? "false" : "true"
-    document.getElementById("blockAction").textContent = status === "Hoạt Động" ? "khóa" : "mở khóa"
+    document.getElementById("blockStatusInput").value = isActive ? "false" : "true"
+    document.getElementById("blockAction").textContent = isActive ? "khóa" : "mở khóa"
+
+    // Update button text and icon
+    const confirmBtn = document.querySelector("#blockUserModal .btn-confirm-block")
+    if (confirmBtn) {
+      confirmBtn.innerHTML = isActive ? '<i class="fas fa-lock"></i> Khóa' : '<i class="fas fa-unlock"></i> Mở Khóa'
+    }
   }
 })
 
@@ -237,7 +237,7 @@ document.addEventListener("input", (e) => {
 
 // Utility function to format date
 function formatDate(dateString) {
-  if (!dateString) return "Chưa cập nhật"
+  if (!dateString || dateString === "Chưa cập nhật") return "Chưa cập nhật"
   const date = new Date(dateString)
   return date.toLocaleDateString("vi-VN")
 }
@@ -253,6 +253,15 @@ function getRoleBadge(role) {
 
   const config = roleConfig[role] || roleConfig["Student"]
   return `<span class="badge" style="background: ${config.color};"><i class="${config.icon}"></i> ${role}</span>`
+}
+
+// Utility function to get status badge HTML
+function getStatusBadge(status) {
+  if (status === "Hoạt Động") {
+    return '<span class="badge badge-active"><i class="fas fa-check-circle"></i> Hoạt Động</span>'
+  } else {
+    return '<span class="badge badge-inactive"><i class="fas fa-times-circle"></i> Không Hoạt Động</span>'
+  }
 }
 
 console.log("User Management JavaScript loaded successfully")

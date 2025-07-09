@@ -217,6 +217,107 @@ public class CourseDAO {
         return courses;
     }
 
+    // Lấy khóa học với bộ lọc
+    public List<Course> getCoursesWithFilters(String keyword, Boolean isActive, Double feeFrom, Double feeTo, String startDate, int offset, int limit) {
+        List<Course> courses = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Courses WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (title LIKE ? OR description LIKE ?)");
+            params.add("%" + keyword.trim() + "%");
+            params.add("%" + keyword.trim() + "%");
+        }
+
+        if (isActive != null) {
+            sql.append(" AND isActive = ?");
+            params.add(isActive);
+        }
+
+        if (feeFrom != null) {
+            sql.append(" AND fee >= ?");
+            params.add(feeFrom);
+        }
+
+        if (feeTo != null) {
+            sql.append(" AND fee <= ?");
+            params.add(feeTo);
+        }
+
+        if (startDate != null && !startDate.trim().isEmpty()) {
+            sql.append(" AND startDate >= ?");
+            params.add(startDate);
+        }
+
+        sql.append(" ORDER BY startDate DESC LIMIT ? OFFSET ?");
+        params.add(limit);
+        params.add(offset);
+
+        try (PreparedStatement pre = con.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                pre.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet resultSet = pre.executeQuery()) {
+                while (resultSet.next()) {
+                    courses.add(mapResultSetToCourse(resultSet));
+                }
+            }
+            logger.debug("CourseDAO: Retrieved {} courses with filters.", courses.size());
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error getting courses with filters: {}", e.getMessage(), e);
+        }
+        return courses;
+    }
+
+    // Đếm khóa học với bộ lọc
+    public int countCoursesWithFilters(String keyword, Boolean isActive, Double feeFrom, Double feeTo, String startDate) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Courses WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (title LIKE ? OR description LIKE ?)");
+            params.add("%" + keyword.trim() + "%");
+            params.add("%" + keyword.trim() + "%");
+        }
+
+        if (isActive != null) {
+            sql.append(" AND isActive = ?");
+            params.add(isActive);
+        }
+
+        if (feeFrom != null) {
+            sql.append(" AND fee >= ?");
+            params.add(feeFrom);
+        }
+
+        if (feeTo != null) {
+            sql.append(" AND fee <= ?");
+            params.add(feeTo);
+        }
+
+        if (startDate != null && !startDate.trim().isEmpty()) {
+            sql.append(" AND startDate >= ?");
+            params.add(startDate);
+        }
+
+        int count = 0;
+        try (PreparedStatement pre = con.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                pre.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet resultSet = pre.executeQuery()) {
+                if (resultSet.next()) {
+                    count = resultSet.getInt(1);
+                }
+            }
+            logger.debug("CourseDAO: Counted {} courses with filters.", count);
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error counting courses with filters: {}", e.getMessage(), e);
+        }
+        return count;
+    }
+
+    // Đóng kết nối
     public void closeConnection() {
         try {
             if (con != null && !con.isClosed()) {

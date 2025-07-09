@@ -51,7 +51,7 @@ public class UserService {
         UserAccount user = userDAO.authenticateUser(username, password);
         if (user != null) {
             UserAccount fullUser = userDAO.findByUsername(username);
-            if (fullUser != null && fullUser.isActive()) {
+            if (fullUser != null && fullUser.getIsActive()) {
                 LOGGER.info("User logged in successfully: " + username);
                 return fullUser;
             } else {

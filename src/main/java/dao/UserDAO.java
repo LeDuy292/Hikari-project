@@ -141,7 +141,7 @@ public class UserDAO {
                 stmt.setString(8, user.getProfilePicture());
                 stmt.setString(9, user.getPhone());
                 stmt.setDate(10, user.getBirthDate() != null ? new Date(user.getBirthDate().getTime()) : null);
-                stmt.setBoolean(11, user.isActive());
+                stmt.setBoolean(11, user.getIsActive());
                 int rows = stmt.executeUpdate();
                 if (rows > 0) {
                     conn.commit();
@@ -550,8 +550,11 @@ public class UserDAO {
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                users.add(mapResultSetToUser(rs));
+                UserAccount user = mapResultSetToUser(rs);
+                LOGGER.info("Fetched user: " + user.getUserID() + ", isActive: " + user.getIsActive());
+                users.add(user);
             }
+            LOGGER.info("Total users fetched: " + users.size());
         } catch (SQLException e) {
             LOGGER.severe("Error getting all users: " + e.getMessage());
             throw e;

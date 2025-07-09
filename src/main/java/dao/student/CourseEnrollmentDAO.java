@@ -108,6 +108,45 @@ public class CourseEnrollmentDAO {
         return null;
     }
 
+    // New method that returns the enrollment ID after successful enrollment
+    public String enrollCourseAndGetID(String userID, String courseID) {
+        logger.info("Attempting to enroll user {} in course {} and return enrollment ID", userID, courseID);
+        
+        // First get studentID from userID
+        String getStudentSQL = "SELECT studentID FROM Student WHERE userID = ?";
+        String studentID = null;
+        
+        try (PreparedStatement pre = con.prepareStatement(getStudentSQL)) {
+            pre.setString(1, userID);
+            try (ResultSet rs = pre.executeQuery()) {
+                if (rs.next()) {
+                    studentID = rs.getString("studentID");
+                } else {
+                    logger.error("No student found for userID: {}", userID);
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error getting studentID for userID {}: {}", userID, e.getMessage(), e);
+            return null;
+        }
+
+        CourseEnrollment enrollment = new CourseEnrollment();
+        enrollment.setStudentID(studentID);
+        enrollment.setCourseID(courseID);
+        enrollment.setEnrollmentDate(Date.valueOf(LocalDate.now()));
+
+        String generatedID = addCourseEnrollment(enrollment);
+        if (generatedID != null) {
+            logger.info("Successfully enrolled user {} (student {}) in course {} with enrollmentID {}", 
+                       userID, studentID, courseID, generatedID);
+            return generatedID;
+        } else {
+            logger.error("Failed to enroll user {} in course {}. addCourseEnrollment returned null.", userID, courseID);
+            return null;
+        }
+    }
+
     // New method to get enrolled courses by userID
    public List<Course> getEnrolledCoursesByUserID(String userID) {
     List<Course> enrolledCourses = new ArrayList<>();

@@ -3,6 +3,7 @@ package model;
 import java.util.Date;
 
 public class UserAccount {
+
     private String userID;
     private String username;
     private String email;
@@ -19,7 +20,7 @@ public class UserAccount {
     private String resetToken;
     private Date resetTokenExpiry;
     private int courseCount;
-    private boolean isActive; // Changed from isBlocked to isActive
+    private Boolean isActive;
 
     // Constructors
     public UserAccount() {
@@ -155,11 +156,11 @@ public class UserAccount {
         this.courseCount = courseCount;
     }
 
-    public boolean isActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setIsActive(boolean isActive) {
+    public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
     }
 
