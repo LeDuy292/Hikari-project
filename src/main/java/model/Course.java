@@ -8,8 +8,9 @@ import java.util.Date;
 
 /**
  *
- * @author LENOVO
+ * @author ADMIN
  */
+
 public class Course {
     private String courseID;
     private String title;
@@ -47,8 +48,8 @@ public class Course {
         this.isActive = isActive;
         this.imageUrl = imageUrl;
     }
-    
-    public String getCourseID() {
+
+        public String getCourseID() {
         return courseID;
     }
 
@@ -127,4 +128,11 @@ public class Course {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    @Override
+    public String toString() {
+        return "Course{" + "courseID=" + courseID + ", title=" + title + ", description=" + description + ", fee=" + fee + ", duration=" + duration + ", startDate=" + startDate + ", endDate=" + endDate + ", isActive=" + isActive + ", imageUrl=" + imageUrl + '}';
+    }
+    
+  
 }

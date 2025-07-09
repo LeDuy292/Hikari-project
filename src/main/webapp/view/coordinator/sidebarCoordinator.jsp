@@ -187,7 +187,7 @@
                 <span class="sidebar-subtitle">Japanese</span> 
             </div>
         </div>    
-        <a href="${pageContext.request.contextPath}/view/coordinator/home.jsp" class="sidebar-nav-item <%= currentPage.equals("home.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/LoadDashboard" class="sidebar-nav-item <%= currentPage.equals("home.jsp") ? "active" : ""%>">
             <i class="fas fa-chart-line"></i>
             <span>Trang chủ</span>
         </a>
@@ -197,7 +197,7 @@
         </a>
         <a href="${pageContext.request.contextPath}/view/coordinator/course-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("course-approval.jsp") ? "active" : ""%>">
             <i class="fas fa-book"></i>
-            <span>Phê duyệt khóa học</span>
+            <span>Phê duyệt bài học</span>
         </a>
         <a href="${pageContext.request.contextPath}/view/coordinator/document-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("document-approval.jsp") ? "active" : ""%>">
             <i class="fas fa-credit-card"></i>
