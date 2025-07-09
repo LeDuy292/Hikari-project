@@ -25,10 +25,13 @@ public class ForumPostDAO {
 
     public List<ForumPost> getPostsSortedAndFiltered(String sort, String filter, String search, int page, int size) throws SQLException {
         List<ForumPost> posts = new ArrayList<>();
-        StringBuilder query = new StringBuilder("SELECT fp.id, fp.title, fp.content, fp.postedBy, fp.createdDate, fp.category, fp.viewCount, fp.voteCount, fp.picture, ua.username AS postedByUsername "
+        StringBuilder query = new StringBuilder("SELECT fp.id, fp.title, fp.content, fp.postedBy, fp.createdDate, fp.category, fp.viewCount, fp.voteCount, fp.picture, fp.status, ua.username AS postedByUsername "
                 + "FROM ForumPost fp LEFT JOIN UserAccount ua ON fp.postedBy = ua.userID ");
         List<String> conditions = new ArrayList<>();
         List<Object> parameters = new ArrayList<>();
+
+        // Only show active posts by default
+        conditions.add("(fp.status IS NULL OR fp.status = 'ACTIVE')");
 
         // Handle search by title
         if (search != null && !search.trim().isEmpty()) {
@@ -80,6 +83,7 @@ public class ForumPostDAO {
                     post.setViewCount(rs.getInt("viewCount"));
                     post.setVoteCount(rs.getInt("voteCount"));
                     post.setPicture(rs.getString("picture"));
+                    post.setStatus(rs.getString("status"));
 
                     String commentCountQuery = "SELECT COUNT(*) AS commentCount FROM ForumComment WHERE postID = ?";
                     try (PreparedStatement countStmt = conn.prepareStatement(commentCountQuery)) {
@@ -107,7 +111,7 @@ public class ForumPostDAO {
 
     public ForumPost getPostById(int postId) throws SQLException {
         ForumPost post = null;
-        String query = "SELECT fp.id, fp.title, fp.content, fp.postedBy, fp.createdDate, fp.category, fp.viewCount, fp.voteCount, fp.picture, ua.username AS postedByUsername "
+        String query = "SELECT fp.id, fp.title, fp.content, fp.postedBy, fp.createdDate, fp.category, fp.viewCount, fp.voteCount, fp.picture, fp.status, ua.username AS postedByUsername "
                 + "FROM ForumPost fp LEFT JOIN UserAccount ua ON fp.postedBy = ua.userID WHERE fp.id = ?";
 
         try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -124,6 +128,7 @@ public class ForumPostDAO {
                     post.setViewCount(rs.getInt("viewCount"));
                     post.setVoteCount(rs.getInt("voteCount"));
                     post.setPicture(rs.getString("picture"));
+                    post.setStatus(rs.getString("status"));
 
                     String commentCountQuery = "SELECT COUNT(*) AS commentCount FROM ForumComment WHERE postID = ?";
                     try (PreparedStatement countStmt = conn.prepareStatement(commentCountQuery)) {
@@ -257,8 +262,8 @@ public class ForumPostDAO {
     }
 
     public void createPost(ForumPost post) throws SQLException {
-        String query = "INSERT INTO ForumPost (title, content, postedBy, createdDate, category, viewCount, voteCount, picture) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO ForumPost (title, content, postedBy, createdDate, category, viewCount, voteCount, picture, status) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, post.getTitle());
             stmt.setString(2, post.getContent());
@@ -268,6 +273,7 @@ public class ForumPostDAO {
             stmt.setInt(6, post.getViewCount());
             stmt.setInt(7, post.getVoteCount());
             stmt.setString(8, post.getPicture());
+            stmt.setString(9, "ACTIVE"); // Default status
             stmt.executeUpdate();
             LOGGER.info("Created new post: " + post.getTitle());
         } catch (SQLException e) {
@@ -280,38 +286,88 @@ public class ForumPostDAO {
 
     // Update post
     public boolean updatePost(ForumPost post) {
-        String sql = "UPDATE ForumPost SET title = ?, content = ?, category = ?, picture = ? WHERE id = ? AND postedBy = ?";
+        String sql = "UPDATE ForumPost SET title = ?, content = ?, category = ?, picture = ? WHERE id = ?";
         try (Connection conn = dbContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, post.getTitle());
             ps.setString(2, post.getContent());
             ps.setString(3, post.getCategory());
             ps.setString(4, post.getPicture());
             ps.setInt(5, post.getId());
-            ps.setString(6, post.getPostedBy());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error updating post: " + e.getMessage(), e);
             return false;
         }
     }
 
-    // Delete post
+    // Delete post (soft delete by setting status)
     public boolean deletePost(int postId, String userId) {
-        String sql = "DELETE FROM ForumPost WHERE id = ? AND postedBy = ?";
+        String sql = "UPDATE ForumPost SET status = 'DELETED' WHERE id = ?";
         try (Connection conn = dbContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, postId);
-            ps.setString(2, userId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error deleting post: " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    // Hide post
+    public boolean hidePost(int postId, String moderatorId) {
+        String sql = "UPDATE ForumPost SET status = 'HIDDEN', moderatedBy = ?, moderatedDate = NOW() WHERE id = ?";
+        try (Connection conn = dbContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, moderatorId);
+            ps.setInt(2, postId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error hiding post: " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    // Show post
+    public boolean showPost(int postId, String moderatorId) {
+        String sql = "UPDATE ForumPost SET status = 'ACTIVE', moderatedBy = ?, moderatedDate = NOW() WHERE id = ?";
+        try (Connection conn = dbContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, moderatorId);
+            ps.setInt(2, postId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error showing post: " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    // Pin post
+    public boolean pinPost(int postId, String moderatorId) {
+        String sql = "UPDATE ForumPost SET status = 'PINNED', moderatedBy = ?, moderatedDate = NOW() WHERE id = ?";
+        try (Connection conn = dbContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, moderatorId);
+            ps.setInt(2, postId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error pinning post: " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    // Unpin post
+    public boolean unpinPost(int postId, String moderatorId) {
+        String sql = "UPDATE ForumPost SET status = 'ACTIVE', moderatedBy = ?, moderatedDate = NOW() WHERE id = ?";
+        try (Connection conn = dbContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, moderatorId);
+            ps.setInt(2, postId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error unpinning post: " + e.getMessage(), e);
             return false;
         }
     }
 
     public List<ForumPost> getRelatedPosts(int postId, String category, int limit) throws SQLException {
         List<ForumPost> related = new ArrayList<>();
-        String query = "SELECT id, title, content, postedBy, createdDate, category, viewCount, voteCount, picture "
-                + "FROM ForumPost WHERE category = ? AND id <> ? ORDER BY createdDate DESC LIMIT ?";
+        String query = "SELECT id, title, content, postedBy, createdDate, category, viewCount, voteCount, picture, status "
+                + "FROM ForumPost WHERE category = ? AND id <> ? AND (status IS NULL OR status = 'ACTIVE') ORDER BY createdDate DESC LIMIT ?";
         try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, category);
             stmt.setInt(2, postId);
@@ -328,6 +384,7 @@ public class ForumPostDAO {
                     post.setViewCount(rs.getInt("viewCount"));
                     post.setVoteCount(rs.getInt("voteCount"));
                     post.setPicture(rs.getString("picture"));
+                    post.setStatus(rs.getString("status"));
                     related.add(post);
                 }
             }
@@ -358,8 +415,8 @@ public class ForumPostDAO {
     
     public List<ForumPost> getPostsByUserId(String userId, int limit) throws SQLException {
         List<ForumPost> posts = new ArrayList<>();
-        String query = "SELECT id, title, content, postedBy, createdDate, category, viewCount, voteCount, picture "
-                + "FROM ForumPost WHERE postedBy = ? ORDER BY createdDate DESC LIMIT ?";
+        String query = "SELECT id, title, content, postedBy, createdDate, category, viewCount, voteCount, picture, status "
+                + "FROM ForumPost WHERE postedBy = ? AND (status IS NULL OR status = 'ACTIVE') ORDER BY createdDate DESC LIMIT ?";
 
         try (Connection conn = dbContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -378,6 +435,7 @@ public class ForumPostDAO {
                     post.setViewCount(rs.getInt("viewCount"));
                     post.setVoteCount(rs.getInt("voteCount"));
                     post.setPicture(rs.getString("picture"));
+                    post.setStatus(rs.getString("status"));
 
                     // Get comment count
                     String commentCountQuery = "SELECT COUNT(*) AS commentCount FROM ForumComment WHERE postID = ?";
@@ -396,6 +454,40 @@ public class ForumPostDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error retrieving posts for user: " + e.getMessage(), e);
+            throw e;
+        } finally {
+            dbContext.closeConnection();
+        }
+        return posts;
+    }
+    
+    public List<ForumPost> getRecentPostsForModeration(int limit) throws SQLException {
+        List<ForumPost> posts = new ArrayList<>();
+        String query = "SELECT fp.id, fp.title, fp.content, fp.postedBy, fp.createdDate, fp.category, fp.viewCount, fp.voteCount, fp.picture, fp.status, ua.username AS postedByUsername "
+                + "FROM ForumPost fp LEFT JOIN UserAccount ua ON fp.postedBy = ua.userID "
+                + "ORDER BY fp.createdDate DESC LIMIT ?";
+
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    ForumPost post = new ForumPost();
+                    post.setId(rs.getInt("id"));
+                    post.setTitle(rs.getString("title"));
+                    post.setContent(rs.getString("content"));
+                    post.setPostedBy(rs.getString("postedBy"));
+                    post.setCreatedDate(rs.getTimestamp("createdDate"));
+                    post.setCategory(rs.getString("category"));
+                    post.setViewCount(rs.getInt("viewCount"));
+                    post.setVoteCount(rs.getInt("voteCount"));
+                    post.setPicture(rs.getString("picture"));
+                    post.setStatus(rs.getString("status"));
+                    posts.add(post);
+                }
+                LOGGER.info("Retrieved " + posts.size() + " posts for moderation");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error retrieving posts for moderation: " + e.getMessage(), e);
             throw e;
         } finally {
             dbContext.closeConnection();

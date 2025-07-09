@@ -1,14 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="model.UserAccount" %>
-<%!
-    public String escapeHtml(String input) {
-        if (input == null) return "";
-        return input.replace("&", "&amp;")
-                    .replace("<", "&lt;")
-                    .replace(">", "&gt;")
-                    .replace("'", "&#39;");
-    }
-%>
 
 <style>
 :root {
@@ -79,6 +70,7 @@ body {
     display: flex;
     gap: 24px;
     align-items: center;
+    padding: 0.5rem 4rem 0.5rem 2rem;
 }
 
 .topbar .nav a {
@@ -93,16 +85,10 @@ body {
     align-items: center;
     gap: 8px;
 }
-
 .topbar .nav a.active,
 .topbar .nav a:hover {
     background: rgba(255, 255, 255, 0.13);
 }
-
-.topbar .account-dropdown {
-    position: relative;
-}
-
 .topbar .account-btn {
     background: none;
     border: none;
@@ -117,7 +103,6 @@ body {
     border-radius: 8px;
     transition: background 0.2s;
 }
-
 .topbar .account-btn:hover {
     background: rgba(255, 255, 255, 0.13);
 }
@@ -130,13 +115,49 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
 }
-
 .avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+.dropdown {
+    position: absolute;
+    top: 110%;
+    right: 0;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.08);
+    min-width: 220px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s;
+    z-index: 50;
+}
+.dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    color: #222b45;
+    text-decoration: none;
+    transition: all 0.2s;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.95rem;
+}
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+.dropdown-item:hover {
+    background: #f1f5f9;
+    color: var(--primary);
 }
 
 .dropdown-content {
@@ -269,7 +290,7 @@ function toggleDropdown() {
 }
 
 // Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function(event) {    
     const dropdown = document.getElementById('userDropdown');
     const avatar = document.querySelector('.account-dropdown .avatar');
     
@@ -285,3 +306,4 @@ document.addEventListener('keydown', function(event) {
     }
 });
 </script>
+    

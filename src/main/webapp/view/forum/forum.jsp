@@ -1,7 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ page import="java.util.List, java.util.Set, dao.UserDAO, model.forum.ForumPost, model.forum.ForumComment, model.forum.UserActivityScore, model.UserAccount, java.text.SimpleDateFormat, java.sql.Timestamp, dao.forum.ForumPostDAO" %>
+<%@ page import="java.util.List, java.util.Set, dao.UserDAO, model.forum.ForumPost, model.forum.ForumComment, model.forum.UserActivityScore, model.UserAccount, java.text.SimpleDateFormat, java.sql.Timestamp, dao.forum.ForumPostDAO, service.ForumPermissionService, constant.ForumPermissions" %>
+<%!
+    public String escapeHtml(String input) {
+        if (input == null) return "";
+        return input.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("'", "&#39;");
+    }
+%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -73,6 +82,97 @@
                     box-shadow: 0 8px 32px 0 rgba(0, 123, 255, 0.15);
                 }
             }
+
+            /* Role-based styling */
+            .role-badge {
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 0.75em;
+                font-weight: 600;
+                margin-left: 8px;
+            }
+
+            .role-badge.admin {
+                background: linear-gradient(90deg, #dc2626, #ef4444);
+                color: white;
+            }
+
+            .role-badge.coordinator {
+                background: linear-gradient(90deg, #f59e0b, #fbbf24);
+                color: white;
+            }
+
+            .role-badge.teacher {
+                background: linear-gradient(90deg, #059669, #10b981);
+                color: white;
+            }
+
+            .role-badge.student {
+                background: linear-gradient(90deg, #2563eb, #3b82f6);
+                color: white;
+            }
+
+            /* Post status indicators */
+            .post-status {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 0.75em;
+                font-weight: 500;
+                margin-left: 8px;
+            }
+
+            .post-status.pinned {
+                background: #fbbf24;
+                color: #92400e;
+            }
+
+            .post-status.hidden {
+                background: #ef4444;
+                color: white;
+            }
+
+            /* Moderation controls */
+            .moderation-controls {
+                display: none;
+                gap: 8px;
+                margin-top: 8px;
+            }
+
+            .moderation-controls.show {
+                display: flex;
+            }
+
+            .mod-btn {
+                padding: 4px 8px;
+                border: none;
+                border-radius: 4px;
+                font-size: 0.8em;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .mod-btn.hide {
+                background: #ef4444;
+                color: white;
+            }
+
+            .mod-btn.pin {
+                background: #f59e0b;
+                color: white;
+            }
+
+            .mod-btn.delete {
+                background: #dc2626;
+                color: white;
+            }
+
+            .mod-btn:hover {
+                opacity: 0.8;
+            }
         </style>
     </head>
     <body>
@@ -94,6 +194,21 @@
                         <li><a href="#" data-filter="Công cụ"><i class="fas fa-tools"></i> Công Cụ</a></li>
                     </ul>
                 </div>
+                
+                <%
+                    boolean canModerate = currentUser != null && ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_MODERATE_CONTENT);
+                    if (canModerate) {
+                %>
+                <div class="topics" style="margin-top: 20px;">
+                    <div class="topics-title">Quản Lý</div>
+                    <ul class="topic-list">
+                        <li><a href="<%= request.getContextPath() %>/forum/moderate"><i class="fas fa-shield-alt"></i> Kiểm Duyệt</a></li>
+                        <% if (ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_MANAGE_USERS)) { %>
+                        <li><a href="<%= request.getContextPath() %>/admin/users"><i class="fas fa-users"></i> Quản Lý User</a></li>
+                        <% } %>
+                    </ul>
+                </div>
+                <% } %>
             </aside>
             <main class="main-content">
                 <%
@@ -115,9 +230,13 @@
                             <div id="suggestionList" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; max-height: 200px; overflow-y: auto;"></div>
                         </div>
                         <button class="btn btn-primary" onclick="handleSearch()"><i class="fas fa-search"></i> Tìm</button>
+                        
+                        <% if (currentUser != null && ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_CREATE_POSTS)) { %>
                         <button class="btn btn-primary" onclick="openPostModal()">
                             <i class="fas fa-plus"></i> Tạo Bài Viết Mới
                         </button>
+                        <% } %>
+                        
                         <div class="filters">
                             <select id="sortSelect" onchange="handleSortChange()">
                                 <option value="newest" <%= "newest".equals(request.getAttribute("sort")) ? "selected" : ""%>>Mới Nhất</option>
@@ -150,16 +269,34 @@
                             String formattedDate = createdDate != null ? sdf.format(createdDate) : "";
                             boolean hasLiked = userId != null && postDAO.hasUserLikedPost(post.getId(), userId);
                             boolean isRead = viewedPostIds != null && viewedPostIds.contains(post.getId());
+                            
+                            // Get post author info
+                            UserAccount postAuthor = new UserDAO().getUserById(post.getPostedBy());
+                            String authorRole = postAuthor != null ? postAuthor.getRole() : "Student";
+                            String authorUsername = postAuthor != null ? postAuthor.getUsername() : "Unknown";
+                            
+                            // Check moderation permissions for current post
+                            boolean canModeratePost = currentUser != null && ForumPermissionService.canModerateCategory(currentUser, post.getCategory());
+                            boolean canEditPost = currentUser != null && ForumPermissionService.canEditPost(currentUser, post);
+                            boolean canDeletePost = currentUser != null && ForumPermissionService.canDeletePost(currentUser, post);
+                            
+                            // Check post status
+                            boolean isPinned = "PINNED".equals(post.getStatus());
+                            boolean isHidden = "HIDDEN".equals(post.getStatus());
                     %>
                     <div class="post-card <%= isRead ? "read" : "unread"%>" data-tags="<%= escapeHtml(post.getCategory())%>">
                         <div class="post-content">
                             <div class="post-header">
-                                <%-- Update avatar image to be a clickable link --%>
                                 <a href="<%= request.getContextPath()%>/profile?userId=<%= escapeHtml(post.getPostedBy())%>" class="avatar" style="text-decoration: none;">
-                                    <img src="<%= request.getContextPath()%>/assets/images/avatar<%= escapeHtml(post.getPostedBy())%>.png" alt="Avatar" />
+                                    <img src="<%= request.getContextPath()%>/<%= postAuthor != null && postAuthor.getProfilePicture() != null && !postAuthor.getProfilePicture().isEmpty() ? escapeHtml(postAuthor.getProfilePicture()) : "assets/img/avatar.png"%>" alt="Avatar" />
                                 </a>
                                 <div class="author-info">
-                                    <span class="author-name"><%= escapeHtml(new UserDAO().getUsernameByUserID(post.getPostedBy()))%></span>
+                                    <span class="author-name">
+                                        <%= escapeHtml(authorUsername)%>
+                                        <span class="role-badge <%= authorRole.toLowerCase()%>">
+                                            <%= ForumPermissionService.getRoleDisplayName(authorRole)%>
+                                        </span>
+                                    </span>
                                     <div class="post-meta">
                                         <span><i class="fas fa-clock"></i> <%= formattedDate%></span>
                                         <span><i class="fas fa-eye"></i> <%= post.getViewCount()%></span>
@@ -168,6 +305,21 @@
                                 </div>
                                 <div class="post-tags">
                                     <span class="tag"><%= escapeHtml(post.getCategory())%></span>
+                                    
+                                    <% if (isPinned) { %>
+                                    <span class="post-status pinned">
+                                        <i class="fas fa-thumbtack"></i>
+                                        Ghim
+                                    </span>
+                                    <% } %>
+                                    
+                                    <% if (isHidden) { %>
+                                    <span class="post-status hidden">
+                                        <i class="fas fa-eye-slash"></i>
+                                        Ẩn
+                                    </span>
+                                    <% } %>
+                                    
                                     <% if (isRead) { %>
                                     <span class="read-indicator">
                                         <i class="fas fa-check"></i>
@@ -183,11 +335,11 @@
                             </div>
                             <a href="<%= request.getContextPath()%>/forum/post/<%= post.getId()%>" class="post-title"><%= escapeHtml(post.getTitle())%></a>
                             <div class="post-body">
-                                <p><%= escapeHtml(post.getContent())%></p>
+                                <p><%= escapeHtml(post.getContent().length() > 200 ? post.getContent().substring(0, 200) + "..." : post.getContent())%></p>
                             </div>
                             <% if (!postPicture.isEmpty()) {%>
                             <div class="post-image">
-                                <img src="<%= request.getContextPath()%>/<%= escapeHtml(postPicture)%>" alt="Post image" />
+                                <img src="<%= escapeHtml(postPicture)%>" alt="Post image" />
                             </div>
                             <% }%>
                             <div class="post-actions">
@@ -197,38 +349,51 @@
                                 <a href="<%= request.getContextPath()%>/forum/post/<%= post.getId()%>" class="action-btn comment-btn">
                                     <i class="fas fa-comment"></i> <%= post.getCommentCount()%>
                                 </a>
+                                
+                                <% if (canEditPost) { %>
+                                <a href="<%= request.getContextPath()%>/forum/editPost/<%= post.getId()%>" class="action-btn edit-btn">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </a>
+                                <% } %>
+                                
+                                <% if (canModeratePost) { %>
+                                <button class="action-btn mod-btn" onclick="toggleModerationControls(<%= post.getId()%>)">
+                                    <i class="fas fa-shield-alt"></i> Kiểm duyệt
+                                </button>
+                                <% } %>
                             </div>
-                            <div class="comment-section" id="comment-section-<%= post.getId()%>" style="display:none;">
-                                <%
-                                    List<ForumComment> comments = post.getComments();
-                                    if (comments != null) {
-                                        for (ForumComment comment : comments) {
-                                            Timestamp commentDate = comment.getCommentedDate();
-                                            String formattedCommentDate = commentDate != null ? sdf.format(commentDate) : "";
-                                %>
-                                <div class="comment">
-                                    <div class="avatar sm">
-                                        <img src="<%= request.getContextPath()%>/assets/images/avatar.png" alt="Avatar" />
-                                    </div>
-                                    <div class="comment-content">
-                                        <span class="author-name"><%= escapeHtml(new UserDAO().getUsernameByUserID(comment.getCommentedBy()))%></span>
-                                        <p><%= escapeHtml(comment.getCommentText())%></p>
-                                        <span class="comment-time"><i class="fas fa-clock"></i> <%= formattedCommentDate%></span>
-                                        <button class="action-btn">
-                                            <i class="fas fa-thumbs-up"></i> <%= comment.getVoteCount()%>
-                                        </button>
-                                    </div>
-                                </div>
-                                <%
-                                        }
-                                    }
-                                %>
-                                <form action="<%= request.getContextPath()%>/forum/createComment" method="post" class="comment-form">
-                                    <input type="hidden" name="postId" value="${post.id}">
-                                    <textarea name="commentText" placeholder="Viết bình luận..." required></textarea>
-                                    <button type="submit" class="btn btn-primary">Gửi</button>
-                                </form>
+                            
+                            <% if (canModeratePost) { %>
+                            <div class="moderation-controls" id="mod-controls-<%= post.getId()%>">
+                                <% if (!isHidden) { %>
+                                <button class="mod-btn hide" onclick="moderatePost(<%= post.getId()%>, 'hide')">
+                                    <i class="fas fa-eye-slash"></i> Ẩn
+                                </button>
+                                <% } else { %>
+                                <button class="mod-btn show" onclick="moderatePost(<%= post.getId()%>, 'show')">
+                                    <i class="fas fa-eye"></i> Hiện
+                                </button>
+                                <% } %>
+                                
+                                <% if (ForumPermissionService.canPinPost(currentUser)) { %>
+                                    <% if (!isPinned) { %>
+                                    <button class="mod-btn pin" onclick="moderatePost(<%= post.getId()%>, 'pin')">
+                                        <i class="fas fa-thumbtack"></i> Ghim
+                                    </button>
+                                    <% } else { %>
+                                    <button class="mod-btn unpin" onclick="moderatePost(<%= post.getId()%>, 'unpin')">
+                                        <i class="fas fa-times"></i> Bỏ ghim
+                                    </button>
+                                    <% } %>
+                                <% } %>
+                                
+                                <% if (canDeletePost) { %>
+                                <button class="mod-btn delete" onclick="confirmDeletePost(<%= post.getId()%>)">
+                                    <i class="fas fa-trash"></i> Xóa
+                                </button>
+                                <% } %>
                             </div>
+                            <% } %>
                         </div>
                     </div>
                     <%
@@ -263,17 +428,17 @@
                     </div>
                     <div style="display:flex;flex-direction:column;align-items:center;padding:0 0 18px 0;position:relative;top:-40px;">
                         <div style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff;">
-                            <img src="<%= request.getContextPath()%>/<%= request.getAttribute("user") != null && ((model.UserAccount) request.getAttribute("user")).getProfilePicture() != null && !((model.UserAccount) request.getAttribute("user")).getProfilePicture().isEmpty() ? ((model.UserAccount) request.getAttribute("user")).getProfilePicture() : "assets/img/avatar.png"%>" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">
+                            <img src="<%= request.getContextPath()%>/<%= currentUser != null && currentUser.getProfilePicture() != null && !currentUser.getProfilePicture().isEmpty() ? currentUser.getProfilePicture() : "assets/img/avatar.png"%>" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">
                         </div>
                         <div style="margin-top:10px;text-align:center;">
                             <div style="color:#888;font-size:1em;">Welcome back,</div>
                             <div style="font-weight:700;font-size:1.2em;">
-                                <%= escapeHtml(((model.UserAccount) request.getAttribute("user")).getUsername())%>
+                                <%= currentUser != null ? escapeHtml(currentUser.getUsername()) : "Guest"%>
                             </div>
                             <div style="color:#888;font-size:0.98em;">
-                                <%= escapeHtml(((model.UserAccount) request.getAttribute("user")).getRole())%>
+                                <%= currentUser != null ? ForumPermissionService.getRoleDisplayName(currentUser.getRole()) : "Khách"%>
                             </div>
-                            <% if (((model.UserAccount) request.getAttribute("user")).getRole() != null && ((model.UserAccount) request.getAttribute("user")).getRole().toLowerCase().contains("admin")) { %>
+                            <% if (currentUser != null && ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_FULL_ADMIN)) { %>
                             <span style="display:inline-block;margin-top:7px;padding:2px 14px;font-size:0.95em;background:linear-gradient(90deg,#a18cd1 0%,#fbc2eb 100%);color:#5a189a;border-radius:12px;font-weight:600;">Admin</span>
                             <% }%>
                         </div>
@@ -364,6 +529,8 @@
             </aside>
 
         </div>
+        
+        <% if (currentUser != null && ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_CREATE_POSTS)) { %>
         <div class="modal-overlay" id="createPostModal">
             <div class="modal">
                 <div class="modal-header">
@@ -380,15 +547,12 @@
                             <label class="form-label" for="postCategory">Chủ đề</label>
                             <select class="form-control" id="postCategory" name="postCategory" required>
                                 <option value="">Chọn chủ đề</option>
-                                <option value="N5">JLPT N5</option>
-                                <option value="N4">JLPT N4</option>
-                                <option value="N3">JLPT N3</option>
-                                <option value="N2">JLPT N2</option>
-                                <option value="N1">JLPT N1</option>
-                                <option value="Ngữ pháp">Ngữ Pháp</option>
-                                <option value="Kinh nghiệm thi">Kinh Nghiệm Thi</option>
-                                <option value="Tài liệu">Tài Liệu</option>
-                                <option value="Công cụ">Công Cụ</option>
+                                <%
+                                    List<String> allowedCategories = ForumPermissionService.getAllowedCategories(currentUser);
+                                    for (String category : allowedCategories) {
+                                %>
+                                <option value="<%= escapeHtml(category) %>"><%= escapeHtml(category) %></option>
+                                <% } %>
                             </select>
                         </div>
                         <div class="form-group">
@@ -412,8 +576,9 @@
                 </div>
             </div>
         </div>
+        <% } %>
+        
         <script>
-
             function openPostModal() {
                 document.getElementById("createPostModal").classList.add("active");
             }
@@ -431,10 +596,6 @@
                     };
                     reader.readAsDataURL(file);
                 }
-            }
-            function openCommentSection(postId) {
-                const section = document.getElementById("comment-section-" + postId);
-                section.style.display = section.style.display === "none" ? "block" : "none";
             }
             function toggleLike(postId, button) {
                 const userId = "<%= request.getAttribute("userId") != null ? request.getAttribute("userId") : ""%>";
@@ -477,6 +638,48 @@
                 const filter = document.getElementById("filterSelect").value;
                 window.location.href = "<%= request.getContextPath()%>/forum?sort=" + sort + "&filter=" + filter + "&search=" + encodeURIComponent(search);
             }
+            function toggleModerationControls(postId) {
+                const controls = document.getElementById("mod-controls-" + postId);
+                controls.classList.toggle("show");
+            }
+            function moderatePost(postId, action) {
+                if (confirm("Bạn có chắc chắn muốn thực hiện hành động này?")) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '<%= request.getContextPath()%>/forum/moderate';
+                    
+                    const postIdInput = document.createElement('input');
+                    postIdInput.type = 'hidden';
+                    postIdInput.name = 'postId';
+                    postIdInput.value = postId;
+                    form.appendChild(postIdInput);
+                    
+                    const actionInput = document.createElement('input');
+                    actionInput.type = 'hidden';
+                    actionInput.name = 'action';
+                    actionInput.value = action;
+                    form.appendChild(actionInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+            function confirmDeletePost(postId) {
+                if (confirm("Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.")) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '<%= request.getContextPath()%>/forum/deletePost';
+                    
+                    const postIdInput = document.createElement('input');
+                    postIdInput.type = 'hidden';
+                    postIdInput.name = 'postId';
+                    postIdInput.value = postId;
+                    form.appendChild(postIdInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
             document.querySelectorAll(".topic-list a").forEach(function (link) {
                 link.addEventListener("click", function (e) {
                     e.preventDefault();
@@ -501,9 +704,6 @@
                     closePostModal();
                 }
             });
-            function toggleMobileMenu() {
-                document.querySelector(".sidebar-left").classList.toggle("active");
-            }
             function handleSortChange() {
                 const sort = document.getElementById("sortSelect").value;
                 const filter = document.getElementById("filterSelect").value;
