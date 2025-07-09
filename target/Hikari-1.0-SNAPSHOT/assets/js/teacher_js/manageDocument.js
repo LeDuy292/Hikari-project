@@ -20,9 +20,9 @@ function populateClassSelector(classes, selectedClassId = null) {
         classes.forEach(cls => {
             if (cls.classID && cls.name) {
                 const option = document.createElement('option');
-                option.value = cls.id;
+                option.value = cls.classID;
                 option.textContent = cls.name;
-                if (cls.classID == selectedClassId) {
+                if (cls.classID === selectedClassId) {
                     option.selected = true;
                 }
                 classSelect.appendChild(option);
@@ -49,6 +49,7 @@ function fetchClassDocuments() {
         fetchDocuments();
     }
 }
+
 function fetchDocuments(classId = null) {
     const documentGrid = document.getElementById('documentGrid');
     if (!documentGrid) {
@@ -57,11 +58,10 @@ function fetchDocuments(classId = null) {
     }
     documentGrid.innerHTML = '<div class="no-documents">Đang tải...</div>';
 
-    // Không lấy classId từ localStorage khi tải trang lần đầu
-    const url = classId ? `${contextPath}/api/documents?filter=${currentFilter}&classId=${classId}` : `${contextPath}/api/documents?filter=${currentFilter}`;
+    const url = classId ? `${contextPath}/manageDocuments?filter=${currentFilter}&classId=${classId}` : `${contextPath}/manageDocuments?filter=${currentFilter}`;
     console.log('Fetching documents from:', url);
 
-    const classPromise = fetch(`${contextPath}/api/documents/classes`, {
+    const classPromise = fetch(`${contextPath}/manageDocuments/classes`, {
         headers: {
             'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]')?.value || '',
             'Accept': 'application/json'
@@ -111,16 +111,17 @@ function fetchDocuments(classId = null) {
             classList = Array.isArray(classes) ? classes : [];
             console.log('Documents received:', allDocuments.length);
             console.log('Classes received:', classList);
-            populateClassSelector(classList, classId); // Truyền classId
+            populateClassSelector(classList, classId);
             renderDocuments();
             updatePagination();
         })
         .catch(error => {
             console.error('Error in fetchDocuments:', error.message);
-            documentGrid.innerHTML = `<div class="no-documents">Lỗi: ${error.message}</div>`;
+            documentGrid.innerHTML = `<div class="no-documents">Lỗi: ${error.message}. Vui lòng thử lại hoặc liên hệ hỗ trợ.</div>`;
             updatePagination();
         });
 }
+
 function renderDocuments() {
     const documentGrid = document.getElementById('documentGrid');
     if (!documentGrid) {
@@ -141,8 +142,8 @@ function renderDocuments() {
             console.warn('Invalid document data:', doc);
             return;
         }
-        const imageUrl = doc.imgUrl || 'https://projectswp1.s3.ap-southeast-2.amazonaws.com/documents/img/Ảnh_chụp_màn_hình_2025-06-17_012223.png';
-        const classInfo = classList.find(cls => cls.id == doc.classID) || { name: 'Chưa có' };
+        const imageUrl = doc.imgUrl || 'https://via.placeholder.com/150'; // Thay defaultAvatar.jpg bằng URL placeholder
+        const classInfo = classList.find(cls => cls.classID === doc.classID) || { name: 'Chưa có' };
         const className = classInfo.name;
 
         const card = document.createElement('div');
@@ -187,61 +188,7 @@ function showAddDocumentForm() {
     document.getElementById('documentFile').setAttribute('required', 'required');
     document.getElementById('classId').innerHTML = '<option value="" disabled selected>Chọn lớp học</option>';
 
-    fetch(`${contextPath}/api/documents/classes`, {
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]')?.value || '',
-            'Accept': 'application/json'
-        },
-        credentials: 'include'
-    })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(`HTTP ${response.status}: ${text || 'Không thể tải danh sách lớp'}`);
-                });
-            }
-            return response.json();
-        })
-        .then(classes => {
-            classList = Array.isArray(classes) ? classes : [];
-            const classSelect = document.getElementById('classId');
-            if (classList.length === 0) {
-                classSelect.innerHTML += '<option value="">Không có lớp học nào</option>';
-            } else {
-                classList.forEach(cls => {
-                    if (cls.id && cls.name) {
-                        const option = document.createElement('option');
-                        option.value = cls.id;
-                        option.textContent = cls.name;
-                        classSelect.appendChild(option);
-                    }
-                });
-            }
-            console.log('Modal class selector populated with:', classList);
-        })
-        .catch(error => {
-            console.error('Error fetching classes for modal:', error);
-            alert('Lỗi tải danh sách lớp: ' + error.message);
-        });
-    new bootstrap.Modal(document.getElementById('documentModal'), { focus: false }).show();
-}
-
-function showUpdateDocumentForm(documentId) {
-    const doc = allDocuments.find(d => d.id == documentId);
-    if (!doc) {
-        console.error('Document not found:', documentId);
-        alert('Không tìm thấy tài liệu.');
-        return;
-    }
-    document.getElementById('documentModalLabel').textContent = 'Cập Nhật Tài Liệu';
-    document.getElementById('documentId').value = doc.id;
-    document.getElementById('documentName').value = doc.title || '';
-    document.getElementById('documentDescription').value = doc.description || '';
-    document.getElementById('documentFileInput').style.display = 'none';
-    document.getElementById('documentFile').removeAttribute('required');
-    document.getElementById('classId').innerHTML = '<option value="" disabled selected>Chọn lớp học</option>';
-
-    fetch(`${contextPath}/api/documents/classes`, {
+    fetch(`${contextPath}/manageDocuments/classes`, {
         headers: {
             'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]')?.value || '',
             'Accept': 'application/json'
@@ -267,7 +214,62 @@ function showUpdateDocumentForm(documentId) {
                         const option = document.createElement('option');
                         option.value = cls.classID;
                         option.textContent = cls.name;
-                        if (cls.classID == doc.classID) {
+                        classSelect.appendChild(option);
+                    }
+                });
+            }
+            console.log('Modal class selector populated with:', classList);
+        })
+        .catch(error => {
+            console.error('Error fetching classes for modal:', error);
+            alert('Lỗi tải danh sách lớp: ' + error.message);
+        });
+    new bootstrap.Modal(document.getElementById('documentModal'), { focus: false }).show();
+}
+
+function showUpdateDocumentForm(documentId) {
+    const doc = allDocuments.find(d => d.id == documentId);
+    if (!doc) {
+        console.error('Document not found:', documentId);
+        alert('Không tìm thấy tài liệu.');
+        return;
+    }
+    console.log('Document classID:', doc.classID);
+    document.getElementById('documentModalLabel').textContent = 'Cập Nhật Tài Liệu';
+    document.getElementById('documentId').value = doc.id;
+    document.getElementById('documentName').value = doc.title || '';
+    document.getElementById('documentDescription').value = doc.description || '';
+    document.getElementById('documentFileInput').style.display = 'none';
+    document.getElementById('documentFile').removeAttribute('required');
+    document.getElementById('classId').innerHTML = '<option value="" disabled selected>Chọn lớp học</option>';
+
+    fetch(`${contextPath}/manageDocuments/classes`, {
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]')?.value || '',
+            'Accept': 'application/json'
+        },
+        credentials: 'include'
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(`HTTP ${response.status}: ${text || 'Không thể tải danh sách lớp'}`);
+                });
+            }
+            return response.json();
+        })
+        .then(classes => {
+            classList = Array.isArray(classes) ? classes : [];
+            const classSelect = document.getElementById('classId');
+            if (classList.length === 0) {
+                classSelect.innerHTML += '<option value="">Không có lớp học nào</option>';
+            } else {
+                classList.forEach(cls => {
+                    if (cls.classID && cls.name) {
+                        const option = document.createElement('option');
+                        option.value = cls.classID;
+                        option.textContent = cls.name;
+                        if (cls.classID === doc.classID) {
                             option.selected = true;
                         }
                         classSelect.appendChild(option);
@@ -285,7 +287,7 @@ function showUpdateDocumentForm(documentId) {
 
 function deleteDocument(documentId) {
     if (confirm('Bạn có chắc chắn muốn xóa tài liệu này?')) {
-        fetch(`${contextPath}/api/documents/${documentId}`, {
+        fetch(`${contextPath}/manageDocuments/${documentId}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]')?.value || '',
@@ -343,23 +345,49 @@ function updatePagination() {
     document.getElementById('nextBtn').disabled = currentPage === totalPages;
     console.log(`Pagination updated: ${totalPages} pages, current page ${currentPage}`);
 }
-
 document.getElementById('documentForm').addEventListener('submit', function (e) {
     e.preventDefault();
-    const formData = new FormData(this);
+
     const documentId = document.getElementById('documentId').value;
+    const title = document.getElementById('documentName').value;
+    const description = document.getElementById('documentDescription').value;
     const classId = document.getElementById('classId').value;
-    if (!classId || isNaN(classId) || classId === '') {
+    const fileInput = document.getElementById('documentFile');
+    const imgInput = document.getElementById('documentImage');
+
+    // Kiểm tra classId hợp lệ
+    const isValidClass = classList.some(cls => cls.classID === classId);
+    if (!classId || classId.trim() === '' || !isValidClass) {
         console.warn('Invalid classId selected:', classId);
         alert('Vui lòng chọn một lớp học hợp lệ.');
         return;
     }
-    const url = documentId ? `${contextPath}/api/documents/${documentId}` : `${contextPath}/api/documents`;
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('classID', classId);
+
+    // Nếu thêm mới => cần fileUrl
+    if (!documentId && fileInput && fileInput.files.length > 0) {
+        formData.append('fileUrl', fileInput.files[0]);
+    }
+
+    // Nếu có ảnh thì thêm imgUrl
+    if (imgInput && imgInput.files.length > 0) {
+        formData.append('imageUrl', imgInput.files[0]);
+    }
+
+    if (documentId) {
+        formData.append('documentId', documentId);
+    }
+
+    const url = documentId ? `${contextPath}/manageDocuments/${documentId}` : `${contextPath}/manageDocuments`;
     const method = documentId ? 'PUT' : 'POST';
 
     console.log('Submitting form:', { method, url, documentId, classId });
     for (let [key, value] of formData.entries()) {
-        console.log(`FormData: ${key}=${value}`);
+        console.log(`FormData: ${key}=${value instanceof File ? value.name : value}`);
     }
 
     fetch(url, {
@@ -379,7 +407,7 @@ document.getElementById('documentForm').addEventListener('submit', function (e) 
                         const json = JSON.parse(text);
                         errorMessage = json.error || text;
                     } catch (e) {
-                        // Not JSON, use text as is
+                        // Not JSON, use raw text
                     }
                     throw new Error(`HTTP ${response.status}: ${errorMessage}`);
                 });
@@ -389,7 +417,10 @@ document.getElementById('documentForm').addEventListener('submit', function (e) 
         .then(data => {
             console.log('Form submission response:', data);
             bootstrap.Modal.getInstance(document.getElementById('documentModal')).hide();
-            fetchDocuments(document.getElementById('classSelect').value || null);
+
+            // ✅ Load lại tài liệu đúng lớp vừa chọn
+            fetchDocuments(classId);
+
             alert(documentId ? 'Tài liệu đã được cập nhật.' : 'Tài liệu đã được thêm.');
         })
         .catch(error => {
@@ -397,6 +428,7 @@ document.getElementById('documentForm').addEventListener('submit', function (e) 
             alert('Có lỗi xảy ra: ' + error.message);
         });
 });
+
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Page loaded, initializing fetchDocuments');

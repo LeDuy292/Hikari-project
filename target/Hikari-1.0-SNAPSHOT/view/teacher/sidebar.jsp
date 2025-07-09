@@ -6,11 +6,12 @@
 <!-- Google Fonts for Elegant Font -->
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/teacher_css/sidebar.css" />
-
+ 
 <%
     // Get the current page name from the request
     String currentPage = request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1);
 %>
+
 
 <div class="sidebar">
     <div class="sidebar-top">
@@ -23,14 +24,14 @@
         </div>
         <a href="${pageContext.request.contextPath}/view/teacher/profileTeacher.jsp" class="sidebar-nav-item <%= currentPage.equals("profileTeacher.jsp") ? "active" : ""%>">
             <i class="fa fa-user"></i><span>Hồ Sơ Của Tôi</span></a>
-        <a href="${pageContext.request.contextPath}/view/teacher/manageCourse.jsp" class="sidebar-nav-item <%= currentPage.equals("manageCourse.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/manageCourse" class="sidebar-nav-item <%= currentPage.equals("manageCourse.jsp") ? "active" : ""%>">
             <i class="fa fa-book-open"></i>
             <span>Quản lý khóa học </span>
         </a>
         <a href="${pageContext.request.contextPath}/view/teacher/manageClasses.jsp" class="sidebar-nav-item <%= currentPage.equals("manageClasses.jsp") ? "active" : ""%>">
             <i class="fa fa-chalkboard"></i><span>Quản Lý Lớp Học</span>
         </a>
-        <a href="${pageContext.request.contextPath}/view/teacher/manageTest.jsp" class="sidebar-nav-item <%= currentPage.equals("manageTest.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/manageTests" class="sidebar-nav-item <%= currentPage.equals("manageTest.jsp") ? "active" : ""%>">
             <i class="fa fa-clipboard-check"></i><span>Bài Tập & Test</span>
         </a>
         <a href="${pageContext.request.contextPath}/view/teacher/manageDocument.jsp" class="sidebar-nav-item <%= currentPage.equals("manageDocument.jsp") ? "active" : ""%>">

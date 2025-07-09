@@ -2,6 +2,7 @@ var ws;
 var currentPartner = null;
 var userMap = userMap || {};
 
+
 function connectWebSocket() {
     ws = new WebSocket("ws://localhost:8080/Hikari/controller.message/ChatServerEndPoint?userID=" + encodeURIComponent(userID));
     console.log("Current user:", userID);
