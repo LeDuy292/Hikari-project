@@ -10,8 +10,6 @@ import model.Topic;
 import utils.DBContext;
 
 public class TopicDAO {
-
-    // Lấy danh sách chủ đề theo courseID
     public List<Topic> getTopicsByCourseId(String courseId) {
         List<Topic> topicList = new ArrayList<>();
         String sql = "SELECT topicID, topicName, description, orderIndex, isActive, createdDate, courseID "

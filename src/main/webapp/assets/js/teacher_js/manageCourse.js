@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
     // Các phần tử DOM
     const courseListView = document.getElementById('courseListView');

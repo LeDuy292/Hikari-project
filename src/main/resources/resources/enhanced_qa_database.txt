@@ -1,0 +1,85 @@
+# HIKARI AI CHATBOT - ENHANCED Q&A DATABASE
+# Format: Q: [Question] | A: [Answer]
+
+# === HỌC PHÍ VÀ THANH TOÁN ===
+Q: Học phí Hikari như thế nào? | A: Học phí từ 1.5-4 triệu tùy khóa: N5 (2tr), N4 (2.5tr), N3 (3tr), N2 (3.5tr), N1 (4tr), Kanji (1.8tr), Hội thoại (2.2tr), Văn hóa (1.5tr), Thương mại (3.2tr), Luyện nghe (1.9tr).
+
+Q: Học phí các khóa học như thế nào? | A: Học phí từ 1.5-4 triệu tùy khóa: N5 (2tr), N4 (2.5tr), N3 (3tr), N2 (3.5tr), N1 (4tr), Kanji (1.8tr), Hội thoại (2.2tr), Văn hóa (1.5tr), Thương mại (3.2tr), Luyện nghe (1.9tr).
+
+Q: Chi phí học tập ra sao? | A: Học phí từ 1.5-4 triệu tùy khóa: N5 (2tr), N4 (2.5tr), N3 (3tr), N2 (3.5tr), N1 (4tr), Kanji (1.8tr), Hội thoại (2.2tr), Văn hóa (1.5tr), Thương mại (3.2tr), Luyện nghe (1.9tr).
+
+Q: Giá khóa học bao nhiêu? | A: Học phí từ 1.5-4 triệu tùy khóa: N5 (2tr), N4 (2.5tr), N3 (3tr), N2 (3.5tr), N1 (4tr), Kanji (1.8tr), Hội thoại (2.2tr), Văn hóa (1.5tr), Thương mại (3.2tr), Luyện nghe (1.9tr).
+
+Q: Bảng giá khóa học? | A: Học phí từ 1.5-4 triệu tùy khóa: N5 (2tr), N4 (2.5tr), N3 (3tr), N2 (3.5tr), N1 (4tr), Kanji (1.8tr), Hội thoại (2.2tr), Văn hóa (1.5tr), Thương mại (3.2tr), Luyện nghe (1.9tr).
+
+Q: Học phí từng khóa học? | A: Học phí từ 1.5-4 triệu tùy khóa: N5 (2tr), N4 (2.5tr), N3 (3tr), N2 (3.5tr), N1 (4tr), Kanji (1.8tr), Hội thoại (2.2tr), Văn hóa (1.5tr), Thương mại (3.2tr), Luyện nghe (1.9tr).
+
+Q: Có thể trả góp học phí không? | A: Hiện tại Hikari chưa hỗ trợ trả góp. Bạn cần thanh toán đủ học phí khi đăng ký khóa học. Chúng tôi đang nghiên cứu phương thức trả góp trong tương lai.
+
+Q: Hikari có mã giảm giá không? | A: Có! Hikari có các mã: NEWBIE2024 (giảm 20% N5), SUMMER2024 (giảm 15% N4), JLPTN3SALE (giảm 25% N3), EARLYBIRD (giảm 30% N2), KANJI50 (giảm 40% Kanji).
+
+Q: Thanh toán bằng cách nào? | A: Hikari hỗ trợ thanh toán qua: chuyển khoản ngân hàng, ví điện tử (Momo, ZaloPay), thẻ tín dụng/ghi nợ. Hệ thống xác nhận thanh toán tự động.
+
+Q: Có được hoàn tiền không? | A: Hoàn tiền 100% nếu hủy trong 7 ngày đầu chưa học bài nào. Hoàn 50% nếu hủy trong 30 ngày đầu. Sau 30 ngày không hoàn tiền.
+
+# === HỆ THỐNG HIKARI ===
+Q: Hệ thống Hikari là gì? | A: Hikari là nền tảng học tiếng Nhật trực tuyến toàn diện, hỗ trợ học viên từ N5 đến N1 với các khóa học, bài tập, thi thử và cộng đồng học tập.
+
+Q: Hikari có những tính năng gì? | A: Hikari cung cấp: đăng ký khóa học, học bài trực tuyến, làm bài tập, thi thử JLPT, diễn đàn thảo luận, theo dõi tiến độ, thanh toán học phí và chat với giảng viên.
+
+Q: Ai có thể sử dụng Hikari? | A: Hikari phục vụ 4 nhóm người dùng: Học viên (đăng ký học), Giảng viên (tạo bài giảng), Quản trị viên (quản lý hệ thống), và Điều phối viên (giám sát chất lượng).
+
+Q: Làm sao để đăng ký tài khoản Hikari? | A: Bạn truy cập trang chủ Hikari, click "Đăng ký", điền thông tin cá nhân (họ tên, email, mật khẩu), xác nhận email và hoàn tất đăng ký.
+
+Q: Tôi quên mật khẩu Hikari thì làm sao? | A: Click "Quên mật khẩu" ở trang đăng nhập, nhập email đã đăng ký, kiểm tra email để nhận link reset mật khẩu, sau đó tạo mật khẩu mới.
+
+# === KHÓA HỌC ===
+Q: Hikari có những khóa học nào? | A: Hikari có 10 khóa học chính: N5 Cơ bản (2tr), N4 Trung cấp (2.5tr), N3 Cao cấp (3tr), N2 Luyện thi (3.5tr), N1 Chuyên sâu (4tr), Kanji Mastery (1.8tr), Hội thoại Thực tế (2.2tr), Văn hóa Nhật (1.5tr), Tiếng Nhật Thương mại (3.2tr), Luyện nghe N3-N2 (1.9tr).
+
+Q: Có những khóa học gì? | A: Hikari có 10 khóa học chính: N5 Cơ bản (2tr), N4 Trung cấp (2.5tr), N3 Cao cấp (3tr), N2 Luyện thi (3.5tr), N1 Chuyên sâu (4tr), Kanji Mastery (1.8tr), Hội thoại Thực tế (2.2tr), Văn hóa Nhật (1.5tr), Tiếng Nhật Thương mại (3.2tr), Luyện nghe N3-N2 (1.9tr).
+
+Q: Danh sách khóa học? | A: Hikari có 10 khóa học chính: N5 Cơ bản (2tr), N4 Trung cấp (2.5tr), N3 Cao cấp (3tr), N2 Luyện thi (3.5tr), N1 Chuyên sâu (4tr), Kanji Mastery (1.8tr), Hội thoại Thực tế (2.2tr), Văn hóa Nhật (1.5tr), Tiếng Nhật Thương mại (3.2tr), Luyện nghe N3-N2 (1.9tr).
+
+Q: Các khóa học hiện có? | A: Hikari có 10 khóa học chính: N5 Cơ bản (2tr), N4 Trung cấp (2.5tr), N3 Cao cấp (3tr), N2 Luyện thi (3.5tr), N1 Chuyên sâu (4tr), Kanji Mastery (1.8tr), Hội thoại Thực tế (2.2tr), Văn hóa Nhật (1.5tr), Tiếng Nhật Thương mại (3.2tr), Luyện nghe N3-N2 (1.9tr).
+
+Q: Khóa N5 Cơ bản học những gì? | A: Khóa N5 bao gồm: Hiragana (46 ký tự), Katakana (46 ký tự), 50 Kanji cơ bản, số đếm 1-100, chào hỏi và giới thiệu bản thân. Thời lượng 120 giờ, học phí 2 triệu đồng.
+
+Q: Khóa N4 Trung cấp có gì? | A: Khóa N4 gồm: 300 Kanji N4, ngữ pháp N4 (80 mẫu), hội thoại du lịch/mua sắm, từ vựng gia đình/công việc. Thời lượng 150 giờ, học phí 2.5 triệu đồng.
+
+# === JLPT VÀ THI CỬ ===
+Q: JLPT là gì? | A: JLPT (Japanese Language Proficiency Test) là kỳ thi năng lực tiếng Nhật quốc tế, có 5 cấp độ từ N5 (cơ bản) đến N1 (cao cấp), tổ chức 2 lần/năm (tháng 7 và 12).
+
+Q: JLPT nghĩa là gì? | A: JLPT (Japanese Language Proficiency Test) là kỳ thi năng lực tiếng Nhật quốc tế, có 5 cấp độ từ N5 (cơ bản) đến N1 (cao cấp), tổ chức 2 lần/năm (tháng 7 và 12).
+
+Q: Kỳ thi JLPT là gì? | A: JLPT (Japanese Language Proficiency Test) là kỳ thi năng lực tiếng Nhật quốc tế, có 5 cấp độ từ N5 (cơ bản) đến N1 (cao cấp), tổ chức 2 lần/năm (tháng 7 và 12).
+
+Q: Thi JLPT là như thế nào? | A: JLPT (Japanese Language Proficiency Test) là kỳ thi năng lực tiếng Nhật quốc tế, có 5 cấp độ từ N5 (cơ bản) đến N1 (cao cấp), tổ chức 2 lần/năm (tháng 7 và 12).
+
+Q: Cấp độ JLPT nào phù hợp với tôi? | A: N5: người mới học (6 tháng), N4: biết cơ bản (1 năm), N3: trung cấp (1.5-2 năm), N2: khá giỏi (2-3 năm), N1: thành thạo (3+ năm). Tùy thuộc thời gian và mục tiêu học.
+
+Q: Thi JLPT N5 cần chuẩn bị gì? | A: N5 cần: 800 từ vựng, 100 Kanji, ngữ pháp cơ bản (80 mẫu), Hiragana/Katakana thành thạo. Thời gian chuẩn bị: 6-12 tháng tùy năng lực.
+
+# === ĐĂNG KÝ VÀ SỬ DỤNG ===
+Q: Làm sao để đăng ký khóa học trên Hikari? | A: Đăng nhập tài khoản → Chọn "Khóa học" → Chọn khóa phù hợp → Click "Đăng ký" → Điền thông tin → Thanh toán → Nhận xác nhận qua email.
+
+Q: Cách đăng ký khóa học trên Hikari? | A: Đăng nhập tài khoản → Chọn "Khóa học" → Chọn khóa phù hợp → Click "Đăng ký" → Điền thông tin → Thanh toán → Nhận xác nhận qua email.
+
+Q: Quy trình đăng ký khóa học? | A: Đăng nhập tài khoản → Chọn "Khóa học" → Chọn khóa phù hợp → Click "Đăng ký" → Điền thông tin → Thanh toán → Nhận xác nhận qua email.
+
+Q: Hikari có hỗ trợ học trên mobile không? | A: Có! Hikari responsive trên mọi thiết bị. Bạn có thể học bài, làm bài tập, thi thử, tham gia diễn đàn ngay trên điện thoại, tablet một cách thuận tiện.
+
+Q: Tôi có thể xem lại bài học đã học không? | A: Có thể! Tất cả bài học đã mở khóa sẽ có sẵn trong "Bài học của tôi". Bạn có thể xem lại không giới hạn số lần trong thời gian khóa học.
+
+# === MÃ GIẢM GIÁ ===
+Q: Có mã giảm giá không? | A: Có! Hikari có các mã: NEWBIE2024 (giảm 20% N5), SUMMER2024 (giảm 15% N4), JLPTN3SALE (giảm 25% N3), EARLYBIRD (giảm 30% N2), KANJI50 (giảm 40% Kanji).
+
+Q: Mã khuyến mãi hiện tại? | A: Có! Hikari có các mã: NEWBIE2024 (giảm 20% N5), SUMMER2024 (giảm 15% N4), JLPTN3SALE (giảm 25% N3), EARLYBIRD (giảm 30% N2), KANJI50 (giảm 40% Kanji).
+
+Q: Discount code nào đang có? | A: Có! Hikari có các mã: NEWBIE2024 (giảm 20% N5), SUMMER2024 (giảm 15% N4), JLPTN3SALE (giảm 25% N3), EARLYBIRD (giảm 30% N2), KANJI50 (giảm 40% Kanji).
+
+# === SUPPORT ===
+Q: Tôi không thể đăng nhập Hikari? | A: Kiểm tra email/mật khẩu, xóa cache browser, thử browser khác, kiểm tra kết nối internet. Nếu vẫn lỗi, liên hệ support@hikari.edu.vn với thông tin tài khoản.
+
+Q: Hikari có hỗ trợ 24/7 không? | A: Support online từ 8h-22h hàng ngày. Ngoài giờ có thể gửi email support@hikari.edu.vn hoặc để lại tin nhắn, chúng tôi sẽ phản hồi sớm nhất.
+
+Q: Liên hệ support như thế nào? | A: Email: support@hikari.edu.vn, chat trực tuyến từ 8h-22h hàng ngày, hoặc để lại tin nhắn trong hệ thống, chúng tôi sẽ phản hồi trong 24h.

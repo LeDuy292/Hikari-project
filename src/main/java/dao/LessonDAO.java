@@ -18,7 +18,6 @@ public class LessonDAO {
         List<Lesson> lessonList = new ArrayList<>();
         String sql = "SELECT id, topicID, topicName, title, description, mediaUrl, duration, isCompleted, isActive "
                    + "FROM Lesson WHERE topicID = ? AND isActive = TRUE";
-
         try (Connection conn = new DBContext().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 

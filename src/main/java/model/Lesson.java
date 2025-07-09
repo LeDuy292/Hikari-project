@@ -117,7 +117,5 @@ public class Lesson {
         return "Lesson{" + "id=" + id + ", topicID=" + topicID + ", topic=" + topic + ", title=" + title + ", description=" + description + ", mediaUrl=" + mediaUrl + ", duration=" + duration + ", isActive=" + isActive + ", isCompleted=" + isCompleted + '}';
     }
 
-    
-
    
 }
