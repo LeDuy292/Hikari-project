@@ -35,6 +35,14 @@
     </div>
   </div>
 </div>
+          
+<script>
+    function confirmLogout(logoutUrl) {
+        if (confirm("Bạn có chắc muốn đăng xuất?")) {
+            window.location.href = logoutUrl;
+        }
+    }
+</script>
 
 <style>
   .header {
