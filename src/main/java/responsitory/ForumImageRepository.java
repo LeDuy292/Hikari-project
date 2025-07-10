@@ -63,7 +63,7 @@ public class ForumImageRepository {
         return uploadImage(filePart, "forum/avatars/" + userId + "/", 5 * 1024 * 1024, "avatar");
     }
 
-    private String uploadImage(Part part, String keyPrefix, long maxSize, String uploadType) {
+    public String uploadImage(Part part, String keyPrefix, long maxSize, String uploadType) {
         if (part == null || part.getSize() == 0) {
             LOGGER.warning("Tệp tải lên rỗng");
             return null;

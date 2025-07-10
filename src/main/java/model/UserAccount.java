@@ -26,6 +26,7 @@ public class UserAccount {
     private Date resetTokenExpiry;
     private int courseCount;
     private Boolean isActive;
+    
 
     // Constructors
     public UserAccount() {

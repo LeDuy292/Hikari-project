@@ -4,11 +4,13 @@
 <%@ page import="java.util.List, java.util.Set, dao.UserDAO, model.forum.ForumPost, model.forum.ForumComment, model.forum.UserActivityScore, model.UserAccount, java.text.SimpleDateFormat, java.sql.Timestamp, dao.forum.ForumPostDAO, service.ForumPermissionService, constant.ForumPermissions" %>
 <%!
     public String escapeHtml(String input) {
-        if (input == null) return "";
+        if (input == null) {
+            return "";
+        }
         return input.replace("&", "&amp;")
-                    .replace("<", "&lt;")
-                    .replace(">", "&gt;")
-                    .replace("'", "&#39;");
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("'", "&#39;");
     }
 %>
 <!DOCTYPE html>
@@ -194,7 +196,7 @@
                         <li><a href="#" data-filter="Công cụ"><i class="fas fa-tools"></i> Công Cụ</a></li>
                     </ul>
                 </div>
-                
+
                 <%
                     boolean canModerate = currentUser != null && ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_MODERATE_CONTENT);
                     if (canModerate) {
@@ -202,10 +204,10 @@
                 <div class="topics" style="margin-top: 20px;">
                     <div class="topics-title">Quản Lý</div>
                     <ul class="topic-list">
-                        <li><a href="<%= request.getContextPath() %>/forum/moderate"><i class="fas fa-shield-alt"></i> Kiểm Duyệt</a></li>
-                        <% if (ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_MANAGE_USERS)) { %>
-                        <li><a href="<%= request.getContextPath() %>/admin/users"><i class="fas fa-users"></i> Quản Lý User</a></li>
-                        <% } %>
+                        <li><a href="<%= request.getContextPath()%>/forum/moderate"><i class="fas fa-shield-alt"></i> Kiểm Duyệt</a></li>
+                            <% if (ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_MANAGE_USERS)) {%>
+                        <li><a href="<%= request.getContextPath()%>/admin/users"><i class="fas fa-users"></i> Quản Lý User</a></li>
+                            <% } %>
                     </ul>
                 </div>
                 <% } %>
@@ -230,13 +232,13 @@
                             <div id="suggestionList" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; max-height: 200px; overflow-y: auto;"></div>
                         </div>
                         <button class="btn btn-primary" onclick="handleSearch()"><i class="fas fa-search"></i> Tìm</button>
-                        
+
                         <% if (currentUser != null && ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_CREATE_POSTS)) { %>
                         <button class="btn btn-primary" onclick="openPostModal()">
                             <i class="fas fa-plus"></i> Tạo Bài Viết Mới
                         </button>
-                        <% } %>
-                        
+                        <% }%>
+
                         <div class="filters">
                             <select id="sortSelect" onchange="handleSortChange()">
                                 <option value="newest" <%= "newest".equals(request.getAttribute("sort")) ? "selected" : ""%>>Mới Nhất</option>
@@ -269,17 +271,17 @@
                             String formattedDate = createdDate != null ? sdf.format(createdDate) : "";
                             boolean hasLiked = userId != null && postDAO.hasUserLikedPost(post.getId(), userId);
                             boolean isRead = viewedPostIds != null && viewedPostIds.contains(post.getId());
-                            
+
                             // Get post author info
                             UserAccount postAuthor = new UserDAO().getUserById(post.getPostedBy());
                             String authorRole = postAuthor != null ? postAuthor.getRole() : "Student";
                             String authorUsername = postAuthor != null ? postAuthor.getUsername() : "Unknown";
-                            
+
                             // Check moderation permissions for current post
                             boolean canModeratePost = currentUser != null && ForumPermissionService.canModerateCategory(currentUser, post.getCategory());
                             boolean canEditPost = currentUser != null && ForumPermissionService.canEditPost(currentUser, post);
                             boolean canDeletePost = currentUser != null && ForumPermissionService.canDeletePost(currentUser, post);
-                            
+
                             // Check post status
                             boolean isPinned = "PINNED".equals(post.getStatus());
                             boolean isHidden = "HIDDEN".equals(post.getStatus());
@@ -287,9 +289,13 @@
                     <div class="post-card <%= isRead ? "read" : "unread"%>" data-tags="<%= escapeHtml(post.getCategory())%>">
                         <div class="post-content">
                             <div class="post-header">
-                                <a href="<%= request.getContextPath()%>/profile?userId=<%= escapeHtml(post.getPostedBy())%>" class="avatar" style="text-decoration: none;">
-                                    <img src="<%= request.getContextPath()%>/<%= postAuthor != null && postAuthor.getProfilePicture() != null && !postAuthor.getProfilePicture().isEmpty() ? escapeHtml(postAuthor.getProfilePicture()) : "assets/img/avatar.png"%>" alt="Avatar" />
+                                <a href="<%= request.getContextPath()%>/profile?userId=<%= post.getPostedBy()%>">
+                                    <img src="<%= postAuthor != null && postAuthor.getProfilePicture() != null && !postAuthor.getProfilePicture().isEmpty()
+                                            ? (postAuthor.getProfilePicture().startsWith("http") ? postAuthor.getProfilePicture() : (request.getContextPath() + "/" + postAuthor.getProfilePicture()))
+                                            : (request.getContextPath() + "/assets/img/avatar.png")%>" alt="Avatar" />
                                 </a>
+
+
                                 <div class="author-info">
                                     <span class="author-name">
                                         <%= escapeHtml(authorUsername)%>
@@ -305,21 +311,21 @@
                                 </div>
                                 <div class="post-tags">
                                     <span class="tag"><%= escapeHtml(post.getCategory())%></span>
-                                    
+
                                     <% if (isPinned) { %>
                                     <span class="post-status pinned">
                                         <i class="fas fa-thumbtack"></i>
                                         Ghim
                                     </span>
                                     <% } %>
-                                    
+
                                     <% if (isHidden) { %>
                                     <span class="post-status hidden">
                                         <i class="fas fa-eye-slash"></i>
                                         Ẩn
                                     </span>
                                     <% } %>
-                                    
+
                                     <% if (isRead) { %>
                                     <span class="read-indicator">
                                         <i class="fas fa-check"></i>
@@ -349,45 +355,45 @@
                                 <a href="<%= request.getContextPath()%>/forum/post/<%= post.getId()%>" class="action-btn comment-btn">
                                     <i class="fas fa-comment"></i> <%= post.getCommentCount()%>
                                 </a>
-                                
-                                <% if (canEditPost) { %>
+
+                                <% if (canEditPost) {%>
                                 <a href="<%= request.getContextPath()%>/forum/editPost/<%= post.getId()%>" class="action-btn edit-btn">
                                     <i class="fas fa-edit"></i> Sửa
                                 </a>
                                 <% } %>
-                                
-                                <% if (canModeratePost) { %>
+
+                                <% if (canModeratePost) {%>
                                 <button class="action-btn mod-btn" onclick="toggleModerationControls(<%= post.getId()%>)">
                                     <i class="fas fa-shield-alt"></i> Kiểm duyệt
                                 </button>
                                 <% } %>
                             </div>
-                            
-                            <% if (canModeratePost) { %>
+
+                            <% if (canModeratePost) {%>
                             <div class="moderation-controls" id="mod-controls-<%= post.getId()%>">
-                                <% if (!isHidden) { %>
+                                <% if (!isHidden) {%>
                                 <button class="mod-btn hide" onclick="moderatePost(<%= post.getId()%>, 'hide')">
                                     <i class="fas fa-eye-slash"></i> Ẩn
                                 </button>
-                                <% } else { %>
+                                <% } else {%>
                                 <button class="mod-btn show" onclick="moderatePost(<%= post.getId()%>, 'show')">
                                     <i class="fas fa-eye"></i> Hiện
                                 </button>
                                 <% } %>
-                                
+
                                 <% if (ForumPermissionService.canPinPost(currentUser)) { %>
-                                    <% if (!isPinned) { %>
-                                    <button class="mod-btn pin" onclick="moderatePost(<%= post.getId()%>, 'pin')">
-                                        <i class="fas fa-thumbtack"></i> Ghim
-                                    </button>
-                                    <% } else { %>
-                                    <button class="mod-btn unpin" onclick="moderatePost(<%= post.getId()%>, 'unpin')">
-                                        <i class="fas fa-times"></i> Bỏ ghim
-                                    </button>
-                                    <% } %>
+                                <% if (!isPinned) {%>
+                                <button class="mod-btn pin" onclick="moderatePost(<%= post.getId()%>, 'pin')">
+                                    <i class="fas fa-thumbtack"></i> Ghim
+                                </button>
+                                <% } else {%>
+                                <button class="mod-btn unpin" onclick="moderatePost(<%= post.getId()%>, 'unpin')">
+                                    <i class="fas fa-times"></i> Bỏ ghim
+                                </button>
                                 <% } %>
-                                
-                                <% if (canDeletePost) { %>
+                                <% } %>
+
+                                <% if (canDeletePost) {%>
                                 <button class="mod-btn delete" onclick="confirmDeletePost(<%= post.getId()%>)">
                                     <i class="fas fa-trash"></i> Xóa
                                 </button>
@@ -428,7 +434,18 @@
                     </div>
                     <div style="display:flex;flex-direction:column;align-items:center;padding:0 0 18px 0;position:relative;top:-40px;">
                         <div style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff;">
-                            <img src="<%= request.getContextPath()%>/<%= currentUser != null && currentUser.getProfilePicture() != null && !currentUser.getProfilePicture().isEmpty() ? currentUser.getProfilePicture() : "assets/img/avatar.png"%>" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">
+                            <%
+                                String sidebarAvatar = null;
+                                if (currentUser != null && currentUser.getProfilePicture() != null && !currentUser.getProfilePicture().isEmpty()) {
+                                    sidebarAvatar = currentUser.getProfilePicture();
+                                    if (!sidebarAvatar.matches("^https?://.*")) {
+                                        sidebarAvatar = request.getContextPath() + "/" + sidebarAvatar;
+                                    }
+                                } else {
+                                    sidebarAvatar = request.getContextPath() + "/assets/img/avatar.png";
+                                }
+                            %>
+                            <img src="<%= sidebarAvatar%>" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">
                         </div>
                         <div style="margin-top:10px;text-align:center;">
                             <div style="color:#888;font-size:1em;">Welcome back,</div>
@@ -445,23 +462,21 @@
                     </div>
                 </div>        
 
-                <!-- Leaderboard -->
+                <%-- Leaderboard --%>
                 <div class="widget" style="padding-top:18px;">
                     <div style="font-size:1.15em;font-weight:700;color:#232946;margin-bottom:18px;display:flex;align-items:center;gap:10px;">
                         <i class="fas fa-trophy" style="color:#f7c873;"></i> Leaderboard
                     </div>
                     <div style="display:flex;gap:8px;margin-bottom:18px;">
-                        <button style="flex:1;padding:7px 0;border:none;border-radius:8px;<%= "weekly".equals(request.getAttribute("timeFrame")) ? "background:#f4f6fb;color:#232946;" : "background:transparent;color:#888;"%>font-weight:600;cursor:pointer;" onclick="window.location.href = '<%= request.getContextPath()%>/forum?sort=weekly&filter=<%= escapeHtml((String) request.getAttribute("filter"))%>&search=<%= escapeHtml(request.getParameter("search") != null ? request.getParameter("search") : "")%>'">This Week</button>
-                        <button style="flex:1;padding:7px 0;border:none;border-radius:8px;<%= "monthly".equals(request.getAttribute("timeFrame")) ? "background:#f4f6fb;color:#232946;" : "background:transparent;color:#888;"%>font-weight:600;cursor:pointer;" onclick="window.location.href = '<%= request.getContextPath()%>/forum?sort=monthly&filter=<%= escapeHtml((String) request.getAttribute("filter"))%>&search=<%= escapeHtml(request.getParameter("search") != null ? request.getParameter("search") : "")%>'">This Month</button>
-                        <button style="flex:1;padding:7px 0;border:none;border-radius:8px;<%= "alltime".equals(request.getAttribute("timeFrame")) ? "background:#f4f6fb;color:#232946;" : "background:transparent;color:#888;"%>font-weight:600;cursor:pointer;" onclick="window.location.href = '<%= request.getContextPath()%>/forum?sort=alltime&filter=<%= escapeHtml((String) request.getAttribute("filter"))%>&search=<%= escapeHtml(request.getParameter("search") != null ? request.getParameter("search") : "")%>'">All Time</button>
+                        <!-- ...các nút lọc leaderboard... -->
                     </div>
                     <div style="display:flex;align-items:flex-end;justify-content:center;gap:18px;margin-bottom:18px;">
                         <%
                             List<UserActivityScore> topUsers = (List<UserActivityScore>) request.getAttribute("topUsers");
                             if (topUsers == null) {
-                                %>
-                                    <div style="color: red;">Không có dữ liệu Leaderboard - Kiểm tra Servlet hoặc DAO</div>
-                                <%
+                        %>
+                        <div style="color: red;">Không có dữ liệu Leaderboard - Kiểm tra Servlet hoặc DAO</div>
+                        <%
                             }
                             UserActivityScore first = null, second = null, third = null;
                             if (topUsers != null && topUsers.size() > 0) {
@@ -474,34 +489,62 @@
                                 third = topUsers.get(2);
                             }
                         %>
-                        <% if (second != null) {%>
+                        <% if (second != null) {
+                                String secondAvatar = second.getUser().getProfilePicture();
+                                if (secondAvatar == null || secondAvatar.isEmpty()) {
+                                    secondAvatar = request.getContextPath() + "/assets/img/avatar.png";
+                                } else if (!secondAvatar.matches("^https?://.*")) {
+                                    secondAvatar = request.getContextPath() + "/" + secondAvatar;
+                                }
+                        %>
                         <div style="display:flex;flex-direction:column;align-items:center;">
-                            <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #b8c6ff;">
-                                <img src="<%= request.getContextPath()%>/<%= second.getUser().getProfilePicture() != null && !second.getUser().getProfilePicture().isEmpty() ? second.getUser().getProfilePicture() : "/assets/img/avatar.png"%>" style="width:100%;height:100%;object-fit:cover;">
-                            </div>
+                            <a href="<%= request.getContextPath()%>/profile?userId=<%= second.getUser().getUserID()%>">
+                                <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #b8c6ff;">
+                                    <img src="<%= secondAvatar%>" style="width:100%;height:100%;object-fit:cover;">
+                                </div>
+                            </a>
                             <div style="font-size:0.95em;font-weight:600;margin-top:4px;"><%= escapeHtml(second.getUser().getUsername())%></div>
                             <div style="color:#888;font-size:0.95em;"><%= second.getTotalScore()%></div>
                         </div>
                         <% } %>
-                        <% if (first != null) {%>
+                        <% if (first != null) {
+                                String firstAvatar = first.getUser().getProfilePicture();
+                                if (firstAvatar == null || firstAvatar.isEmpty()) {
+                                    firstAvatar = request.getContextPath() + "/assets/img/avatar.png";
+                                } else if (!firstAvatar.matches("^https?://.*")) {
+                                    firstAvatar = request.getContextPath() + "/" + firstAvatar;
+                                }
+                        %>
                         <div style="display:flex;flex-direction:column;align-items:center;">
-                            <div style="width:60px;height:60px;border-radius:50%;overflow:hidden;border:3px solid #f7c873;box-shadow:0 2px 8px #f7c87344;">
-                                <img src="<%= request.getContextPath()%>/<%= first.getUser().getProfilePicture() != null && !first.getUser().getProfilePicture().isEmpty() ? first.getUser().getProfilePicture() : "/assets/img/avatar.png"%>" style="width:100%;height:100%;object-fit:cover;">
-                            </div>
+                            <a href="<%= request.getContextPath()%>/profile?userId=<%= first.getUser().getUserID()%>">
+                                <div style="width:60px;height:60px;border-radius:50%;overflow:hidden;border:3px solid #f7c873;box-shadow:0 2px 8px #f7c87344;">
+                                    <img src="<%= firstAvatar%>" style="width:100%;height:100%;object-fit:cover;">
+                                </div>
+                            </a>
                             <div style="font-size:1.05em;font-weight:700;margin-top:4px;color:#f7c873;"><%= escapeHtml(first.getUser().getUsername())%></div>
                             <div style="color:#232946;font-size:1.05em;font-weight:700;"><%= first.getTotalScore()%></div>
                         </div>
                         <% } %>
-                        <% if (third != null) {%>
+                        <% if (third != null) {
+                                String thirdAvatar = third.getUser().getProfilePicture();
+                                if (thirdAvatar == null || thirdAvatar.isEmpty()) {
+                                    thirdAvatar = request.getContextPath() + "/assets/img/avatar.png";
+                                } else if (!thirdAvatar.matches("^https?://.*")) {
+                                    thirdAvatar = request.getContextPath() + "/" + thirdAvatar;
+                                }
+                        %>
                         <div style="display:flex;flex-direction:column;align-items:center;">
-                            <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #b8c6ff;">
-                                <img src="<%= request.getContextPath()%>/<%= third.getUser().getProfilePicture() != null && !third.getUser().getProfilePicture().isEmpty() ? third.getUser().getProfilePicture() : "assets/img/avatar.png"%>" style="width:100%;height:100%;object-fit:cover;">
-                            </div>
+                            <a href="<%= request.getContextPath()%>/profile?userId=<%= third.getUser().getUserID()%>">
+                                <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #b8c6ff;">
+                                    <img src="<%= thirdAvatar%>" style="width:100%;height:100%;object-fit:cover;">
+                                </div>
+                            </a>
                             <div style="font-size:0.95em;font-weight:600;margin-top:4px;"><%= escapeHtml(third.getUser().getUsername())%></div>
                             <div style="color:#888;font-size:0.95em;"><%= third.getTotalScore()%></div>
                         </div>
                         <% } %>
                     </div>
+
                     <div>
                         <%
                             int rank = 4;
@@ -509,28 +552,36 @@
                                 for (int i = 3; i < Math.min(topUsers.size(), 9); i++) {
                                     UserActivityScore score = topUsers.get(i);
                                     UserAccount user = score.getUser();
+                                    String userAvatar = user.getProfilePicture();
+                                    if (userAvatar == null || userAvatar.isEmpty()) {
+                                        userAvatar = request.getContextPath() + "/assets/img/avatar.png";
+                                    } else if (!userAvatar.matches("^https?://.*")) {
+                                        userAvatar = request.getContextPath() + "/" + userAvatar;
+                                    }
                         %>
                         <div style="display:flex;align-items:center;gap:10px;padding:7px 0 7px 0;border-radius:8px;<%= i == 4 ? "background:#f4f6fb;" : ""%>">
                             <div style="width:28px;text-align:center;font-weight:600;color:#232946;font-size:1.08em;"><%= rank%></div>
                             <div style="width:32px;height:32px;border-radius:50%;overflow:hidden;">
-                                <img src="<%= request.getContextPath()%>/<%= user.getProfilePicture() != null && !user.getProfilePicture().isEmpty() ? user.getProfilePicture() : "assets/img/avatar.png"%>" style="width:100%;height:100%;object-fit:cover;">
+                                <a href="<%= request.getContextPath()%>/profile?userId=<%= user.getUserID()%>">
+                                    <img src="<%= userAvatar%>" style="width:100%;height:100%;object-fit:cover;">
+                                </a>
                             </div>
                             <div style="flex:1;">
                                 <div style="font-weight:600;font-size:1em;color:#232946;"><%= escapeHtml(user.getUsername())%></div>
                             </div>
                             <div style="color:#888;font-size:1em;font-weight:500;"><%= score.getTotalScore()%></div>
                         </div>
-                        <%      rank++;
+                        <%
+                                    rank++;
                                 }
                             }
                         %>
                     </div>
-                </div>
             </aside>
 
         </div>
-        
-        <% if (currentUser != null && ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_CREATE_POSTS)) { %>
+
+        <% if (currentUser != null && ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_CREATE_POSTS)) {%>
         <div class="modal-overlay" id="createPostModal">
             <div class="modal">
                 <div class="modal-header">
@@ -551,7 +602,7 @@
                                     List<String> allowedCategories = ForumPermissionService.getAllowedCategories(currentUser);
                                     for (String category : allowedCategories) {
                                 %>
-                                <option value="<%= escapeHtml(category) %>"><%= escapeHtml(category) %></option>
+                                <option value="<%= escapeHtml(category)%>"><%= escapeHtml(category)%></option>
                                 <% } %>
                             </select>
                         </div>
@@ -576,8 +627,8 @@
                 </div>
             </div>
         </div>
-        <% } %>
-        
+        <% }%>
+
         <script>
             function openPostModal() {
                 document.getElementById("createPostModal").classList.add("active");
@@ -647,19 +698,19 @@
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = '<%= request.getContextPath()%>/forum/moderate';
-                    
+
                     const postIdInput = document.createElement('input');
                     postIdInput.type = 'hidden';
                     postIdInput.name = 'postId';
                     postIdInput.value = postId;
                     form.appendChild(postIdInput);
-                    
+
                     const actionInput = document.createElement('input');
                     actionInput.type = 'hidden';
                     actionInput.name = 'action';
                     actionInput.value = action;
                     form.appendChild(actionInput);
-                    
+
                     document.body.appendChild(form);
                     form.submit();
                 }
@@ -669,13 +720,13 @@
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = '<%= request.getContextPath()%>/forum/deletePost';
-                    
+
                     const postIdInput = document.createElement('input');
                     postIdInput.type = 'hidden';
                     postIdInput.name = 'postId';
                     postIdInput.value = postId;
                     form.appendChild(postIdInput);
-                    
+
                     document.body.appendChild(form);
                     form.submit();
                 }

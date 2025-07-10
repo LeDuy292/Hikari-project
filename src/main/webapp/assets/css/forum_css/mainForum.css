@@ -1,4 +1,3 @@
-
 :root {
     --primary: #4f8cff;
     --secondary: #232946;
@@ -220,42 +219,45 @@ body {
 .post-list {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 28px;
+    margin-top: 18px;
 }
 .post-card {
-    background: var(--card-bg);
-    border-radius: 14px;
-    box-shadow: var(--shadow);
-    padding: 20px 18px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px 0 rgba(79, 140, 255, 0.1), 0 1.5px 8px 0 rgba(31, 38, 135, 0.05);
+    padding: 28px 28px 22px 28px;
     transition: box-shadow 0.2s, transform 0.2s;
     position: relative;
-}
-.post-card:hover {
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.13);
-    transform: translateY(-2px) scale(1.01);
-}
-.post-card .post-image {
-    width: 100%;
-    max-height: 300px;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 10px;
-}
-.post-card .post-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-.post-card .post-content {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 14px;
+    border: 1.5px solid #f2f6ff;
+}
+.post-card:hover {
+    box-shadow: 0 8px 32px 0 rgba(79, 140, 255, 0.18);
+    transform: translateY(-2px) scale(1.01);
+    border-color: #b8c6ff;
 }
 .post-card .post-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 4px;
+    gap: 18px;
+    margin-bottom: 0;
+}
+.post-card .avatar,
+.post-card .post-header img[alt="Avatar"] {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    min-height: 46px;
+    max-width: 46px;
+    max-height: 46px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f4f6fb;
+    border: 2px solid #eaf1ff;
+    box-shadow: 0 1px 4px rgba(79, 140, 255, 0.07);
 }
 .post-card .author-info {
     display: flex;
@@ -263,35 +265,47 @@ body {
     gap: 2px;
 }
 .post-card .author-name {
+    font-weight: 700;
+    color: #232946;
+    font-size: 1.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.post-card .role-badge {
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
     font-weight: 600;
-    color: var(--secondary);
-    font-size: 1em;
+    margin-left: 0;
 }
 .post-card .post-meta {
     display: flex;
-    gap: 12px;
+    gap: 16px;
     align-items: center;
     color: #7f8c8d;
-    font-size: 0.95em;
+    font-size: 0.97em;
 }
 .post-card .post-title {
-    font-size: 1.18em;
-    font-weight: bold;
-    color: var(--primary);
-    margin-bottom: 8px;
+    font-size: 1.22em;
+    font-weight: 800;
+    color: #4f8cff;
+    margin-bottom: 0;
     text-decoration: none;
     cursor: pointer;
     transition: color 0.2s;
+    letter-spacing: 0.2px;
 }
 .post-card .post-title:hover {
-    color: var(--accent);
+    color: #232946;
     text-decoration: underline;
 }
 .post-card .post-body {
-    font-size: 1em;
-    color: var(--secondary);
-    line-height: 1.6;
-    margin-bottom: 10px;
+    font-size: 1.04em;
+    color: #232946;
+    line-height: 1.7;
+    margin-bottom: 0;
+    margin-top: 2px;
 }
 .post-card .post-tags {
     display: flex;
@@ -301,17 +315,38 @@ body {
 }
 .post-card .tag {
     background: #eaf1ff;
-    color: var(--primary);
+    color: #4f8cff;
     border-radius: 8px;
-    padding: 4px 10px;
-    font-size: 0.92em;
-    font-weight: 500;
+    padding: 4px 12px;
+    font-size: 0.95em;
+    font-weight: 600;
+}
+.post-card .post-image {
+    width: 100%;
+    max-height: 320px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+    background: #f4f6fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.post-card .post-image img {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 320px;
+    object-fit: contain;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
 }
 .post-card .post-actions {
     display: flex;
     gap: 18px;
     align-items: center;
-    margin-top: 6px;
+    margin-top: 10px;
     justify-content: flex-end;
 }
 .post-card .action-btn {
@@ -321,20 +356,18 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 14px;
+    padding: 7px 18px;
     border-radius: 15px;
     transition: all 0.2s;
     font-size: 1em;
-    font-weight: 500;
-}
-.post-card .action-btn.like-btn {
-    color: #7f8c8d;
+    font-weight: 600;
+    color: #4f8cff;
 }
 .post-card .action-btn.like-btn.liked {
-    color: var(--like-color);
+    color: #e74c3c;
 }
 .post-card .action-btn.comment-btn {
-    color: var(--comment-color);
+    color: #9b59b6;
 }
 .post-card .action-btn:hover {
     background: #eaf1ff;
@@ -647,6 +680,42 @@ textarea.form-control {
     background: #d4edda;
     color: #155724;
 }
+/* Đảm bảo avatar luôn bo tròn và không bị méo */
+.avatar,
+.sidebar-right .widget div[style*="border-radius:50%"],
+.sidebar-right .widget div[style*="border-radius:50%"] img,
+.sidebar-right img[alt="Avatar"] {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+/* Avatar nhỏ gọn cho post-header */
+.post-card .post-header .avatar,
+.post-card .post-header img[alt="Avatar"] {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    max-width: 38px;
+    max-height: 38px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(79,140,255,0.07);
+}
+.post-card .post-header .avatar img,
+.post-card .post-header img[alt="Avatar"] {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
 @media (max-width: 1200px) {
     .sidebar-right {
         display: none;
@@ -662,6 +731,15 @@ textarea.form-control {
     }
     .main-content {
         margin-left: 0;
+    }
+    .main-content {
+        padding: 16px 4px;
+    }
+    .post-card {
+        padding: 14px 8px 12px 8px;
+    }
+    .post-card .post-header {
+        gap: 10px;
     }
 }
 @media (max-width: 600px) {

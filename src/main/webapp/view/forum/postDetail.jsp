@@ -40,7 +40,17 @@
                         </div>
                         <% if (author != null) {%>
                         <div class="avatar">
-                            <img src="<%= request.getContextPath()%>/<%= author.getProfilePicture() != null && !author.getProfilePicture().isEmpty() ? author.getProfilePicture() : "assets/img/avatar.png"%>" alt="Avatar" />
+                            <a href="<%= request.getContextPath() %>/profile?userId=<%= author.getUserID() %>">
+                                <%
+                                    String authorAvatar = author.getProfilePicture();
+                                    if (authorAvatar == null || authorAvatar.isEmpty()) {
+                                        authorAvatar = request.getContextPath() + "/assets/img/avatar.png";
+                                    } else if (!authorAvatar.startsWith("http")) {
+                                        authorAvatar = request.getContextPath() + "/" + authorAvatar;
+                                    }
+                                %>
+                                <img src="<%= authorAvatar %>" alt="Avatar" />
+                            </a>
                         </div>
                         <div class="username">
                             <%= author.getUsername()%>
@@ -95,7 +105,9 @@
                             %>
                             <a href="<%= request.getContextPath()%>/forum/post/<%= relatedPost.getId()%>" class="related-item">
                                 <div class="related-image">
-                                    <img src="<%= request.getContextPath()%>/<%= relatedPicture != null && !relatedPicture.isEmpty() ? relatedPicture : "assets/img/learning.jpg"%>" alt="Related post" />
+                                    <img src="<%= relatedPicture != null && !relatedPicture.isEmpty() 
+    ? (relatedPicture.startsWith("http") ? relatedPicture : (request.getContextPath() + "/" + relatedPicture))
+    : (request.getContextPath() + "/assets/img/learning.jpg") %>" alt="Related post" />
                                 </div>
                                 <div class="related-content">
                                     <h3 class="related-post-title">
@@ -187,7 +199,9 @@
                             <div class="post-meta">
                                 <div class="author-info">
                                     <div class="author-avatar">
-                                        <img src="<%= request.getContextPath()%>/<%= author != null && author.getProfilePicture() != null && !author.getProfilePicture().isEmpty() ? author.getProfilePicture() : "assets/img/avatar.png"%>" alt="Avatar" />
+                                        <a href="<%= request.getContextPath() %>/profile?userId=<%= author.getUserID() %>">
+                                            <img src="<%= author.getProfilePicture() != null && !author.getProfilePicture().isEmpty() ? author.getProfilePicture() : (request.getContextPath() + "/assets/img/avatar.png") %>" alt="Avatar" />
+                                        </a>
                                     </div>
                                     <div class="author-details">
                                         <h3>
@@ -233,11 +247,11 @@
                             <div class="post-text">
                                 <%= post.getContent().replace("\n", "<br>")%>
                             </div>
-                            <% if (postPicture != null && !postPicture.isEmpty()) {%>
+                            <% if (postPicture != null && !postPicture.isEmpty()) { %>
                             <div class="post-image">
-                                <img src="<%= request.getContextPath()%>/<%= postPicture%>" alt="Post image" />
+                                <img src="<%= postPicture.startsWith("http") ? postPicture : (request.getContextPath() + "/" + postPicture) %>" alt="Post image" />
                             </div>
-                            <% }%>
+                            <% } %>
                         </div>
                         <div class="post-stats">
                             <div class="stats-row">
@@ -256,7 +270,7 @@
                             </div>
                         </div>
                         <% if (canModeratePost) { %>
-                        <div class="moderation-section">
+                        <div class="moderation-section center">
                             <div class="moderation-title">
                                 <i class="fas fa-shield-alt"></i>
                                 Công cụ kiểm duyệt
@@ -321,7 +335,11 @@
                                 <div class="comment-item">
                                     <div class="comment-header">
                                         <div class="comment-avatar">
-                                            <img src="<%= request.getContextPath()%>/<%= commentAuthor != null && commentAuthor.getProfilePicture() != null && !commentAuthor.getProfilePicture().isEmpty() ? commentAuthor.getProfilePicture() : "assets/img/avatar.png"%>" alt="Avatar" />
+                                            <a href="<%= request.getContextPath() %>/profile?userId=<%= comment.getCommentedBy() %>">
+                                                <img src="<%= commentAuthor != null && commentAuthor.getProfilePicture() != null && !commentAuthor.getProfilePicture().isEmpty()
+                                                    ? (commentAuthor.getProfilePicture().startsWith("http") ? commentAuthor.getProfilePicture() : (request.getContextPath() + "/" + commentAuthor.getProfilePicture()))
+                                                    : (request.getContextPath() + "/assets/img/avatar.png") %>" alt="Avatar" />
+                                            </a>
                                         </div>
                                         <a href="<%= request.getContextPath()%>/profile?userId=<%= comment.getCommentedBy()%>" class="comment-author">
                                             <%= commentAuthorUsername%>
@@ -364,18 +382,10 @@
                                 %>
                             </div>
                             <% if (currentUser != null && ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_COMMENT)) {%>
-                            <form action="<%= request.getContextPath()%>/forum/comment" method="post" class="comment-form" id="commentForm">
-                                <input type="hidden" name="postId" value="<%= post.getId()%>">
-                                <div class="form-group">
-                                    <img src="<%= request.getContextPath()%>/<%= currentUser.getProfilePicture() != null && !currentUser.getProfilePicture().isEmpty() ? currentUser.getProfilePicture() : "assets/img/avatar.png"%>" alt="Your avatar" class="comment-avatar" />
-                                    <textarea class="form-control" name="commentText" id="commentText" placeholder="Viết bình luận của bạn..." required maxlength="1000"></textarea>
-                                </div>
-                                <div class="form-footer">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-paper-plane"></i>
-                                        Gửi bình luận
-                                    </button>
-                                </div>
+                            <form action="<%= request.getContextPath() %>/forum/createComment" method="post" class="comment-form">
+                                <input type="hidden" name="postId" value="<%= post.getId() %>"/>
+                                <textarea class="form-control" name="commentText" id="commentText" placeholder="Viết bình luận..." required maxlength="1000"></textarea>
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Gửi</button>
                             </form>
                             <% } else if (currentUser == null) {%>
                             <div class="permission-info">
@@ -443,27 +453,33 @@
                             %>
                             <% if (second != null) {%>
                             <div style="display:flex;flex-direction:column;align-items:center;">
-                                <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #b8c6ff;">
-                                    <img src="<%= request.getContextPath()%>/<%= second.getUser().getProfilePicture() != null && !second.getUser().getProfilePicture().isEmpty() ? second.getUser().getProfilePicture() : "assets/img/avatar.png"%>" style="width:100%;height:100%;object-fit:cover;">
-                                </div>
+                                <a href="<%= request.getContextPath() %>/profile?userId=<%= second.getUser().getUserID() %>">
+                                    <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #b8c6ff;">
+                                        <img src="<%= request.getContextPath()%>/<%= second.getUser().getProfilePicture() != null && !second.getUser().getProfilePicture().isEmpty() ? second.getUser().getProfilePicture() : "assets/img/avatar.png"%>" style="width:100%;height:100%;object-fit:cover;">
+                                    </div>
+                                </a>
                                 <div style="font-size:0.95em;font-weight:600;margin-top:4px;"><%= second.getUser().getUsername()%></div>
                                 <div style="color:#888;font-size:0.95em;"><%= second.getTotalScore()%></div>
                             </div>
                             <% } %>
                             <% if (first != null) {%>
                             <div style="display:flex;flex-direction:column;align-items:center;">
-                                <div style="width:60px;height:60px;border-radius:50%;overflow:hidden;border:3px solid #f7c873;box-shadow:0 2px 8px #f7c87344;">
-                                    <img src="<%= request.getContextPath()%>/<%= first.getUser().getProfilePicture() != null && !first.getUser().getProfilePicture().isEmpty() ? first.getUser().getProfilePicture() : "assets/img/avatar.png"%>" style="width:100%;height:100%;object-fit:cover;">
-                                </div>
+                                <a href="<%= request.getContextPath() %>/profile?userId=<%= first.getUser().getUserID() %>">
+                                    <div style="width:60px;height:60px;border-radius:50%;overflow:hidden;border:3px solid #f7c873;box-shadow:0 2px 8px #f7c87344;">
+                                        <img src="<%= request.getContextPath()%>/<%= first.getUser().getProfilePicture() != null && !first.getUser().getProfilePicture().isEmpty() ? first.getUser().getProfilePicture() : "assets/img/avatar.png"%>" style="width:100%;height:100%;object-fit:cover;">
+                                    </div>
+                                </a>
                                 <div style="font-size:1.05em;font-weight:700;margin-top:4px;color:#f7c873;"><%= first.getUser().getUsername()%></div>
                                 <div style="color:#232946;font-size:1.05em;font-weight:700;"><%= first.getTotalScore()%></div>
                             </div>
                             <% } %>
                             <% if (third != null) {%>
                             <div style="display:flex;flex-direction:column;align-items:center;">
-                                <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #b8c6ff;">
-                                    <img src="<%= request.getContextPath()%>/<%= third.getUser().getProfilePicture() != null && !third.getUser().getProfilePicture().isEmpty() ? third.getUser().getProfilePicture() : "assets/img/avatar.png"%>" style="width:100%;height:100%;object-fit:cover;">
-                                </div>
+                                <a href="<%= request.getContextPath() %>/profile?userId=<%= third.getUser().getUserID() %>">
+                                    <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #b8c6ff;">
+                                        <img src="<%= request.getContextPath()%>/<%= third.getUser().getProfilePicture() != null && !third.getUser().getProfilePicture().isEmpty() ? third.getUser().getProfilePicture() : "assets/img/avatar.png"%>" style="width:100%;height:100%;object-fit:cover;">
+                                    </div>
+                                </a>
                                 <div style="font-size:0.95em;font-weight:600;margin-top:4px;"><%= third.getUser().getUsername()%></div>
                                 <div style="color:#888;font-size:0.95em;"><%= third.getTotalScore()%></div>
                             </div>
@@ -480,7 +496,9 @@
                             <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-radius:8px;<%= i == 4 ? "background:#f4f6fb;" : ""%>">
                                 <div style="width:28px;text-align:center;font-weight:600;color:#232946;font-size:1em;"><%= rank%></div>
                                 <div style="width:32px;height:32px;border-radius:50%;overflow:hidden;">
-                                    <img src="<%= request.getContextPath()%>/<%= user.getProfilePicture() != null && !user.getProfilePicture().isEmpty() ? user.getProfilePicture() : "assets/img/avatar.png"%>" style="width:100%;height:100%;object-fit:cover;">
+                                    <a href="<%= request.getContextPath() %>/profile?userId=<%= user.getUserID() %>">
+                                        <img src="<%= request.getContextPath()%>/<%= user.getProfilePicture() != null && !user.getProfilePicture().isEmpty() ? user.getProfilePicture() : "assets/img/avatar.png"%>" style="width:100%;height:100%;object-fit:cover;">
+                                    </a>
                                 </div>
                                 <div style="flex:1;">
                                     <div style="font-weight:600;font-size:1em;color:#232946;"><%= user.getUsername()%></div>
