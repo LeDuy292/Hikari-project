@@ -195,11 +195,11 @@
             <i class="fas fa-users"></i>
             <span>Giám sát khóa học</span>
         </a>
-        <a href="${pageContext.request.contextPath}/view/coordinator/course-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("course-approval.jsp") ? "active" : ""%>">
+<!--        <a href="${pageContext.request.contextPath}/LessonApprovalServlet" class="sidebar-nav-item <%= currentPage.equals("course-approval.jsp") ? "active" : ""%>">
             <i class="fas fa-book"></i>
             <span>Phê duyệt bài học</span>
         </a>
-        <a href="${pageContext.request.contextPath}/view/coordinator/document-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("document-approval.jsp") ? "active" : ""%>">
+-->        <a href="${pageContext.request.contextPath}/view/coordinator/document-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("document-approval.jsp") ? "active" : ""%>">
             <i class="fas fa-credit-card"></i>
             <span>Phê duyệt tài liệu</span>
         </a>

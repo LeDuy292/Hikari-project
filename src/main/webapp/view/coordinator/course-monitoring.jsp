@@ -13,24 +13,21 @@
         <link href="${pageContext.request.contextPath}/assets/css/coordinator_css/course-monitoring.css" rel="stylesheet">
 
         <style>
-            /* Sửa lỗi: Đảm bảo modal-overlay hiển thị và có thể tương tác */
             .modal-overlay {
-                display: none; /* Ban đầu ẩn */
-                position: fixed; /* Sửa: Đảm bảo cố định trên màn hình */
+                display: none; 
+                position: fixed; 
                 top: 0;
                 left: 0;
                 width: 100%;
                 height: 100%;
                 background-color: rgba(0, 0, 0, 0.5);
-                /*z-index: 1000;  Sửa: Đảm bảo hiển thị trên các phần tử khác */
-                z-index: 2000; /* Tăng z-index để vượt qua sidebar */
+                z-index: 2000; 
                 justify-content: center;
                 align-items: center;
                 min-height: 100vh;
-                overflow: auto; /* Sửa: Cho phép cuộn nếu nội dung dài */
+                overflow: auto; 
             }
 
-            /* Sửa lỗi: Đảm bảo form-container không bị giới hạn bởi bố cục cha */
             .form-container {
                 background-color: #ffffff;
                 margin: 5% auto;
@@ -103,7 +100,7 @@
                 margin-top: 10px;
             }
 
-              /* Thay đổi: Cải thiện CSS cho thanh tìm kiếm và gợi ý */
+            /* Thay đổi: Cải thiện CSS cho thanh tìm kiếm và gợi ý */
             .course-card-header {
                 padding: 4px 5px;
                 margin: 0;
@@ -295,11 +292,14 @@
                                                         </div>
                                                     </div>
                                                     <div class="course-actions">
-                                                        <a href="LoadClass?id=${course.courseID}" class="btn btn-sm btn-outline-secondary" title="Xem lớp học">
+                                                        <a href="#" class="btn btn-sm btn-outline-secondary" title="Xem lớp học">
                                                             <i class="fas fa-chalkboard-teacher"></i>
                                                         </a>
                                                         <a href="NextEditCourse?id=${course.courseID}" class="btn btn-sm btn-outline-primary" title="Chỉnh sửa khóa học">
                                                             <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="LessonApprovalServlet?courseID=${course.courseID}" class="btn btn-sm btn-outline-success" title="Phê duyệt bài học">
+                                                            <i class="fas fa-check-circle"></i>
                                                         </a>
                                                     </div>
                                                 </div>
