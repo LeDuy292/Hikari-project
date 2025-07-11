@@ -26,7 +26,10 @@ public class UserAccount {
     private Date resetTokenExpiry;
     private int courseCount;
     private Boolean isActive;
-    
+    private String coverPhoto;      // Ảnh bìa
+    private String bio;             // Tiểu sử
+    private int followerCount;      // Số người theo dõi
+    private int followingCount;     // Số người đang theo dõi
 
     // Constructors
     public UserAccount() {
@@ -54,6 +57,7 @@ public class UserAccount {
         this.phone = phone;
         this.birthDate = birthDate;
     }
+    
     // Getters and Setters
     public String getUserID() {
         return userID;
@@ -190,4 +194,17 @@ public class UserAccount {
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
+
+    // Getters & Setters
+    public String getCoverPhoto() { return coverPhoto; }
+    public void setCoverPhoto(String coverPhoto) { this.coverPhoto = coverPhoto; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public int getFollowerCount() { return followerCount; }
+    public void setFollowerCount(int followerCount) { this.followerCount = followerCount; }
+
+    public int getFollowingCount() { return followingCount; }
+    public void setFollowingCount(int followingCount) { this.followingCount = followingCount; }
 }

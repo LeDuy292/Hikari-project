@@ -593,6 +593,74 @@ public class UserDAO {
         return users;
     }
 
+    //forum
+    public UserAccount getUserProfileDetailById(String userID) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT u.*, " +
+                     "IFNULL((SELECT COUNT(*) FROM UserFollow WHERE userID = u.userID), 0) AS followerCount, " +
+                     "IFNULL((SELECT COUNT(*) FROM UserFollow WHERE followerID = u.userID), 0) AS followingCount " +
+                     "FROM UserAccount u WHERE u.userID = ?";
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, userID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    UserAccount user = new UserAccount();
+                    // Copy all UserAccount fields
+                    user.setUserID(rs.getString("userID"));
+                    user.setUsername(rs.getString("username"));
+                    user.setFullName(rs.getString("fullName"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPassword(rs.getString("password"));
+                    user.setRole(rs.getString("role"));
+                    user.setRegistrationDate(rs.getDate("registrationDate"));
+                    user.setProfilePicture(rs.getString("profilePicture"));
+                    user.setPhone(rs.getString("phone"));
+                    user.setBirthDate(rs.getDate("birthDate"));
+                    user.setIsActive(rs.getBoolean("isActive"));
+                    // Thêm các trường mở rộng
+                    try { user.setCoverPhoto(rs.getString("coverPhoto")); } catch (Exception e) {}
+                    try { user.setBio(rs.getString("bio")); } catch (Exception e) {}
+                    user.setFollowerCount(rs.getInt("followerCount"));
+                    user.setFollowingCount(rs.getInt("followingCount"));
+                    return user;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void updateUserProfileDetail(UserAccount user) throws ClassNotFoundException, SQLException {
+    String sql = "UPDATE UserAccount SET fullName = ?, username = ?, email = ?, phone = ?, birthDate = ?, profilePicture = ?, coverPhoto = ?, role = ?";
+    if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+        sql += ", password = ?";
+    }
+    sql += " WHERE userID = ?";
+    try (Connection conn = dbContext.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        int paramIndex = 1;
+        pstmt.setString(paramIndex++, user.getFullName());
+        pstmt.setString(paramIndex++, user.getUsername());
+        pstmt.setString(paramIndex++, user.getEmail());
+        pstmt.setString(paramIndex++, user.getPhone());
+        pstmt.setDate(paramIndex++, user.getBirthDate() != null ? new java.sql.Date(user.getBirthDate().getTime()) : null);
+        pstmt.setString(paramIndex++, user.getProfilePicture());
+        pstmt.setString(paramIndex++, user.getCoverPhoto()); // Thêm dòng này
+        pstmt.setString(paramIndex++, user.getRole());
+        if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+            pstmt.setString(paramIndex++, user.getPassword());
+        }
+        pstmt.setString(paramIndex, user.getUserID());
+        int rowsAffected = pstmt.executeUpdate();
+        if (rowsAffected == 0) {
+            throw new SQLException("No user found with userID: " + user.getUserID());
+        }
+        LOGGER.info("User profile updated for userID: " + user.getUserID() + " with role: " + user.getRole());
+    } catch (SQLException e) {
+        LOGGER.severe("Error updating user profile for userID: " + user.getUserID() + ", " + e.getMessage());
+        throw e;
+    }
+}
+    //forum end
     private UserAccount mapResultSetToUser(ResultSet rs) throws SQLException {
         UserAccount user = new UserAccount();
         user.setUserID(rs.getString("userID"));

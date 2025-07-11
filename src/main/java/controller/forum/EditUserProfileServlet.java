@@ -2,22 +2,18 @@ package controller.forum;
 
 import dao.UserDAO;
 import model.UserAccount;
+import responsitory.ForumImageRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.Part;
+import jakarta.servlet.http.*;
+
 import java.io.IOException;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import responsitory.ForumImageRepository;
 
 @WebServlet(name = "EditUserProfileServlet", urlPatterns = {"/profile/edit"})
-@MultipartConfig(maxFileSize = 10 * 1024 * 1024) // Đảm bảo hỗ trợ upload ảnh lớn
+@MultipartConfig(maxFileSize = 10 * 1024 * 1024) // 10MB
 public class EditUserProfileServlet extends HttpServlet {
     private UserDAO userDAO;
 
@@ -29,41 +25,52 @@ public class EditUserProfileServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         HttpSession session = request.getSession();
         String currentUserId = (String) session.getAttribute("userId");
+
+        // Lấy đối tượng userDetail từ session
         UserAccount currentUser = (UserAccount) session.getAttribute("user");
 
-        // Lấy userId cần sửa (từ session hoặc form)
+        // Trường hợp chưa đăng nhập hoặc user không đúng kiểu
+        if (currentUserId == null || currentUser == null) {
+            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            return;
+        }
+
+        // Lấy userId từ form (ẩn)
         String userId = request.getParameter("userId");
         if (userId == null || userId.isEmpty()) {
             userId = currentUserId;
         }
 
-        // Chỉ cho phép user tự sửa thông tin của mình
-        if (currentUserId == null || !currentUserId.equals(userId)) {
+        // Không cho sửa tài khoản người khác
+        if (!currentUserId.equals(userId)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền sửa thông tin người khác!");
             return;
         }
 
         try {
-            // Lấy thông tin từ form
+            // Lấy dữ liệu từ form
             String fullName = request.getParameter("fullName");
             String email = request.getParameter("email");
             String phone = request.getParameter("phone");
             String birthDateStr = request.getParameter("birthDate");
+            String bio = request.getParameter("bio");
 
-            java.util.Date birthDate = null;
+            Date birthDate = null;
             if (birthDateStr != null && !birthDateStr.isEmpty()) {
-                birthDate = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(birthDateStr);
+                birthDate = new SimpleDateFormat("yyyy-MM-dd").parse(birthDateStr);
             }
 
-            // Cập nhật thông tin user
+            // Cập nhật dữ liệu cơ bản
             currentUser.setFullName(fullName);
             currentUser.setEmail(email);
             currentUser.setPhone(phone);
             currentUser.setBirthDate(birthDate);
+            currentUser.setBio(bio);
 
-            // Xử lý ảnh đại diện
+            // Cập nhật ảnh đại diện
             Part avatarPart = request.getPart("avatar");
             if (avatarPart != null && avatarPart.getSize() > 0) {
                 ForumImageRepository repo = new ForumImageRepository();
@@ -72,27 +79,27 @@ public class EditUserProfileServlet extends HttpServlet {
                     currentUser.setProfilePicture(avatarUrl);
                 }
             }
-
-            // Xử lý ảnh bìa (nếu bạn muốn lưu đường dẫn ảnh bìa, hãy thêm trường coverPhoto vào UserAccount và DB)
+            // Cập nhật ảnh bìa
             Part coverPart = request.getPart("coverPhoto");
             if (coverPart != null && coverPart.getSize() > 0) {
                 ForumImageRepository repo = new ForumImageRepository();
                 String coverUrl = repo.uploadImage(coverPart, "forum/covers/" + userId + "/", 5 * 1024 * 1024, "cover");
-                // Nếu có trường coverPhoto trong UserAccount:
-                // currentUser.setCoverPhoto(coverUrl);
-                // Nếu không, bạn có thể bỏ qua hoặc lưu vào session để hiển thị tạm thời
-                session.setAttribute("coverPhotoUrl", coverUrl);
+                if (coverUrl != null && !coverUrl.isEmpty()) {
+                    currentUser.setCoverPhoto(coverUrl);
+                }
             }
 
-            userDAO.updateUserProfile(currentUser);
+            // Cập nhật vào CSDL
+            userDAO.updateUserProfileDetail(currentUser);
 
-            // Cập nhật lại session
-            session.setAttribute("user", currentUser);
-
-            // Thông báo thành công
+            // Cập nhật session
+            session.setAttribute("userDetail", currentUser); // thông tin chi tiết
+            session.setAttribute("user", currentUser); // thông tin cơ bản (dùng UserProfileDetail luôn)
             session.setAttribute("message", "Cập nhật thông tin thành công!");
+
             response.sendRedirect(request.getContextPath() + "/profile?userId=" + userId);
         } catch (Exception e) {
+            e.printStackTrace();
             session.setAttribute("message", "Có lỗi xảy ra: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/view/forum/editUserProfileForum.jsp");
         }

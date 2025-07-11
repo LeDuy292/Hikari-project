@@ -235,9 +235,21 @@ body {
     border: 1.5px solid #f2f6ff;
 }
 .post-card:hover {
-    box-shadow: 0 8px 32px 0 rgba(79, 140, 255, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(79,140,255,0.18);
     transform: translateY(-2px) scale(1.01);
     border-color: #b8c6ff;
+}
+.post-card.unread {
+    border-left: 4px solid #4f8cff;
+    background: #f8fbff;
+}
+.post-card.read {
+    opacity: 0.92;
+}
+.post-card .post-status.pinned {
+    background: #f7c873;
+    color: #232946;
+    font-weight: 700;
 }
 .post-card .post-header {
     display: flex;

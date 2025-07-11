@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="model.UserAccount, java.text.SimpleDateFormat" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="model.UserAccount" %>
 <%
     UserAccount user = (UserAccount) session.getAttribute("user");
     if (user == null) {
@@ -23,14 +24,20 @@
         <form class="edit-profile-form" action="<%=request.getContextPath()%>/profile/edit" method="post" enctype="multipart/form-data">
             <h2><i class="fas fa-user-edit"></i> Chỉnh sửa hồ sơ cá nhân</h2>
             <div class="avatar-preview">
-                <img id="avatarImg" src="<%= user.getProfilePicture() != null && !user.getProfilePicture().isEmpty() ? user.getProfilePicture() : (request.getContextPath() + "/assets/img/avatar.png") %>" alt="Avatar" />
+                <!-- Avatar preview -->
+                <img id="avatarImg"
+                     src="<%= user.getProfilePicture() != null && !user.getProfilePicture().isEmpty() ? user.getProfilePicture() : (request.getContextPath() + "/assets/img/avatar.png") %>"
+                     alt="Avatar" />
                 <label class="upload-btn">
                     <i class="fas fa-camera"></i> Đổi ảnh đại diện
                     <input type="file" name="avatar" accept="image/*" onchange="previewImage(this, 'avatarImg')" />
                 </label>
             </div>
             <div class="cover-preview">
-                <img id="coverImg" src="<%= request.getContextPath() %>/assets/img/cover-default.jpg" alt="Cover" />
+                <!-- Cover preview -->
+                <img id="coverImg"
+                     src="<%= user.getCoverPhoto() != null && !user.getCoverPhoto().isEmpty() ? user.getCoverPhoto() : (request.getContextPath() + "/assets/img/backgroundLogin.png") %>"
+                     alt="Cover" />
                 <label class="upload-btn">
                     <i class="fas fa-image"></i> Đổi ảnh bìa
                     <input type="file" name="coverPhoto" accept="image/*" onchange="previewImage(this, 'coverImg')" />

@@ -287,120 +287,116 @@
                             boolean isHidden = "HIDDEN".equals(post.getStatus());
                     %>
                     <div class="post-card <%= isRead ? "read" : "unread"%>" data-tags="<%= escapeHtml(post.getCategory())%>">
-                        <div class="post-content">
-                            <div class="post-header">
-                                <a href="<%= request.getContextPath()%>/profile?userId=<%= post.getPostedBy()%>">
+                        <div class="post-header">
+                           <a href="<%= request.getContextPath()%>/profile?userId=<%= post.getPostedBy()%>">
                                     <img src="<%= postAuthor != null && postAuthor.getProfilePicture() != null && !postAuthor.getProfilePicture().isEmpty()
                                             ? (postAuthor.getProfilePicture().startsWith("http") ? postAuthor.getProfilePicture() : (request.getContextPath() + "/" + postAuthor.getProfilePicture()))
                                             : (request.getContextPath() + "/assets/img/avatar.png")%>" alt="Avatar" />
                                 </a>
-
-
-                                <div class="author-info">
-                                    <span class="author-name">
-                                        <%= escapeHtml(authorUsername)%>
-                                        <span class="role-badge <%= authorRole.toLowerCase()%>">
-                                            <%= ForumPermissionService.getRoleDisplayName(authorRole)%>
-                                        </span>
+                            <div class="author-info">
+                                <span class="author-name">
+                                    <%= escapeHtml(authorUsername)%>
+                                    <span class="role-badge <%= authorRole.toLowerCase()%>">
+                                        <%= ForumPermissionService.getRoleDisplayName(authorRole)%>
                                     </span>
-                                    <div class="post-meta">
-                                        <span><i class="fas fa-clock"></i> <%= formattedDate%></span>
-                                        <span><i class="fas fa-eye"></i> <%= post.getViewCount()%></span>
-                                        <span><i class="fas fa-comment"></i> <%= post.getCommentCount()%></span>
-                                    </div>
-                                </div>
-                                <div class="post-tags">
-                                    <span class="tag"><%= escapeHtml(post.getCategory())%></span>
-
-                                    <% if (isPinned) { %>
-                                    <span class="post-status pinned">
-                                        <i class="fas fa-thumbtack"></i>
-                                        Ghim
-                                    </span>
-                                    <% } %>
-
-                                    <% if (isHidden) { %>
-                                    <span class="post-status hidden">
-                                        <i class="fas fa-eye-slash"></i>
-                                        Ẩn
-                                    </span>
-                                    <% } %>
-
-                                    <% if (isRead) { %>
-                                    <span class="read-indicator">
-                                        <i class="fas fa-check"></i>
-                                        Đã đọc
-                                    </span>
-                                    <% } else { %>
-                                    <span class="unread-indicator">
-                                        <i class="fas fa-circle"></i>
-                                        Mới
-                                    </span>
-                                    <% }%>
+                                </span>
+                                <div class="post-meta">
+                                    <span><i class="fas fa-clock"></i> <%= formattedDate%></span>
+                                    <span><i class="fas fa-eye"></i> <%= post.getViewCount()%></span>
+                                    <span><i class="fas fa-comment"></i> <%= post.getCommentCount()%></span>
                                 </div>
                             </div>
-                            <a href="<%= request.getContextPath()%>/forum/post/<%= post.getId()%>" class="post-title"><%= escapeHtml(post.getTitle())%></a>
-                            <div class="post-body">
-                                <p><%= escapeHtml(post.getContent().length() > 200 ? post.getContent().substring(0, 200) + "..." : post.getContent())%></p>
-                            </div>
-                            <% if (!postPicture.isEmpty()) {%>
-                            <div class="post-image">
-                                <img src="<%= escapeHtml(postPicture)%>" alt="Post image" />
-                            </div>
-                            <% }%>
-                            <div class="post-actions">
-                                <button class="action-btn like-btn <%= hasLiked ? "liked" : ""%>" onclick="toggleLike(<%= post.getId()%>, this)">
-                                    <i class="fas fa-thumbs-up"></i> <span class="like-count"><%= post.getVoteCount()%></span>
-                                </button>
-                                <a href="<%= request.getContextPath()%>/forum/post/<%= post.getId()%>" class="action-btn comment-btn">
-                                    <i class="fas fa-comment"></i> <%= post.getCommentCount()%>
-                                </a>
+                            <div class="post-tags">
+                                <span class="tag"><%= escapeHtml(post.getCategory())%></span>
 
-                                <% if (canEditPost) {%>
-                                <a href="<%= request.getContextPath()%>/forum/editPost/<%= post.getId()%>" class="action-btn edit-btn">
-                                    <i class="fas fa-edit"></i> Sửa
-                                </a>
+                                <% if (isPinned) { %>
+                                <span class="post-status pinned">
+                                    <i class="fas fa-thumbtack"></i>
+                                    Ghim
+                                </span>
                                 <% } %>
 
-                                <% if (canModeratePost) {%>
-                                <button class="action-btn mod-btn" onclick="toggleModerationControls(<%= post.getId()%>)">
-                                    <i class="fas fa-shield-alt"></i> Kiểm duyệt
-                                </button>
+                                <% if (isHidden) { %>
+                                <span class="post-status hidden">
+                                    <i class="fas fa-eye-slash"></i>
+                                    Ẩn
+                                </span>
                                 <% } %>
+
+                                <% if (isRead) { %>
+                                <span class="read-indicator">
+                                    <i class="fas fa-check"></i>
+                                    Đã đọc
+                                </span>
+                                <% } else { %>
+                                <span class="unread-indicator">
+                                    <i class="fas fa-circle"></i>
+                                    Mới
+                                </span>
+                                <% }%>
                             </div>
+                        </div>
+                        <a href="<%= request.getContextPath()%>/forum/post/<%= post.getId()%>" class="post-title"><%= escapeHtml(post.getTitle())%></a>
+                        <div class="post-body">
+                            <p><%= escapeHtml(post.getContent().length() > 200 ? post.getContent().substring(0, 200) + "..." : post.getContent())%></p>
+                        </div>
+                        <% if (!postPicture.isEmpty()) {%>
+                        <div class="post-image">
+                            <img src="<%= escapeHtml(postPicture)%>" alt="Post image" />
+                        </div>
+                        <% }%>
+                        <div class="post-actions">
+                            <button class="action-btn like-btn <%= hasLiked ? "liked" : ""%>" onclick="toggleLike(<%= post.getId()%>, this)">
+                                <i class="fas fa-thumbs-up"></i> <span class="like-count"><%= post.getVoteCount()%></span>
+                            </button>
+                            <a href="<%= request.getContextPath()%>/forum/post/<%= post.getId()%>" class="action-btn comment-btn">
+                                <i class="fas fa-comment"></i> <%= post.getCommentCount()%>
+                            </a>
+
+                            <% if (canEditPost) {%>
+                            <a href="<%= request.getContextPath()%>/forum/editPost/<%= post.getId()%>" class="action-btn edit-btn">
+                                <i class="fas fa-edit"></i> Sửa
+                            </a>
+                            <% } %>
 
                             <% if (canModeratePost) {%>
-                            <div class="moderation-controls" id="mod-controls-<%= post.getId()%>">
-                                <% if (!isHidden) {%>
-                                <button class="mod-btn hide" onclick="moderatePost(<%= post.getId()%>, 'hide')">
-                                    <i class="fas fa-eye-slash"></i> Ẩn
-                                </button>
-                                <% } else {%>
-                                <button class="mod-btn show" onclick="moderatePost(<%= post.getId()%>, 'show')">
-                                    <i class="fas fa-eye"></i> Hiện
-                                </button>
-                                <% } %>
-
-                                <% if (ForumPermissionService.canPinPost(currentUser)) { %>
-                                <% if (!isPinned) {%>
-                                <button class="mod-btn pin" onclick="moderatePost(<%= post.getId()%>, 'pin')">
-                                    <i class="fas fa-thumbtack"></i> Ghim
-                                </button>
-                                <% } else {%>
-                                <button class="mod-btn unpin" onclick="moderatePost(<%= post.getId()%>, 'unpin')">
-                                    <i class="fas fa-times"></i> Bỏ ghim
-                                </button>
-                                <% } %>
-                                <% } %>
-
-                                <% if (canDeletePost) {%>
-                                <button class="mod-btn delete" onclick="confirmDeletePost(<%= post.getId()%>)">
-                                    <i class="fas fa-trash"></i> Xóa
-                                </button>
-                                <% } %>
-                            </div>
+                            <button class="action-btn mod-btn" onclick="toggleModerationControls(<%= post.getId()%>)">
+                                <i class="fas fa-shield-alt"></i> Kiểm duyệt
+                            </button>
                             <% } %>
                         </div>
+
+                        <% if (canModeratePost) {%>
+                        <div class="moderation-controls" id="mod-controls-<%= post.getId()%>">
+                            <% if (!isHidden) {%>
+                            <button class="mod-btn hide" onclick="moderatePost(<%= post.getId()%>, 'hide')">
+                                <i class="fas fa-eye-slash"></i> Ẩn
+                            </button>
+                            <% } else {%>
+                            <button class="mod-btn show" onclick="moderatePost(<%= post.getId()%>, 'show')">
+                                <i class="fas fa-eye"></i> Hiện
+                            </button>
+                            <% } %>
+
+                            <% if (ForumPermissionService.canPinPost(currentUser)) { %>
+                            <% if (!isPinned) {%>
+                            <button class="mod-btn pin" onclick="moderatePost(<%= post.getId()%>, 'pin')">
+                                <i class="fas fa-thumbtack"></i> Ghim
+                            </button>
+                            <% } else {%>
+                            <button class="mod-btn unpin" onclick="moderatePost(<%= post.getId()%>, 'unpin')">
+                                <i class="fas fa-times"></i> Bỏ ghim
+                            </button>
+                            <% } %>
+                            <% } %>
+
+                            <% if (canDeletePost) {%>
+                            <button class="mod-btn delete" onclick="confirmDeletePost(<%= post.getId()%>)">
+                                <i class="fas fa-trash"></i> Xóa
+                            </button>
+                            <% } %>
+                        </div>
+                        <% } %>
                     </div>
                     <%
                             }
@@ -549,7 +545,7 @@
                         <%
                             int rank = 4;
                             if (topUsers != null && topUsers.size() > 3) {
-                                for (int i = 3; i < Math.min(topUsers.size(), 9); i++) {
+                                for (int i = 3; i < Math.min(topUsers.size(), 10); i++) {
                                     UserActivityScore score = topUsers.get(i);
                                     UserAccount user = score.getUser();
                                     String userAvatar = user.getProfilePicture();
