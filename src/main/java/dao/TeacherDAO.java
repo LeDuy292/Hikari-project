@@ -14,7 +14,8 @@ import java.util.List;
 import model.Class;
 import model.Teacher;
 import utils.DBContext;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -22,6 +23,7 @@ import utils.DBContext;
  */
 public class TeacherDAO {
 
+    private static final Logger logger = LoggerFactory.getLogger(TeacherDAO.class);
     Connection con;
 
     public TeacherDAO() {
@@ -35,11 +37,10 @@ public class TeacherDAO {
     }
 
     public List<Teacher> getAllTeachers() {
-        String sql = "SELECT t.teacherID, t.userID, t.specialization, t.experienceYears, u.fullName " +
-                     "FROM Teacher t JOIN UserAccount u ON t.userID = u.userID";
+        String sql = "SELECT t.teacherID, t.userID, t.specialization, t.experienceYears, u.fullName "
+                + "FROM Teacher t JOIN UserAccount u ON t.userID = u.userID";
         List<Teacher> list = new ArrayList<>();
-        try (PreparedStatement pre = con.prepareStatement(sql);
-             ResultSet resultSet = pre.executeQuery()) {
+        try (PreparedStatement pre = con.prepareStatement(sql); ResultSet resultSet = pre.executeQuery()) {
             while (resultSet.next()) {
                 String teacherID = resultSet.getString("teacherID");
                 String userID = resultSet.getString("userID");
@@ -62,16 +63,29 @@ public class TeacherDAO {
         return list;
     }
 
+    public void addTeacher(Teacher teacher) {
+        String sql = "INSERT INTO Teacher (teacherID, userID, specialization, experienceYears) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
+            pre.setString(1, teacher.getTeacherID());
+            pre.setString(2, teacher.getUserID());
+            pre.setString(3, teacher.getSpecialization());
+            pre.setInt(4, teacher.getExperienceYears());
+            pre.executeUpdate();
+            logger.info("TeacherDAO: Added new teacher with ID: {}", teacher.getTeacherID());
+        } catch (SQLException e) {
+            logger.error("TeacherDAO: Error adding teacher {}: {}", teacher.getTeacherID(), e.getMessage(), e);
+        }
+    }
+
     public List<Class> getAllClasses() {
-        String sql = "SELECT c.classID, c.courseID, c.name, c.teacherID, c.numberOfStudents, " +
-                     "co.title, co.startDate, co.endDate, u.fullName as teacherName " +
-                     "FROM Class c " +
-                     "JOIN Courses co ON c.courseID = co.courseID " +
-                     "LEFT JOIN Teacher t ON c.teacherID = t.teacherID " +
-                     "LEFT JOIN UserAccount u ON t.userID = u.userID";
+        String sql = "SELECT c.classID, c.courseID, c.name, c.teacherID, c.numberOfStudents, "
+                + "co.title, co.startDate, co.endDate, u.fullName as teacherName "
+                + "FROM Class c "
+                + "JOIN Courses co ON c.courseID = co.courseID "
+                + "LEFT JOIN Teacher t ON c.teacherID = t.teacherID "
+                + "LEFT JOIN UserAccount u ON t.userID = u.userID";
         List<Class> list = new ArrayList<>();
-        try (PreparedStatement pre = con.prepareStatement(sql);
-             ResultSet resultSet = pre.executeQuery()) {
+        try (PreparedStatement pre = con.prepareStatement(sql); ResultSet resultSet = pre.executeQuery()) {
             while (resultSet.next()) {
                 String classID = resultSet.getString("classID");
                 String courseID = resultSet.getString("courseID");
@@ -149,9 +163,9 @@ public class TeacherDAO {
     }
 
     public Teacher getTeacherByID(String id) {
-        String sql = "SELECT t.teacherID, t.userID, t.specialization, t.experienceYears, u.fullName " +
-                     "FROM Teacher t JOIN UserAccount u ON t.userID = u.userID " +
-                     "WHERE t.teacherID = ?";
+        String sql = "SELECT t.teacherID, t.userID, t.specialization, t.experienceYears, u.fullName "
+                + "FROM Teacher t JOIN UserAccount u ON t.userID = u.userID "
+                + "WHERE t.teacherID = ?";
         Teacher teacher = new Teacher();
         try (PreparedStatement pre = con.prepareStatement(sql)) {
             pre.setString(1, id);
@@ -178,8 +192,7 @@ public class TeacherDAO {
     public int countAllTeachers() {
         String sql = "SELECT COUNT(*) FROM Teacher";
         int count = 0;
-        try (PreparedStatement pre = con.prepareStatement(sql);
-             ResultSet resultSet = pre.executeQuery()) {
+        try (PreparedStatement pre = con.prepareStatement(sql); ResultSet resultSet = pre.executeQuery()) {
             if (resultSet.next()) {
                 count = resultSet.getInt(1);
             }
@@ -198,7 +211,7 @@ public class TeacherDAO {
         System.out.println("Assign success: " + success);
     }
 
-        public void closeConnection() {
+    public void closeConnection() {
         try {
             if (con != null && !con.isClosed()) {
                 con.close();
