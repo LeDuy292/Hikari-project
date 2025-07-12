@@ -1,0 +1,73 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Arial', sans-serif;
+}
+
+.main-content {
+    padding: 20px;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    font-weight: bold;
+}
+
+.table {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+.badge.bg-success {
+    background-color: #28a745 !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+.btn-primary, .btn-success, .btn-danger {
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover, .btn-success:hover, .btn-danger:hover {
+    opacity: 0.9;
+}
+
+.modal-content {
+    border-radius: 10px;
+}
+
+.modal-header {
+    background-color: #007bff;
+    color: white;
+}
+
+.form-control, .form-select {
+    border-radius: 5px;
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+embed {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.alert {
+    border-radius: 5px;
+}

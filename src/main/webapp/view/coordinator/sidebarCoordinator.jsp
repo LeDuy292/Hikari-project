@@ -211,7 +211,7 @@
             <i class="fas fa-bell"></i>
             <span>Phân công giảng viên</span>
         </a>
-        <a href="${pageContext.request.contextPath}/view/coordinator/teacher-cv-review.jsp" class="sidebar-nav-item <%= currentPage.equals("teacher-cv-review.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/cv" class="sidebar-nav-item <%= currentPage.equals("teacher-cv-review.jsp") ? "active" : ""%>">
             <i class="fas fa-users"></i>
             <span>Phê Duyệt Hồ Sơ Giảng Viên</span>
         </a>
