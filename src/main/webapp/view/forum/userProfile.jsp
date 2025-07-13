@@ -392,9 +392,6 @@
         function sendMessage(userId) {
             alert('Tính năng nhắn tin sẽ được phát triển trong tương lai!');
         }
-        function followUser(userId) {
-            alert('Tính năng theo dõi sẽ được phát triển trong tương lai!');
-        }
         window.onclick = function (event) {
             var modal = document.getElementById('editProfileModal');
             if (event.target == modal)
