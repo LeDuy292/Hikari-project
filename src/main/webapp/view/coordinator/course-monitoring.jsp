@@ -1,7 +1,7 @@
 <%@page import="model.Course"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> 
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -13,34 +13,38 @@
         <link href="${pageContext.request.contextPath}/assets/css/coordinator_css/course-monitoring.css" rel="stylesheet">
 
         <style>
-            /* Lớp phủ mờ cho nền */
+            /* Sửa lỗi: Đảm bảo modal-overlay hiển thị và có thể tương tác */
             .modal-overlay {
-                display: none;
-                position: fixed;
+                display: none; /* Ban đầu ẩn */
+                position: fixed; /* Sửa: Đảm bảo cố định trên màn hình */
                 top: 0;
                 left: 0;
                 width: 100%;
                 height: 100%;
                 background-color: rgba(0, 0, 0, 0.5);
-                z-index: 1000;
+                /*z-index: 1000;  Sửa: Đảm bảo hiển thị trên các phần tử khác */
+                z-index: 2000; /* Tăng z-index để vượt qua sidebar */
                 justify-content: center;
                 align-items: center;
                 min-height: 100vh;
+                overflow: auto; /* Sửa: Cho phép cuộn nếu nội dung dài */
             }
 
-            /* Container cho form */
+            /* Sửa lỗi: Đảm bảo form-container không bị giới hạn bởi bố cục cha */
             .form-container {
                 background-color: #ffffff;
                 margin: 5% auto;
                 padding: 30px;
-                border-radius: 16px; /* Tăng bo góc */
+                border-radius: 16px;
                 width: 100%;
-                max-width: 600px; /* Tăng chiều rộng */
+                max-width: 600px;
                 position: relative;
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                /*z-index: 1001;  Sửa: Đảm bảo form hiển thị trên lớp phủ */
+                z-index: 2001; /* Tăng z-index để hiển thị trên modal-overlay */
             }
 
-            /* Styling cho nút đóng */
+            /* Sửa lỗi: Đảm bảo nút đóng hoạt động */
             .close-button {
                 position: absolute;
                 top: 15px;
@@ -49,47 +53,19 @@
                 font-size: 24px;
                 color: #333;
                 transition: color 0.3s;
+                z-index: 1002; /* Sửa: Đảm bảo nút đóng hiển thị trên form */
             }
 
             .close-button:hover {
                 color: #ff0000;
             }
 
-            /* Styling cho tiêu đề */
-            .form-title {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                font-size: 24px;
-                font-weight: 600;
-                color: #333;
-                margin-bottom: 20px;
-                text-align: center;
-            }
-
-            /* Styling cho form */
-            .course-form {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            }
-
-            /* Styling cho các div chứa label và input */
-            .form-group {
-                margin-bottom: 20px;
-            }
-
-            /* Styling cho label */
-            .form-label {
-                display: block;
-                font-size: 14px;
-                font-weight: 600;
-                color: #333;
-                margin-bottom: 8px;
-            }
-
-            /* Styling cho input */
-            .form-input {
+            /* Sửa lỗi: Đảm bảo form-input không bị cố định bởi CSS khác */
+            .form-input, .form-textarea, .form-select {
                 width: 100%;
                 padding: 12px;
                 border: 1px solid #dfe1e5;
-                border-radius: 12px; /* Tăng bo góc */
+                border-radius: 12px;
                 font-size: 14px;
                 color: #333;
                 background-color: #fafafa;
@@ -97,57 +73,20 @@
                 box-sizing: border-box;
             }
 
-            /* Styling cho textarea */
-            .form-textarea {
-                width: 100%;
-                padding: 12px;
-                border: 1px solid #dfe1e5;
-                border-radius: 12px; /* Tăng bo góc */
-                font-size: 14px;
-                color: #333;
-                background-color: #fafafa;
-                transition: border-color 0.3s, box-shadow 0.3s;
-                box-sizing: border-box;
-                resize: vertical;
-                min-height: 100px;
-            }
-
-            /* Styling cho select */
-            .form-select {
-                width: 100%;
-                padding: 12px;
-                border: 1px solid #dfe1e5;
-                border-radius: 12px; /* Tăng bo góc */
-                font-size: 14px;
-                color: #333;
-                background-color: #fafafa;
-                transition: border-color 0.3s, box-shadow 0.3s;
-                box-sizing: border-box;
-            }
-
-            /* Hiệu ứng khi focus vào input, textarea, select */
-            .form-input:focus, .form-textarea:focus, .form-select:focus {
-                outline: none;
-                border-color: #007bff;
-                box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
-                background-color: #fff;
-            }
-
-            /* Styling cho button */
+            /* Sửa lỗi: Đảm bảo button submit không bị vô hiệu hóa */
             .submit-button {
                 width: 100%;
                 padding: 12px;
                 background-color: #007bff;
                 color: white;
                 border: none;
-                border-radius: 12px; /* Tăng bo góc */
+                border-radius: 12px;
                 font-size: 16px;
                 font-weight: 600;
                 cursor: pointer;
                 transition: background-color 0.3s, transform 0.2s;
             }
 
-            /* Hiệu ứng hover và active cho button */
             .submit-button:hover {
                 background-color: #0056b3;
                 transform: translateY(-2px);
@@ -157,96 +96,132 @@
                 transform: translateY(0);
             }
 
-            /* Responsive cho màn hình nhỏ */
-            @media (max-width: 480px) {
-                .form-container {
-                    padding: 20px;
-                    max-width: 90%; /* Giảm chiều rộng cho màn hình nhỏ */
-                }
-
-                .form-title {
-                    font-size: 20px;
-                }
-
-                .form-label {
-                    font-size: 12px;
-                }
-
-                .form-input, .form-textarea, .form-select, .submit-button {
-                    font-size: 13px;
-                }
-
-                .close-button {
-                    font-size: 20px;
-                }
+            /* Sửa lỗi: Đảm bảo image-preview hiển thị đúng */
+            .image-preview img {
+                max-width: 200px;
+                border-radius: 12px;
+                margin-top: 10px;
             }
-            /*gợi ý*/
+
+              /* Thay đổi: Cải thiện CSS cho thanh tìm kiếm và gợi ý */
+            .course-card-header {
+                padding: 4px 5px;
+                margin: 0;
+            }
+
+            .d-flex {
+                align-items: center;
+                padding: 0;
+                position: relative; /* Thay đổi: Đảm bảo vị trí tham chiếu ổn định */
+                z-index: 1100; /* Thay đổi: Đặt z-index cao hơn modal-overlay */
+            }
+
             .search-container {
                 position: relative;
-                max-width: 300px;
-                margin: 20px;
+                width: 320px;
+                padding: 0;
+                margin: 0;
+                margin-left: 65%;
+                z-index: 1150; /* Thay đổi: Tăng z-index cho search-container */
             }
-            
+
             .search-input-group {
                 display: flex;
                 align-items: center;
-                background: #f8f9fa;
-                border-radius: 12px;
-                padding: 5px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                border: 1px solid #dfe1e5;
+                border-radius: 20px;
+                background-color: #ffffff;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                transition: box-shadow 0.3s ease;
+                height: 40px;
             }
-            
+
+            .search-input-group:hover {
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+            }
+
             .search-input {
+                flex: 1;
                 border: none;
-                background: transparent;
-                padding: 8px 12px;
-                width: 100%;
-                font-size: 14px;
-            }
-            
-            .search-input:focus {
+                padding: 12px 16px;
+                font-family: 'Arial', sans-serif;
+                font-size: 15px;
+                color: #333;
+                background-color: transparent;
                 outline: none;
+                height: 100%;
             }
-            
+
+            .search-input:focus {
+                box-shadow: inset 0 0 0 2px #007bff;
+            }
+
             .search-button {
-                background: transparent;
+                background-color: transparent;
                 border: none;
-                color: #007bff;
-                padding: 8px 12px;
-                cursor: pointer;
-                transition: color 0.3s;
-            }
-            
-            .search-button:hover {
-                color: #0056b3;
-            }
-            
-            .suggestions-container {
-                position: absolute;
-                width: 100%;
-                background: white;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                max-height: 250px;
-                overflow-y: auto;
-                display: none;
-                z-index: 1000;
-                margin-top: 5px;
-            }
-            
-            .suggestion-item {
                 padding: 12px 16px;
                 cursor: pointer;
-                transition: background-color 0.2s;
-                border-bottom: 1px solid #f0f0f0;
+                color: #555;
+                font-size: 16px;
+                transition: color 0.3s ease;
+                height: 100%;
             }
-            
-            .suggestion-item:last-child {
-                border-bottom: none;
+
+            .search-button:hover {
+                color: #007bff;
             }
-            
+
+            .suggestions-container {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: auto;
+                min-width: 100%;
+                max-height: 240px;
+                overflow-y: auto;
+                background-color: #ffffff;
+                border: 1px solid #dfe1e5;
+                border-radius: 12px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+                z-index: 1250; /* Thay đổi: Tăng z-index cao hơn để tránh bị che khuất bởi sidebar */
+                display: none;
+                margin-top: 2px;
+            }
+
+            .suggestion-item {
+                padding: 12px 16px;
+                font-family: 'Arial', sans-serif;
+                font-size: 15px;
+                color: #333;
+                cursor: pointer;
+                transition: background-color 0.2s ease;
+            }
+
             .suggestion-item:hover {
-                background-color: #f8f9fa;
+                background-color: #e8f0fe;
+            }
+
+            .no-suggestions {
+                padding: 12px 16px;
+                font-family: 'Arial', sans-serif;
+                font-size: 15px;
+                color: #888;
+                text-align: center;
+                font-style: italic;
+            }
+
+            @media (max-width: 480px) {
+                .form-container {
+                    padding: 20px;
+                    max-width: 90%;
+                }
+                .search-container {
+                    width: 100%;
+                }
+                .suggestions-container {
+                    width: 100%;
+                    left: 0;
+                }
             }
         </style>
     </head>
@@ -271,7 +246,6 @@
                         <div class="col-12">
                             <div class="course-card-main">
                                 <div class="course-card-header">
-                                    <h5 class="course-card-title mb-0">Danh sách khóa học tiếng Nhật</h5>
                                     <div class="d-flex gap-2">
                                         <div class="search-container">
                                             <div class="search-input-group">
@@ -324,7 +298,7 @@
                                                         <a href="LoadClass?id=${course.courseID}" class="btn btn-sm btn-outline-secondary" title="Xem lớp học">
                                                             <i class="fas fa-chalkboard-teacher"></i>
                                                         </a>
-                                                        <a href="NextEditCourse?id=${course.courseNum}" class="btn btn-sm btn-outline-primary" title="Chỉnh sửa khóa học">
+                                                        <a href="NextEditCourse?id=${course.courseID}" class="btn btn-sm btn-outline-primary" title="Chỉnh sửa khóa học">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                     </div>
@@ -346,7 +320,11 @@
             <div class="form-container">
                 <span onclick="closeModal()" class="close-button">×</span>
                 <h2 class="form-title">Thêm Khóa Học</h2>
-                <form action="AddCourse" method="get" class="course-form">
+                <form action="AddCourse" method="post" class="course-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="courseID" class="form-label">Mã khóa học:</label> <!-- Thêm trường courseID -->
+                        <input type="text" id="courseID" name="courseID" class="form-input" required>
+                    </div>
                     <div class="form-group">
                         <label for="title" class="form-label">Tên khóa học:</label>
                         <input type="text" id="title" name="title" class="form-input" required>
@@ -379,6 +357,14 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label for="imageUrl" class="form-label">Ảnh khóa học:</label> <!-- Thay đổi: Thêm label cho input file -->
+                        <input type="file" id="imageUrl" name="imageUrl" class="form-input" accept="image/png,image/jpeg,image/jpg"> <!-- Thay đổi: Thêm input file cho ảnh -->
+                        <span class="error-message" id="imageUrl-error"></span> <!-- Thay đổi: Thêm span để hiển thị lỗi -->
+                        <div class="image-preview">
+                            <img id="imagePreview" src="" alt="Course Image Preview" style="display: none; max-width: 200px; border-radius: 12px; margin-top: 10px;"> <!-- Thay đổi: Thêm preview ảnh -->
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <button type="submit" class="submit-button">Thêm khóa học</button>
                     </div>
                 </form>
@@ -392,6 +378,13 @@
             function closeModal() {
                 document.getElementById('addCourseModal').style.display = 'none';
             }
+            // Thêm sự kiện đóng modal khi click vào lớp phủ
+            document.getElementById('addCourseModal').addEventListener('click', function (e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
         </script>
 
         <script>
@@ -402,16 +395,16 @@
 
             // Lấy dữ liệu khóa học từ các card hiện có
             const courseData = Array.from(courseCards).map(card => ({
-                title: card.querySelector('.course-title').textContent,
-                element: card.closest('.col-md-6')
-            }));
+                    title: card.querySelector('.course-title').textContent,
+                    element: card.closest('.col-md-6')
+                }));
 
             function filterCourses(query) {
                 const searchTerm = query.toLowerCase();
                 courseCards.forEach(card => {
                     const title = card.querySelector('.course-title').textContent.toLowerCase();
                     const parent = card.closest('.col-md-6');
-                    
+
                     if (title.includes(searchTerm)) {
                         parent.style.display = '';
                     } else {
@@ -426,7 +419,7 @@
                     return;
                 }
 
-                const filteredCourses = courseData.filter(course => 
+                const filteredCourses = courseData.filter(course =>
                     course.title.toLowerCase().includes(query.toLowerCase())
                 );
 
@@ -450,21 +443,21 @@
             }
 
             // Xử lý sự kiện input
-            searchInput.addEventListener('input', function() {
+            searchInput.addEventListener('input', function () {
                 const query = this.value.trim();
                 showSuggestions(query);
                 filterCourses(query);
             });
 
             // Đóng suggestions khi click ra ngoài
-            document.addEventListener('click', function(e) {
+            document.addEventListener('click', function (e) {
                 if (!searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
                     suggestionsContainer.style.display = 'none';
                 }
             });
 
             // Xử lý sự kiện Enter
-            searchInput.addEventListener('keypress', function(e) {
+            searchInput.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     const query = this.value.trim();
                     filterCourses(query);
@@ -473,10 +466,113 @@
             });
 
             // Xử lý sự kiện click nút tìm kiếm
-            searchButton.addEventListener('click', function() {
+            searchButton.addEventListener('click', function () {
                 const query = searchInput.value.trim();
                 filterCourses(query);
                 suggestionsContainer.style.display = 'none';
+            });
+
+            // Thay đổi: Thêm JavaScript để xử lý preview và validation cho ảnh
+            document.getElementById('imageUrl').addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                const preview = document.getElementById('imagePreview');
+                const error = document.getElementById('imageUrl-error');
+
+                if (file) {
+                    const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+                    if (!validTypes.includes(file.type)) {
+                        error.textContent = 'Vui lòng chọn file ảnh (PNG, JPG, JPEG)';
+                        error.style.display = 'block';
+                        this.value = '';
+                        preview.style.display = 'none';
+                        return;
+                    }
+                    if (file.size > 5 * 1024 * 1024) {
+                        error.textContent = 'Kích thước ảnh không được vượt quá 5MB';
+                        error.style.display = 'block';
+                        this.value = '';
+                        preview.style.display = 'none';
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                    error.textContent = '';
+                    error.style.display = 'none';
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
+
+            // Thay đổi: Thêm validation cho form khi submit
+            document.querySelector('#addCourseModal .course-form').addEventListener('submit', function (e) {
+                let isValid = true;
+                const title = document.getElementById('title').value.trim();
+                const description = document.getElementById('description').value.trim();
+                const fee = parseFloat(document.getElementById('fee').value);
+                const duration = parseInt(document.getElementById('duration').value);
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const imageUrl = document.getElementById('imageUrl').files[0];
+
+                // Reset error messages
+                document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+
+                if (!title) {
+                    document.getElementById('title-error').textContent = 'Vui lòng nhập tên khóa học';
+                    document.getElementById('title-error').style.display = 'block';
+                    isValid = false;
+                }
+                if (!description) {
+                    document.getElementById('description-error').textContent = 'Vui lòng nhập mô tả';
+                    document.getElementById('description-error').style.display = 'block';
+                    isValid = false;
+                }
+                if (isNaN(fee) || fee <= 0) {
+                    document.getElementById('fee-error').textContent = 'Học phí phải lớn hơn 0';
+                    document.getElementById('fee-error').style.display = 'block';
+                    isValid = false;
+                }
+                if (isNaN(duration) || duration <= 0) {
+                    document.getElementById('duration-error').textContent = 'Thời lượng phải lớn hơn 0';
+                    document.getElementById('duration-error').style.display = 'block';
+                    isValid = false;
+                }
+                if (!startDate) {
+                    document.getElementById('startDate-error').textContent = 'Vui lòng chọn ngày bắt đầu';
+                    document.getElementById('startDate-error').style.display = 'block';
+                    isValid = false;
+                }
+                if (!endDate) {
+                    document.getElementById('endDate-error').textContent = 'Vui lòng chọn ngày kết thúc';
+                    document.getElementById('endDate-error').style.display = 'block';
+                    isValid = false;
+                } else if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+                    document.getElementById('endDate-error').textContent = 'Ngày kết thúc phải sau ngày bắt đầu';
+                    document.getElementById('endDate-error').style.display = 'block';
+                    isValid = false;
+                }
+                if (imageUrl) {
+                    const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+                    if (!validTypes.includes(imageUrl.type)) {
+                        document.getElementById('imageUrl-error').textContent = 'Vui lòng chọn file ảnh (PNG, JPG, JPEG)';
+                        document.getElementById('imageUrl-error').style.display = 'block';
+                        isValid = false;
+                    }
+                    if (imageUrl.size > 5 * 1024 * 1024) {
+                        document.getElementById('imageUrl-error').textContent = 'Kích thước ảnh không được vượt quá 5MB';
+                        document.getElementById('imageUrl-error').style.display = 'block';
+                        isValid = false;
+                    }
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                }
             });
         </script>
     </body>

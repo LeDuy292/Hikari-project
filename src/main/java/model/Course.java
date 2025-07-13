@@ -8,10 +8,10 @@ import java.util.Date;
 
 /**
  *
- * @author LENOVO
+ * @author ADMIN
  */
+
 public class Course {
-    private int courseNum;
     private String courseID;
     private String title;
     private String description;
@@ -20,13 +20,13 @@ public class Course {
     private Date startDate;
     private Date endDate;
     private boolean isActive;
+    private String imageUrl;
     private int classCount;
 
     public Course() {
     }
 
-    public Course(int courseNum, String courseID, String title, String description, double fee, int duration, Date startDate, Date endDate, boolean isActive) {
-        this.courseNum = courseNum;
+    public Course(String courseID, String title, String description, double fee, int duration, Date startDate, Date endDate, boolean isActive) {
         this.courseID = courseID;
         this.title = title;
         this.description = description;
@@ -37,15 +37,19 @@ public class Course {
         this.isActive = isActive;
     }
 
-    public int getCourseNum() {
-        return courseNum;
+    public Course(String courseID, String title, String description, double fee, int duration, Date startDate, Date endDate, boolean isActive, String imageUrl) {
+        this.courseID = courseID;
+        this.title = title;
+        this.description = description;
+        this.fee = fee;
+        this.duration = duration;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isActive = isActive;
+        this.imageUrl = imageUrl;
     }
 
-    public void setCourseNum(int courseNum) {
-        this.courseNum = courseNum;
-    }
-
-    public String getCourseID() {
+        public String getCourseID() {
         return courseID;
     }
 
@@ -116,10 +120,19 @@ public class Course {
     public void setClassCount(int classCount) {
         this.classCount = classCount;
     }
-    
-    
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     @Override
     public String toString() {
-        return "Course{" + "courseNum=" + courseNum + ", courseID=" + courseID + ", title=" + title + ", description=" + description + ", fee=" + fee + ", duration=" + duration + ", startDate=" + startDate + ", endDate=" + endDate + ", isActive=" + isActive + '}';
+        return "Course{" + "courseID=" + courseID + ", title=" + title + ", description=" + description + ", fee=" + fee + ", duration=" + duration + ", startDate=" + startDate + ", endDate=" + endDate + ", isActive=" + isActive + ", imageUrl=" + imageUrl + '}';
     }
+    
+  
 }

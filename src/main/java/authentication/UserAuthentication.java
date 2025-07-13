@@ -1,29 +1,58 @@
 package authentication;
 
 import jakarta.servlet.http.HttpSession;
+import model.UserAccount;
 import java.util.HashMap;
 import java.util.Map;
 
 public class UserAuthentication {
     public static boolean isAuthenticated(HttpSession session) {
-        return session != null && session.getAttribute("user") != null;
+        if (session == null) {
+            return false;
+        }
+        
+        // Check both methods for compatibility
+        Object userObj = session.getAttribute("user");
+        if (userObj instanceof UserAccount) {
+            return true;
+        } else if (userObj instanceof Map) {
+            return true;
+        }
+        
+        return false;
     }
 
     public static String getUserRole(HttpSession session) {
-        if (session != null && session.getAttribute("user") != null) {
+        if (session == null) {
+            return null;
+        }
+        
+        Object userObj = session.getAttribute("user");
+        if (userObj instanceof UserAccount) {
+            return ((UserAccount) userObj).getRole();
+        } else if (userObj instanceof Map) {
             @SuppressWarnings("unchecked")
-            Map<String, Object> user = (Map<String, Object>) session.getAttribute("user");
+            Map<String, Object> user = (Map<String, Object>) userObj;
             return (String) user.get("role");
         }
+        
         return null;
     }
 
     public static String getUserID(HttpSession session) {
-        if (session != null && session.getAttribute("user") != null) {
+        if (session == null) {
+            return null;
+        }
+        
+        Object userObj = session.getAttribute("user");
+        if (userObj instanceof UserAccount) {
+            return ((UserAccount) userObj).getUserID();
+        } else if (userObj instanceof Map) {
             @SuppressWarnings("unchecked")
-            Map<String, Object> user = (Map<String, Object>) session.getAttribute("user");
+            Map<String, Object> user = (Map<String, Object>) userObj;
             return (String) user.get("userID");
         }
+        
         return null;
     }
 
