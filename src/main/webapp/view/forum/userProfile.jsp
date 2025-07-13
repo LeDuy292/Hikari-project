@@ -81,11 +81,6 @@
                     <% if (user.getBio() != null && !user.getBio().isEmpty()) { %>
                         <div class="profile-bio"><%= escapeHtml(user.getBio()) %></div>
                     <% } %>
-                    <div style="color:#64748b;font-size:1.1rem;margin-bottom:0.7rem;">
-                        <i class="fas fa-users"></i>
-                        <span><%= user.getFollowerCount() %> người theo dõi</span>
-                        <span style="margin-left:12px;">• <%= user.getFollowingCount() %> đang theo dõi</span>
-                    </div>
                     <div class="role">
                         <i class="fas fa-<%= user.getRole().equals("Student") ? "graduation-cap" : user.getRole().equals("Teacher") ? "chalkboard-teacher" : "user-shield"%>"></i>
                         <%= escapeHtml(user.getRole())%>
@@ -95,9 +90,6 @@
                     <div class="profile-actions" style="margin-top: 1rem;">
                         <button class="btn btn-primary" onclick="sendMessage('<%= escapeHtml(user.getUserID())%>')">
                             <i class="fas fa-envelope"></i> Nhắn tin
-                        </button>
-                        <button class="btn btn-secondary" onclick="followUser('<%= escapeHtml(user.getUserID())%>')">
-                            <i class="fas fa-user-plus"></i> Theo dõi
                         </button>
                     </div>
                     <% } %>

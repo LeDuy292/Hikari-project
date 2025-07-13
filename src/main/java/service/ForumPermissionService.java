@@ -1,6 +1,7 @@
 package service;
 
 import constant.ForumPermissions;
+import static constant.ForumPermissions.PERM_FULL_ADMIN;
 import model.UserAccount;
 import model.forum.ForumPost;
 import java.util.Arrays;
@@ -217,9 +218,11 @@ public class ForumPermissionService {
      * Check if user can pin posts
      */
     public static boolean canPinPost(UserAccount user) {
-        return hasPermission(user, ForumPermissions.PERM_PIN_POSTS);
+    if (user == null) {
+        return false;
     }
-    
+    return hasPermission(user, PERM_FULL_ADMIN);
+}
     /**
      * Check if user can hide posts
      */

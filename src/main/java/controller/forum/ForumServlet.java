@@ -131,6 +131,16 @@ public class ForumServlet extends HttpServlet {
             request.setAttribute("timeFrame", timeFrame);
             LOGGER.info("Leaderboard set with timeFrame: " + timeFrame + ", topUsers size: " + (topUsers != null ? topUsers.size() : 0));
 
+            // Get viewed posts for current user
+            Set<Integer> viewedPostIds = null;
+            try {
+                viewedPostIds = postViewDAO.getViewedPostIds(userId);
+                LOGGER.info("Retrieved " + viewedPostIds.size() + " viewed posts for user " + userId);
+            } catch (SQLException e) {
+                LOGGER.warning("Could not get viewed posts: " + e.getMessage());
+                viewedPostIds = new java.util.HashSet<>();
+            }
+
             if (pathInfo != null && pathInfo.matches("/\\d+")) {
                 // Viewing a specific post
                 int postId = Integer.parseInt(pathInfo.substring(1));
@@ -187,17 +197,7 @@ public class ForumServlet extends HttpServlet {
                     LOGGER.warning("Invalid page parameter, defaulting to 1");
                 }
 
-                List<ForumPost> posts = postDAO.getPostsSortedAndFiltered(sort, filter, search, page, size);
-
-                // Get viewed posts for current user
-                Set<Integer> viewedPostIds = null;
-                try {
-                    viewedPostIds = postViewDAO.getViewedPostIds(userId);
-                    LOGGER.info("Retrieved " + viewedPostIds.size() + " viewed posts for user " + userId);
-                } catch (SQLException e) {
-                    LOGGER.warning("Could not get viewed posts: " + e.getMessage());
-                    viewedPostIds = new java.util.HashSet<>();
-                }
+                List<ForumPost> posts = postDAO.getPostsSortedAndFiltered(sort, filter, search, page, size, userId, viewedPostIds);
 
                 request.setAttribute("posts", posts);
                 request.setAttribute("viewedPostIds", viewedPostIds);
@@ -309,6 +309,7 @@ public class ForumServlet extends HttpServlet {
             post.setPicture(imageUrl);
             post.setViewCount(0);
             post.setVoteCount(0);
+            post.setPinned(false);
 
             postDAO.createPost(post);
 

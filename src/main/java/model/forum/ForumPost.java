@@ -16,12 +16,14 @@ public class ForumPost {
     private String status;
     private String moderatedBy;
     private Timestamp moderatedDate;
+    private boolean isPinned;
+    private boolean isHidden;
     private int commentCount;
     private List<ForumComment> comments;
 
     // Constructors
     public ForumPost() {}
-
+                
     public ForumPost(int id, String title, String content, String postedBy, 
                     Timestamp createdDate, String category, int viewCount, 
                     int voteCount, String picture) {
@@ -35,6 +37,23 @@ public class ForumPost {
         this.voteCount = voteCount;
         this.picture = picture;
     }
+
+    public ForumPost(int id, String title, String content, String postedBy, 
+                    Timestamp createdDate, String category, int viewCount, 
+                    int voteCount, String picture, boolean isPinned, boolean isHidden) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.postedBy = postedBy;
+        this.createdDate = createdDate;
+        this.category = category;
+        this.viewCount = viewCount;
+        this.voteCount = voteCount;
+        this.picture = picture;
+        this.isPinned = isPinned;
+        this.isHidden = isHidden;
+    }
+    
 
     // Getters and Setters
     public int getId() {
@@ -133,6 +152,22 @@ public class ForumPost {
         this.moderatedDate = moderatedDate;
     }
 
+    public boolean isPinned() {
+        return isPinned;
+    }
+
+    public void setPinned(boolean isPinned) {
+        this.isPinned = isPinned;
+    }
+
+    public boolean isHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(boolean isHidden) {
+        this.isHidden = isHidden;
+    }
+
     public int getCommentCount() {
         return commentCount;
     }
@@ -150,14 +185,6 @@ public class ForumPost {
     }
 
     // Status helper methods
-    public boolean isPinned() {
-        return "PINNED".equals(this.status);
-    }
-
-    public boolean isHidden() {
-        return "HIDDEN".equals(this.status);
-    }
-
     public boolean isActive() {
         return this.status == null || "ACTIVE".equals(this.status);
     }

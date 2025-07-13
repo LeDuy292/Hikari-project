@@ -167,6 +167,11 @@
                 color: white;
             }
 
+            .mod-btn.unpin {
+                background: #f59e0b;
+                color: white;
+            }
+
             .mod-btn.delete {
                 background: #dc2626;
                 color: white;
@@ -205,7 +210,7 @@
                     <div class="topics-title">Quản Lý</div>
                     <ul class="topic-list">
                         <li><a href="<%= request.getContextPath()%>/forum/moderate"><i class="fas fa-shield-alt"></i> Kiểm Duyệt</a></li>
-                            <% if (ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_MANAGE_USERS)) {%>
+                            <% if (ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_MANAGE_USERS)) {%>   
                         <li><a href="<%= request.getContextPath()%>/admin/users"><i class="fas fa-users"></i> Quản Lý User</a></li>
                             <% } %>
                     </ul>
@@ -283,16 +288,16 @@
                             boolean canDeletePost = currentUser != null && ForumPermissionService.canDeletePost(currentUser, post);
 
                             // Check post status
-                            boolean isPinned = "PINNED".equals(post.getStatus());
-                            boolean isHidden = "HIDDEN".equals(post.getStatus());
+                            boolean isPinned = post.isPinned();
+                            boolean isHidden = post.isHidden();
                     %>
                     <div class="post-card <%= isRead ? "read" : "unread"%>" data-tags="<%= escapeHtml(post.getCategory())%>">
                         <div class="post-header">
-                           <a href="<%= request.getContextPath()%>/profile?userId=<%= post.getPostedBy()%>">
-                                    <img src="<%= postAuthor != null && postAuthor.getProfilePicture() != null && !postAuthor.getProfilePicture().isEmpty()
-                                            ? (postAuthor.getProfilePicture().startsWith("http") ? postAuthor.getProfilePicture() : (request.getContextPath() + "/" + postAuthor.getProfilePicture()))
-                                            : (request.getContextPath() + "/assets/img/avatar.png")%>" alt="Avatar" />
-                                </a>
+                            <a href="<%= request.getContextPath()%>/profile?userId=<%= post.getPostedBy()%>">
+                                <img src="<%= postAuthor != null && postAuthor.getProfilePicture() != null && !postAuthor.getProfilePicture().isEmpty()
+                                        ? (postAuthor.getProfilePicture().startsWith("http") ? postAuthor.getProfilePicture() : (request.getContextPath() + "/" + postAuthor.getProfilePicture()))
+                                        : (request.getContextPath() + "/assets/img/avatar.png")%>" alt="Avatar" />
+                            </a>
                             <div class="author-info">
                                 <span class="author-name">
                                     <%= escapeHtml(authorUsername)%>
@@ -378,7 +383,7 @@
                             </button>
                             <% } %>
 
-                            <% if (ForumPermissionService.canPinPost(currentUser)) { %>
+                            <% if (ForumPermissionService.hasPermission(currentUser, ForumPermissions.PERM_FULL_ADMIN)) { %>
                             <% if (!isPinned) {%>
                             <button class="mod-btn pin" onclick="moderatePost(<%= post.getId()%>, 'pin')">
                                 <i class="fas fa-thumbtack"></i> Ghim
@@ -727,7 +732,7 @@
                     form.submit();
                 }
             }
-            document.querySelectorAll(".topic-list a").forEach(function (link) {
+            document.querySelectorAll(".topic-list a[data-filter]").forEach(function (link) {
                 link.addEventListener("click", function (e) {
                     e.preventDefault();
                     const topic = link.getAttribute("data-filter");

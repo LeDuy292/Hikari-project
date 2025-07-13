@@ -839,6 +839,12 @@ body {
   background: linear-gradient(90deg,#e0e7ef 0%,#f1f5f9 100%);
   border-bottom: 2.5px solid #cbd5e1;
 }
+.mod-btn.edit {
+  color: #3b4cca;
+  background: linear-gradient(90deg, #dbeafe 0%, #eff6ff 100%);
+  border-bottom: 2.5px solid #93c5fd;
+}   
+
 .mod-btn.delete {
   color: #fff;
   background: linear-gradient(90deg,#dc2626 0%,#f87171 100%);

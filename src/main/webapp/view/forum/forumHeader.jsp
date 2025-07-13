@@ -114,8 +114,8 @@ pageEncoding="UTF-8"%> <%@ page import="model.UserAccount" %>
   }
 
   .avatar {
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     overflow: hidden;
     display: flex;
