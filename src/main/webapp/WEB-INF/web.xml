@@ -24,6 +24,10 @@
         <servlet-name>LoadTeacherServlet</servlet-name>
         <servlet-class>controller.coordinator.LoadTeacherServlet</servlet-class>
     </servlet>
+     <servlet>
+        <servlet-name>TeacherAssignmentServlet</servlet-name>
+        <servlet-class>controller.coordinator.TeacherAssignmentServlet</servlet-class>
+    </servlet>
     
     <servlet-mapping>
         <servlet-name>LoadCourseServlet</servlet-name>
@@ -48,6 +52,10 @@
     <servlet-mapping>
         <servlet-name>LoadTeacherServlet</servlet-name>
         <url-pattern>/LoadTeacher</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TeacherAssignmentServlet</servlet-name>
+        <url-pattern>/TeacherAssignment</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
