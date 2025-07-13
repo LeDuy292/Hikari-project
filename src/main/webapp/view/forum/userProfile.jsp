@@ -163,8 +163,8 @@
                             <span><%= user.getBirthDate() != null ? sdf.format(user.getBirthDate()) : "Chưa cập nhật"%></span>
                         </div>
                         <div>
-                            <strong>Tên người dùng:</strong>
-                            <span><%= escapeHtml(user.getUsername())%></span>
+                            <strong>Họ và tên:  </strong>
+                            <span><%= escapeHtml(user.getFullName())%></span>
                         </div>
                         <div>
                             <strong>Vai trò:</strong>

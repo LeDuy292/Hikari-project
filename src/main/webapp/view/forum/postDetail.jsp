@@ -53,7 +53,7 @@
                             </a>
                         </div>
                         <div class="username">
-                            <%= author.getUsername()%>
+                            <%= author.getFullName()%>
                         </div>
                         <div class="role">
                             <%= ForumPermissionService.getRoleDisplayName(author.getRole())%>
@@ -206,7 +206,7 @@
                                     <div class="author-details">
                                         <h3>
                                             <a href="<%= request.getContextPath()%>/profile?userId=<%= author != null ? author.getUserID() : ""%>" style="color: inherit; text-decoration: none;">
-                                                <%= author != null ? author.getUsername() : "Unknown"%>
+                                                <%= author != null ? author.getFullName() : "Unknown"%>
                                                 <span class="role-badge <%= author != null ? author.getRole().toLowerCase() : "student"%>">
                                                     <%= author != null ? ForumPermissionService.getRoleDisplayName(author.getRole()) : "Student"%>
                                                 </span>
@@ -335,7 +335,7 @@
                                         for (ForumComment comment : comments) {
                                             UserAccount commentAuthor = new UserDAO().getUserById(comment.getCommentedBy());
                                             String commentAuthorRole = commentAuthor != null ? commentAuthor.getRole() : "Student";
-                                            String commentAuthorUsername = commentAuthor != null ? commentAuthor.getUsername() : "Unknown";
+                                            String commentAuthorUsername = commentAuthor != null ? commentAuthor.getFullName() : "Unknown";
                                             String commentDate = comment.getCommentedDate() != null ? sdf.format(comment.getCommentedDate()) : "";
                                 %>
                                 <div class="comment-item">
@@ -432,7 +432,7 @@
                             <div style="margin-top:10px;text-align:center;">
                                 <div style="color:#888;font-size:1em;">Welcome back,</div>
                                 <div style="font-weight:700;font-size:1.2em;">
-                                    <%= currentUser != null ? (currentUser.getUsername()) : "Guest"%>
+                                    <%= currentUser != null ? (currentUser.getFullName()) : "Guest"%>
                                 </div>
                                 <div style="color:#888;font-size:0.98em;">
                                     <%= currentUser != null ? ForumPermissionService.getRoleDisplayName(currentUser.getRole()) : "Khách"%>
@@ -444,88 +444,98 @@
                         </div>
                     </div>        
 
-                    <%-- Leaderboard --%>
-                    <div class="widget" style="padding-top:18px;">
-                        <div style="font-size:1.15em;font-weight:700;color:#232946;margin-bottom:18px;display:flex;align-items:center;gap:10px;">
-                            <i class="fas fa-trophy" style="color:#f7c873;"></i> Leaderboard
+                     <%-- Leaderboard --%>
+                <div class="widget" style="padding-top:18px;">
+                    <div style="font-size:1.15em;font-weight:700;color:#232946;margin-bottom:18px;display:flex;align-items:center;gap:10px;">
+                        <i class="fas fa-trophy" style="color:#f7c873;"></i> Leaderboard
+                    </div>
+                    <div style="display:flex;gap:8px;margin-bottom:18px;">
+                        <!-- ...các nút lọc leaderboard... -->
+                    </div>
+                    <div style="display:flex;align-items:flex-end;justify-content:center;gap:18px;margin-bottom:18px;">
+                        <%
+                            List<UserActivityScore> topUsers = (List<UserActivityScore>) request.getAttribute("topUsers");
+                            if (topUsers == null) {
+                        %>
+                        <div style="color: red;">Không có dữ liệu Leaderboard</div>
+                        <%
+                            }
+                            UserActivityScore first = null, second = null, third = null;
+                            if (topUsers != null && topUsers.size() > 0) {
+                                first = topUsers.get(0);
+                            }
+                            if (topUsers != null && topUsers.size() > 1) {
+                                second = topUsers.get(1);
+                            }
+                            if (topUsers != null && topUsers.size() > 2) {
+                                third = topUsers.get(2);
+                            }
+                        %>
+
+                        <% if (second != null) {
+                                String secondAvatar = second.getUser().getProfilePicture();
+                                if (secondAvatar == null || secondAvatar.isEmpty()) {
+                                    secondAvatar = request.getContextPath() + "/assets/img/avatar.png";
+                                } else if (!secondAvatar.matches("^https?://.*")) {
+                                    secondAvatar = request.getContextPath() + "/" + secondAvatar;
+                                }
+                                String[] nameParts = second.getUser().getFullName().trim().split("\\s+");
+                                String secondName = nameParts[nameParts.length - 1];
+                        %>
+                        <div style="display:flex;flex-direction:column;align-items:center;">
+                            <a href="<%= request.getContextPath()%>/profile?userId=<%= second.getUser().getUserID()%>">
+                                <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #b8c6ff;">
+                                    <img src="<%= secondAvatar%>" style="width:100%;height:100%;object-fit:cover;">
+                                </div>
+                            </a>
+                            <div style="font-size:0.95em;font-weight:600;margin-top:4px;"><%= (secondName)%></div>
+                            <div style="color:#888;font-size:0.95em;"><%= second.getTotalScore()%></div>
                         </div>
-                        <div style="display:flex;gap:8px;margin-bottom:18px;">
-                            <!-- ...các nút lọc leaderboard... -->
+                        <% } %>
+
+                        <% if (first != null) {
+                                String firstAvatar = first.getUser().getProfilePicture();
+                                if (firstAvatar == null || firstAvatar.isEmpty()) {
+                                    firstAvatar = request.getContextPath() + "/assets/img/avatar.png";
+                                } else if (!firstAvatar.matches("^https?://.*")) {
+                                    firstAvatar = request.getContextPath() + "/" + firstAvatar;
+                                }
+                                String[] nameParts = first.getUser().getFullName().trim().split("\\s+");
+                                String firstName = nameParts[nameParts.length - 1];
+                        %>
+                        <div style="display:flex;flex-direction:column;align-items:center;">
+                            <a href="<%= request.getContextPath()%>/profile?userId=<%= first.getUser().getUserID()%>">
+                                <div style="width:60px;height:60px;border-radius:50%;overflow:hidden;border:3px solid #f7c873;box-shadow:0 2px 8px #f7c87344;">
+                                    <img src="<%= firstAvatar%>" style="width:100%;height:100%;object-fit:cover;">
+                                </div>
+                            </a>
+                            <div style="font-size:1.05em;font-weight:700;margin-top:4px;color:#f7c873;"><%= (firstName)%></div>
+                            <div style="color:#232946;font-size:1.05em;font-weight:700;"><%= first.getTotalScore()%></div>
                         </div>
-                        <div style="display:flex;align-items:flex-end;justify-content:center;gap:18px;margin-bottom:18px;">
-                            <%
-                                List<UserActivityScore> topUsers = (List<UserActivityScore>) request.getAttribute("topUsers");
-                                if (topUsers == null) {
-                            %>
-                            <div style="color: red;">Không có dữ liệu Leaderboard - Kiểm tra Servlet hoặc DAO</div>
-                            <%
+                        <% } %>
+
+                        <% if (third != null) {
+                                String thirdAvatar = third.getUser().getProfilePicture();
+                                if (thirdAvatar == null || thirdAvatar.isEmpty()) {
+                                    thirdAvatar = request.getContextPath() + "/assets/img/avatar.png";
+                                } else if (!thirdAvatar.matches("^https?://.*")) {
+                                    thirdAvatar = request.getContextPath() + "/" + thirdAvatar;
                                 }
-                                UserActivityScore first = null, second = null, third = null;
-                                if (topUsers != null && topUsers.size() > 0) {
-                                    first = topUsers.get(0);
-                                }
-                                if (topUsers != null && topUsers.size() > 1) {
-                                    second = topUsers.get(1);
-                                }
-                                if (topUsers != null && topUsers.size() > 2) {
-                                    third = topUsers.get(2);
-                                }
-                            %>
-                            <% if (second != null) {
-                                    String secondAvatar = second.getUser().getProfilePicture();
-                                    if (secondAvatar == null || secondAvatar.isEmpty()) {
-                                        secondAvatar = request.getContextPath() + "/assets/img/avatar.png";
-                                    } else if (!secondAvatar.matches("^https?://.*")) {
-                                        secondAvatar = request.getContextPath() + "/" + secondAvatar;
-                                    }
-                            %>
-                            <div style="display:flex;flex-direction:column;align-items:center;">
-                                <a href="<%= request.getContextPath()%>/profile?userId=<%= second.getUser().getUserID()%>">
-                                    <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #b8c6ff;">
-                                        <img src="<%= secondAvatar%>" style="width:100%;height:100%;object-fit:cover;">
-                                    </div>
-                                </a>
-                                <div style="font-size:0.95em;font-weight:600;margin-top:4px;"><%= second.getUser().getUsername()%></div>
-                                <div style="color:#888;font-size:0.95em;"><%= second.getTotalScore()%></div>
-                            </div>
-                            <% } %>
-                            <% if (first != null) {
-                                    String firstAvatar = first.getUser().getProfilePicture();
-                                    if (firstAvatar == null || firstAvatar.isEmpty()) {
-                                        firstAvatar = request.getContextPath() + "/assets/img/avatar.png";
-                                    } else if (!firstAvatar.matches("^https?://.*")) {
-                                        firstAvatar = request.getContextPath() + "/" + firstAvatar;
-                                    }
-                            %>
-                            <div style="display:flex;flex-direction:column;align-items:center;">
-                                <a href="<%= request.getContextPath()%>/profile?userId=<%= first.getUser().getUserID()%>">
-                                    <div style="width:60px;height:60px;border-radius:50%;overflow:hidden;border:3px solid #f7c873;box-shadow:0 2px 8px #f7c87344;">
-                                        <img src="<%= firstAvatar%>" style="width:100%;height:100%;object-fit:cover;">
-                                    </div>
-                                </a>
-                                <div style="font-size:1.05em;font-weight:700;margin-top:4px;color:#f7c873;"><%= first.getUser().getUsername()%></div>
-                                <div style="color:#232946;font-size:1.05em;font-weight:700;"><%= first.getTotalScore()%></div>
-                            </div>
-                            <% } %>
-                            <% if (third != null) {
-                                    String thirdAvatar = third.getUser().getProfilePicture();
-                                    if (thirdAvatar == null || thirdAvatar.isEmpty()) {
-                                        thirdAvatar = request.getContextPath() + "/assets/img/avatar.png";
-                                    } else if (!thirdAvatar.matches("^https?://.*")) {
-                                        thirdAvatar = request.getContextPath() + "/" + thirdAvatar;
-                                    }
-                            %>
-                            <div style="display:flex;flex-direction:column;align-items:center;">
-                                <a href="<%= request.getContextPath()%>/profile?userId=<%= third.getUser().getUserID()%>">
-                                    <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #b8c6ff;">
-                                        <img src="<%= thirdAvatar%>" style="width:100%;height:100%;object-fit:cover;">
-                                    </div>
-                                </a>
-                                <div style="font-size:0.95em;font-weight:600;margin-top:4px;"><%= third.getUser().getUsername()%></div>
-                                <div style="color:#888;font-size:0.95em;"><%= third.getTotalScore()%></div>
-                            </div>
-                            <% } %>
+                                String[] nameParts = third.getUser().getFullName().trim().split("\\s+");
+                                String thirdName = nameParts[nameParts.length - 1];
+                        %>
+                        <div style="display:flex;flex-direction:column;align-items:center;">
+                            <a href="<%= request.getContextPath()%>/profile?userId=<%= third.getUser().getUserID()%>">
+                                <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #b8c6ff;">
+                                    <img src="<%= thirdAvatar%>" style="width:100%;height:100%;object-fit:cover;">
+                                </div>
+                            </a>
+                            <div style="font-size:0.95em;font-weight:600;margin-top:4px;"><%= (thirdName)%></div>
+                            <div style="color:#888;font-size:0.95em;"><%= third.getTotalScore()%></div>
                         </div>
+                        <% } %>
+                    </div>
+                </div>
 
                         <div>
                             <%
@@ -549,7 +559,7 @@
                                     </a>
                                 </div>
                                 <div style="flex:1;">
-                                    <div style="font-weight:600;font-size:1em;color:#232946;"><%= user.getUsername()%></div>
+                                    <div style="font-weight:600;font-size:1em;color:#232946;"><%= user.getFullName()%></div>
                                 </div>
                                 <div style="color:#888;font-size:1em;font-weight:500;"><%= score.getTotalScore()%></div>
                             </div>

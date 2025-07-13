@@ -122,7 +122,7 @@
                             // Get post author info
                             UserAccount postAuthor = new UserDAO().getUserById(post.getPostedBy());
                             String authorRole = postAuthor != null ? postAuthor.getRole() : "Student";
-                            String authorUsername = postAuthor != null ? postAuthor.getUsername() : "Unknown";
+                            String authorUsername = postAuthor != null ? postAuthor.getFullName() : "Unknown";
 
                             // Check moderation permissions for current post
                             boolean canModeratePost = currentUser != null && ForumPermissionService.canModerateCategory(currentUser, post.getCategory());
@@ -293,7 +293,7 @@
                         <div style="margin-top:10px;text-align:center;">
                             <div style="color:#888;font-size:1em;">Welcome back,</div>
                             <div style="font-weight:700;font-size:1.2em;">
-                                <%= currentUser != null ? escapeHtml(currentUser.getUsername()) : "Guest"%>
+                                <%= currentUser != null ? escapeHtml(currentUser.getFullName()) : "Guest"%>
                             </div>
                             <div style="color:#888;font-size:0.98em;">
                                 <%= currentUser != null ? ForumPermissionService.getRoleDisplayName(currentUser.getRole()) : "Khách"%>
@@ -318,7 +318,7 @@
                             List<UserActivityScore> topUsers = (List<UserActivityScore>) request.getAttribute("topUsers");
                             if (topUsers == null) {
                         %>
-                        <div style="color: red;">Không có dữ liệu Leaderboard - Kiểm tra Servlet hoặc DAO</div>
+                        <div style="color: red;">Không có dữ liệu Leaderboard</div>
                         <%
                             }
                             UserActivityScore first = null, second = null, third = null;
@@ -332,6 +332,7 @@
                                 third = topUsers.get(2);
                             }
                         %>
+
                         <% if (second != null) {
                                 String secondAvatar = second.getUser().getProfilePicture();
                                 if (secondAvatar == null || secondAvatar.isEmpty()) {
@@ -339,6 +340,8 @@
                                 } else if (!secondAvatar.matches("^https?://.*")) {
                                     secondAvatar = request.getContextPath() + "/" + secondAvatar;
                                 }
+                                String[] nameParts = second.getUser().getFullName().trim().split("\\s+");
+                                String secondName = nameParts[nameParts.length - 1];
                         %>
                         <div style="display:flex;flex-direction:column;align-items:center;">
                             <a href="<%= request.getContextPath()%>/profile?userId=<%= second.getUser().getUserID()%>">
@@ -346,10 +349,11 @@
                                     <img src="<%= secondAvatar%>" style="width:100%;height:100%;object-fit:cover;">
                                 </div>
                             </a>
-                            <div style="font-size:0.95em;font-weight:600;margin-top:4px;"><%= escapeHtml(second.getUser().getUsername())%></div>
+                            <div style="font-size:0.95em;font-weight:600;margin-top:4px;"><%= escapeHtml(secondName)%></div>
                             <div style="color:#888;font-size:0.95em;"><%= second.getTotalScore()%></div>
                         </div>
                         <% } %>
+
                         <% if (first != null) {
                                 String firstAvatar = first.getUser().getProfilePicture();
                                 if (firstAvatar == null || firstAvatar.isEmpty()) {
@@ -357,6 +361,8 @@
                                 } else if (!firstAvatar.matches("^https?://.*")) {
                                     firstAvatar = request.getContextPath() + "/" + firstAvatar;
                                 }
+                                String[] nameParts = first.getUser().getFullName().trim().split("\\s+");
+                                String firstName = nameParts[nameParts.length - 1];
                         %>
                         <div style="display:flex;flex-direction:column;align-items:center;">
                             <a href="<%= request.getContextPath()%>/profile?userId=<%= first.getUser().getUserID()%>">
@@ -364,10 +370,11 @@
                                     <img src="<%= firstAvatar%>" style="width:100%;height:100%;object-fit:cover;">
                                 </div>
                             </a>
-                            <div style="font-size:1.05em;font-weight:700;margin-top:4px;color:#f7c873;"><%= escapeHtml(first.getUser().getUsername())%></div>
+                            <div style="font-size:1.05em;font-weight:700;margin-top:4px;color:#f7c873;"><%= escapeHtml(firstName)%></div>
                             <div style="color:#232946;font-size:1.05em;font-weight:700;"><%= first.getTotalScore()%></div>
                         </div>
                         <% } %>
+
                         <% if (third != null) {
                                 String thirdAvatar = third.getUser().getProfilePicture();
                                 if (thirdAvatar == null || thirdAvatar.isEmpty()) {
@@ -375,6 +382,8 @@
                                 } else if (!thirdAvatar.matches("^https?://.*")) {
                                     thirdAvatar = request.getContextPath() + "/" + thirdAvatar;
                                 }
+                                String[] nameParts = third.getUser().getFullName().trim().split("\\s+");
+                                String thirdName = nameParts[nameParts.length - 1];
                         %>
                         <div style="display:flex;flex-direction:column;align-items:center;">
                             <a href="<%= request.getContextPath()%>/profile?userId=<%= third.getUser().getUserID()%>">
@@ -382,44 +391,46 @@
                                     <img src="<%= thirdAvatar%>" style="width:100%;height:100%;object-fit:cover;">
                                 </div>
                             </a>
-                            <div style="font-size:0.95em;font-weight:600;margin-top:4px;"><%= escapeHtml(third.getUser().getUsername())%></div>
+                            <div style="font-size:0.95em;font-weight:600;margin-top:4px;"><%= escapeHtml(thirdName)%></div>
                             <div style="color:#888;font-size:0.95em;"><%= third.getTotalScore()%></div>
                         </div>
                         <% } %>
                     </div>
+                </div>
 
-                    <div>
-                        <%
-                            int rank = 4;
-                            if (topUsers != null && topUsers.size() > 3) {
-                                for (int i = 3; i < Math.min(topUsers.size(), 10); i++) {
-                                    UserActivityScore score = topUsers.get(i);
-                                    UserAccount user = score.getUser();
-                                    String userAvatar = user.getProfilePicture();
-                                    if (userAvatar == null || userAvatar.isEmpty()) {
-                                        userAvatar = request.getContextPath() + "/assets/img/avatar.png";
-                                    } else if (!userAvatar.matches("^https?://.*")) {
-                                        userAvatar = request.getContextPath() + "/" + userAvatar;
-                                    }
-                        %>
-                        <div style="display:flex;align-items:center;gap:10px;padding:7px 0 7px 0;border-radius:8px;<%= i == 4 ? "background:#f4f6fb;" : ""%>">
-                            <div style="width:28px;text-align:center;font-weight:600;color:#232946;font-size:1.08em;"><%= rank%></div>
-                            <div style="width:32px;height:32px;border-radius:50%;overflow:hidden;">
-                                <a href="<%= request.getContextPath()%>/profile?userId=<%= user.getUserID()%>">
-                                    <img src="<%= userAvatar%>" style="width:100%;height:100%;object-fit:cover;">
-                                </a>
-                            </div>
-                            <div style="flex:1;">
-                                <div style="font-weight:600;font-size:1em;color:#232946;"><%= escapeHtml(user.getUsername())%></div>
-                            </div>
-                            <div style="color:#888;font-size:1em;font-weight:500;"><%= score.getTotalScore()%></div>
-                        </div>
-                        <%
-                                    rank++;
+
+                <div>
+                    <%
+                        int rank = 4;
+                        if (topUsers != null && topUsers.size() > 3) {
+                            for (int i = 3; i < Math.min(topUsers.size(), 10); i++) {
+                                UserActivityScore score = topUsers.get(i);
+                                UserAccount user = score.getUser();
+                                String userAvatar = user.getProfilePicture();
+                                if (userAvatar == null || userAvatar.isEmpty()) {
+                                    userAvatar = request.getContextPath() + "/assets/img/avatar.png";
+                                } else if (!userAvatar.matches("^https?://.*")) {
+                                    userAvatar = request.getContextPath() + "/" + userAvatar;
                                 }
-                            }
-                        %>
+                    %>
+                    <div style="display:flex;align-items:center;gap:10px;padding:7px 0 7px 0;border-radius:8px;<%= i == 4 ? "background:#f4f6fb;" : ""%>">
+                        <div style="width:28px;text-align:center;font-weight:600;color:#232946;font-size:1.08em;"><%= rank%></div>
+                        <div style="width:32px;height:32px;border-radius:50%;overflow:hidden;">
+                            <a href="<%= request.getContextPath()%>/profile?userId=<%= user.getUserID()%>">
+                                <img src="<%= userAvatar%>" style="width:100%;height:100%;object-fit:cover;">
+                            </a>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600;font-size:1em;color:#232946;"><%= escapeHtml(user.getFullName())%></div>
+                        </div>
+                        <div style="color:#888;font-size:1em;font-weight:500;"><%= score.getTotalScore()%></div>
                     </div>
+                    <%
+                                rank++;
+                            }
+                        }
+                    %>
+                </div>
             </aside>
 
         </div>
