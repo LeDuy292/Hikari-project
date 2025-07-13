@@ -15,11 +15,27 @@ import java.util.Date;
 @WebServlet(name = "EditUserProfileServlet", urlPatterns = {"/profile/edit"})
 @MultipartConfig(maxFileSize = 10 * 1024 * 1024) // 10MB
 public class EditUserProfileServlet extends HttpServlet {
+
     private UserDAO userDAO;
 
     @Override
     public void init() throws ServletException {
         userDAO = new UserDAO();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        UserAccount user = (UserAccount) session.getAttribute("user");
+
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            return;
+        }
+
+        request.setAttribute("user", user);
+        request.getRequestDispatcher("/view/forum/editUserProfileForum.jsp").forward(request, response);
     }
 
     @Override
