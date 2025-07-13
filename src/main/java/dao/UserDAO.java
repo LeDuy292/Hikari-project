@@ -24,8 +24,7 @@ public class UserDAO {
 
     public UserAccount getUserByEmail(String email) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM UserAccount WHERE email = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -39,11 +38,9 @@ public class UserDAO {
         return null;
     }
 
-
     public void addUser(UserAccount user) throws SQLException, ClassNotFoundException {
         String sql = "INSERT INTO UserAccount (userID, fullName, username, email, password, role, profilePicture, phone, birthDate, registrationDate, isActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.getUserID());
             pstmt.setString(2, user.getFullName());
             pstmt.setString(3, user.getUsername());
@@ -65,8 +62,7 @@ public class UserDAO {
 
     public void updateUserProfileGG(UserAccount user) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE UserAccount SET fullName = ?, username = ?, phone = ?, birthDate = ?, password = ? WHERE userID = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.getFullName());
             pstmt.setString(2, user.getUsername());
             pstmt.setString(3, user.getPhone());
@@ -86,8 +82,7 @@ public class UserDAO {
 
     public UserAccount authenticateUser(String username, String password) throws SQLException, ClassNotFoundException {
         String sql = "SELECT userID, role, isActive FROM UserAccount WHERE username = ? AND password = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setString(2, password);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -151,8 +146,7 @@ public class UserDAO {
 
     private boolean isUsernameExists(String username) throws ClassNotFoundException, SQLException {
         String sql = "SELECT COUNT(*) FROM UserAccount WHERE username = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -168,9 +162,7 @@ public class UserDAO {
 
     public String generateNewUserID() throws SQLException, ClassNotFoundException {
         String query = "SELECT userID FROM UserAccount WHERE userID LIKE 'U%' ORDER BY userID DESC LIMIT 1";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
                 String lastID = rs.getString("userID");
                 int num = Integer.parseInt(lastID.substring(1));
@@ -186,8 +178,7 @@ public class UserDAO {
 
     public UserAccount findByEmail(String email) throws ClassNotFoundException, SQLException {
         String sql = "SELECT * FROM UserAccount WHERE email = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -203,8 +194,7 @@ public class UserDAO {
 
     public void updateOtp(UserAccount user) throws ClassNotFoundException, SQLException {
         String sql = "UPDATE UserAccount SET otp = ?, otpExpiry = ? WHERE userID = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.getOtp());
             pstmt.setTimestamp(2, user.getOtpExpiry() != null ? new Timestamp(user.getOtpExpiry().getTime()) : null);
             pstmt.setString(3, user.getUserID());
@@ -221,8 +211,7 @@ public class UserDAO {
 
     public UserAccount findByOtp(String otp) throws ClassNotFoundException, SQLException {
         String sql = "SELECT * FROM UserAccount WHERE otp = ? AND (otpExpiry IS NULL OR otpExpiry > ?)";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, otp);
             pstmt.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -265,8 +254,7 @@ public class UserDAO {
 
     public void updateResetToken(UserAccount user) throws ClassNotFoundException, SQLException {
         String sql = "UPDATE UserAccount SET resetToken = ?, resetTokenExpiry = ? WHERE userID = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.getResetToken());
             pstmt.setTimestamp(2, user.getResetTokenExpiry() != null ? new Timestamp(user.getResetTokenExpiry().getTime()) : null);
             pstmt.setString(3, user.getUserID());
@@ -283,8 +271,7 @@ public class UserDAO {
 
     public UserAccount findByResetToken(String resetToken) throws ClassNotFoundException, SQLException {
         String sql = "SELECT * FROM UserAccount WHERE resetToken = ? AND (resetTokenExpiry IS NULL OR resetTokenExpiry > ?)";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, resetToken);
             pstmt.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -310,8 +297,7 @@ public class UserDAO {
 
     public void updateSessionId(String userID, String sessionId) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE UserAccount SET sessionId = ? WHERE userID = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, sessionId);
             stmt.setString(2, userID);
             int rowsAffected = stmt.executeUpdate();
@@ -324,8 +310,7 @@ public class UserDAO {
 
     public String getSessionIdByUsername(String username) throws SQLException, ClassNotFoundException {
         String sql = "SELECT sessionId FROM UserAccount WHERE username = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -348,9 +333,8 @@ public class UserDAO {
             sql += ", password = ?";
         }
         sql += " WHERE userID = ?";
-        
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        try (Connection conn = dbContext.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             int paramIndex = 1;
             pstmt.setString(paramIndex++, user.getFullName());
             pstmt.setString(paramIndex++, user.getUsername());
@@ -363,7 +347,7 @@ public class UserDAO {
                 pstmt.setString(paramIndex++, user.getPassword());
             }
             pstmt.setString(paramIndex, user.getUserID());
-            
+
             int rowsAffected = pstmt.executeUpdate();
             if (rowsAffected == 0) {
                 throw new SQLException("No user found with userID: " + user.getUserID());
@@ -377,8 +361,7 @@ public class UserDAO {
 
     public UserAccount findByUsername(String username) throws ClassNotFoundException, SQLException {
         String sql = "SELECT * FROM UserAccount WHERE username = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -394,8 +377,7 @@ public class UserDAO {
 
     public UserAccount findByUserNum(String userID) throws ClassNotFoundException, SQLException {
         String sql = "SELECT * FROM UserAccount WHERE userID = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, userID);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -411,8 +393,7 @@ public class UserDAO {
 
     public UserAccount getUserByUsername(String username) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM UserAccount WHERE username = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -431,8 +412,7 @@ public class UserDAO {
 
     public String getUsernameByUserID(String userID) throws SQLException, ClassNotFoundException {
         String sql = "SELECT username FROM UserAccount WHERE userID = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, userID);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -448,8 +428,7 @@ public class UserDAO {
 
     public UserAccount getUserById(String userID) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM UserAccount WHERE userID = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, userID);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -468,15 +447,13 @@ public class UserDAO {
 
     public List<UserAccount> getAllUsers() throws SQLException, ClassNotFoundException {
         List<UserAccount> users = new ArrayList<>();
-        String sql = "SELECT u.*, " +
-                     "(SELECT COUNT(*) FROM Course_Enrollments ce " +
-                     "JOIN Student s ON ce.studentID = s.studentID " +
-                     "WHERE s.userID = u.userID) as courseCount " +
-                     "FROM UserAccount u ORDER BY u.registrationDate DESC";
-        
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        String sql = "SELECT u.*, "
+                + "(SELECT COUNT(*) FROM Course_Enrollments ce "
+                + "JOIN Student s ON ce.studentID = s.studentID "
+                + "WHERE s.userID = u.userID) as courseCount "
+                + "FROM UserAccount u ORDER BY u.registrationDate DESC";
+
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 UserAccount user = mapResultSetToUser(rs);
                 LOGGER.info("Fetched user: " + user.getUserID() + ", isActive: " + user.getIsActive());
@@ -492,8 +469,7 @@ public class UserDAO {
 
     public void updateUserStatus(String userID, boolean isActive) throws SQLException, ClassNotFoundException {
         String sql = "UPDATE UserAccount SET isActive = ? WHERE userID = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setBoolean(1, isActive);
             stmt.setString(2, userID);
             int rowsAffected = stmt.executeUpdate();
@@ -509,14 +485,13 @@ public class UserDAO {
 
     public List<UserAccount> getUsersByRole(String role) throws SQLException, ClassNotFoundException {
         List<UserAccount> users = new ArrayList<>();
-        String sql = "SELECT u.*, " +
-                     "(SELECT COUNT(*) FROM Course_Enrollments ce " +
-                     "JOIN Student s ON ce.studentID = s.studentID " +
-                     "WHERE s.userID = u.userID) as courseCount " +
-                     "FROM UserAccount u WHERE u.role = ? ORDER BY u.registrationDate DESC";
-        
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "SELECT u.*, "
+                + "(SELECT COUNT(*) FROM Course_Enrollments ce "
+                + "JOIN Student s ON ce.studentID = s.studentID "
+                + "WHERE s.userID = u.userID) as courseCount "
+                + "FROM UserAccount u WHERE u.role = ? ORDER BY u.registrationDate DESC";
+
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, role);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -531,26 +506,26 @@ public class UserDAO {
     }
 
     public List<UserAccount> getFilteredUsers(String role, String status, String dateFrom, String dateTo,
-                                             String nameSearch, int minCourses) throws SQLException, ClassNotFoundException {
+            String nameSearch, int minCourses) throws SQLException, ClassNotFoundException {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT u.*, ");
         sql.append("(SELECT COUNT(*) FROM Course_Enrollments ce ");
         sql.append("JOIN Student s ON ce.studentID = s.studentID ");
         sql.append("WHERE s.userID = u.userID) as courseCount ");
         sql.append("FROM UserAccount u WHERE 1=1 ");
-        
+
         List<Object> params = new ArrayList<>();
-        
+
         if (role != null && !role.trim().isEmpty()) {
             sql.append("AND u.role = ? ");
             params.add(role);
         }
-        
+
         if (status != null && !status.trim().isEmpty()) {
             sql.append("AND u.isActive = ? ");
             params.add(Boolean.parseBoolean(status));
         }
-        
+
         if (nameSearch != null && !nameSearch.trim().isEmpty()) {
             sql.append("AND (u.fullName LIKE ? OR u.username LIKE ? OR u.email LIKE ?) ");
             String searchPattern = "%" + nameSearch + "%";
@@ -558,26 +533,25 @@ public class UserDAO {
             params.add(searchPattern);
             params.add(searchPattern);
         }
-        
+
         if (dateFrom != null && !dateFrom.trim().isEmpty()) {
             sql.append("AND u.registrationDate >= ? ");
             params.add(Date.valueOf(dateFrom));
         }
-        
+
         if (dateTo != null && !dateTo.trim().isEmpty()) {
             sql.append("AND u.registrationDate <= ? ");
             params.add(Date.valueOf(dateTo));
         }
-        
+
         sql.append("HAVING courseCount >= ? ");
         params.add(minCourses);
-        
+
         sql.append("ORDER BY u.registrationDate DESC");
-        
+
         List<UserAccount> users = new ArrayList<>();
-        
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) {
                 stmt.setObject(i + 1, params.get(i));
             }
@@ -595,68 +569,78 @@ public class UserDAO {
 
     //forum
     public UserAccount getUserProfileDetailById(String userID) throws SQLException, ClassNotFoundException {
-    String sql = "SELECT * FROM UserAccount WHERE userID = ?";
-    
-    try (Connection conn = dbContext.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-        
-        stmt.setString(1, userID);
-        
-        try (ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                UserAccount user = new UserAccount();
-                user.setUserID(rs.getString("userID"));
-                user.setUsername(rs.getString("username"));
-                user.setFullName(rs.getString("fullName"));
-                user.setEmail(rs.getString("email"));
-                user.setPassword(rs.getString("password"));
-                user.setRole(rs.getString("role"));
-                user.setRegistrationDate(rs.getDate("registrationDate"));
-                user.setProfilePicture(rs.getString("profilePicture"));
-                user.setPhone(rs.getString("phone"));
-                user.setBirthDate(rs.getDate("birthDate"));
-                user.setIsActive(rs.getBoolean("isActive"));
-                try { user.setCoverPhoto(rs.getString("coverPhoto")); } catch (Exception e) {}
-                try { user.setBio(rs.getString("bio")); } catch (Exception e) {}
-                return user;
+        String sql = "SELECT * FROM UserAccount WHERE userID = ?";
+
+        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, userID);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    UserAccount user = new UserAccount();
+                    user.setUserID(rs.getString("userID"));
+                    user.setUsername(rs.getString("username"));
+                    user.setFullName(rs.getString("fullName"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPassword(rs.getString("password"));
+                    user.setRole(rs.getString("role"));
+                    user.setRegistrationDate(rs.getDate("registrationDate"));
+                    user.setProfilePicture(rs.getString("profilePicture"));
+                    user.setPhone(rs.getString("phone"));
+                    user.setBirthDate(rs.getDate("birthDate"));
+                    user.setIsActive(rs.getBoolean("isActive"));
+                    try {
+                        user.setCoverPhoto(rs.getString("coverPhoto"));
+                    } catch (Exception e) {
+                    }
+                    try {
+                        user.setBio(rs.getString("bio"));
+                    } catch (Exception e) {
+                    }
+                    return user;
+                }
             }
         }
+        return null;
     }
-    return null;
-}
-
 
     public void updateUserProfileDetail(UserAccount user) throws ClassNotFoundException, SQLException {
-    String sql = "UPDATE UserAccount SET fullName = ?, username = ?, email = ?, phone = ?, birthDate = ?, profilePicture = ?, coverPhoto = ?, role = ?";
-    if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
-        sql += ", password = ?";
-    }
-    sql += " WHERE userID = ?";
-    try (Connection conn = dbContext.getConnection();
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        int paramIndex = 1;
-        pstmt.setString(paramIndex++, user.getFullName());
-        pstmt.setString(paramIndex++, user.getUsername());
-        pstmt.setString(paramIndex++, user.getEmail());
-        pstmt.setString(paramIndex++, user.getPhone());
-        pstmt.setDate(paramIndex++, user.getBirthDate() != null ? new java.sql.Date(user.getBirthDate().getTime()) : null);
-        pstmt.setString(paramIndex++, user.getProfilePicture());
-        pstmt.setString(paramIndex++, user.getCoverPhoto()); // Thêm dòng này
-        pstmt.setString(paramIndex++, user.getRole());
+        String sql = "UPDATE UserAccount SET fullName = ?, username = ?, email = ?, phone = ?, birthDate = ?, profilePicture = ?, coverPhoto = ?, role = ?, bio = ?";
         if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
-            pstmt.setString(paramIndex++, user.getPassword());
+            sql += ", password = ?";
         }
-        pstmt.setString(paramIndex, user.getUserID());
-        int rowsAffected = pstmt.executeUpdate();
-        if (rowsAffected == 0) {
-            throw new SQLException("No user found with userID: " + user.getUserID());
+        sql += " WHERE userID = ?";
+
+        try (Connection conn = dbContext.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            int paramIndex = 1;
+            pstmt.setString(paramIndex++, user.getFullName());
+            pstmt.setString(paramIndex++, user.getUsername());
+            pstmt.setString(paramIndex++, user.getEmail());
+            pstmt.setString(paramIndex++, user.getPhone());
+            pstmt.setDate(paramIndex++, user.getBirthDate() != null ? new java.sql.Date(user.getBirthDate().getTime()) : null);
+            pstmt.setString(paramIndex++, user.getProfilePicture());
+            pstmt.setString(paramIndex++, user.getCoverPhoto());
+            pstmt.setString(paramIndex++, user.getRole());
+            pstmt.setString(paramIndex++, user.getBio()); // 🔥 Bio thêm ở đây
+
+            if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+                pstmt.setString(paramIndex++, user.getPassword());
+            }
+
+            pstmt.setString(paramIndex, user.getUserID());
+
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("No user found with userID: " + user.getUserID());
+            }
+            LOGGER.info("User profile updated for userID: " + user.getUserID() + " with role: " + user.getRole());
+        } catch (SQLException e) {
+            LOGGER.severe("Error updating user profile for userID: " + user.getUserID() + ", " + e.getMessage());
+            throw e;
         }
-        LOGGER.info("User profile updated for userID: " + user.getUserID() + " with role: " + user.getRole());
-    } catch (SQLException e) {
-        LOGGER.severe("Error updating user profile for userID: " + user.getUserID() + ", " + e.getMessage());
-        throw e;
     }
-}
+
     //forum end
     private UserAccount mapResultSetToUser(ResultSet rs) throws SQLException {
         UserAccount user = new UserAccount();
