@@ -50,103 +50,102 @@ public class ForumPostDAO {
     }
 
     public List<ForumPost> getPostsSortedAndFiltered(String sort, String filter, String search, int page, int size, String userId, Set<Integer> viewedPostIds) throws SQLException {
-        List<ForumPost> posts = new ArrayList<>();
-        StringBuilder query = new StringBuilder(
-                "SELECT fp.id, fp.title, fp.content, fp.postedBy, fp.createdDate, fp.category, fp.viewCount, fp.voteCount, fp.picture, fp.status, fp.isPinned, ua.username AS postedByUsername "
-                + "FROM ForumPost fp LEFT JOIN UserAccount ua ON fp.postedBy = ua.userID "
-        );
-        List<String> conditions = new ArrayList<>();
-        List<Object> parameters = new ArrayList<>();
+    List<ForumPost> posts = new ArrayList<>();
+    StringBuilder query = new StringBuilder(
+            "SELECT fp.id, fp.title, fp.content, fp.postedBy, fp.createdDate, fp.category, fp.viewCount, fp.voteCount, fp.picture, fp.status, fp.isPinned, ua.username AS postedByUsername "
+            + "FROM ForumPost fp LEFT JOIN UserAccount ua ON fp.postedBy = ua.userID "
+    );
+    List<String> conditions = new ArrayList<>();
+    List<Object> parameters = new ArrayList<>();
 
-        // Only show active or pinned posts
-        conditions.add("(fp.status IS NULL OR fp.status = 'ACTIVE' OR fp.status = 'PINNED')");
-        conditions.add("fp.isHidden = 0");
+    // Only show active or pinned posts
+    conditions.add("(fp.status IS NULL OR fp.status = 'ACTIVE' OR fp.status = 'PINNED')");
+    conditions.add("fp.isHidden = 0");
 
-        // Handle search by title
-        if (search != null && !search.trim().isEmpty()) {
-            conditions.add("fp.title LIKE ?");
-            parameters.add("%" + search.trim() + "%");
-        }
-
-        // Handle filter conditions
-        if ("with-replies".equals(filter)) {
-            conditions.add("fp.id IN (SELECT postID FROM ForumComment)");
-        } else if ("no-replies".equals(filter)) {
-            conditions.add("fp.id NOT IN (SELECT postID FROM ForumComment)");
-        }
-
-        // Combine conditions
-        if (!conditions.isEmpty()) {
-            query.append("WHERE ").append(String.join(" AND ", conditions)).append(" ");
-        }
-
-        // Handle sorting
-        query.append("ORDER BY ");
-        query.append("fp.isPinned DESC, "); // Pinned posts come first
-        if (viewedPostIds != null && !viewedPostIds.isEmpty()) {
-            query.append("CASE WHEN fp.id IN (").append(String.join(",", viewedPostIds.stream().map(String::valueOf).toArray(String[]::new))).append(") THEN 1 ELSE 0 END, ");
-        } else {
-            query.append("0, "); // No viewed posts, treat all as unread
-        }
-        if ("newest".equals(sort)) {
-            query.append("fp.createdDate DESC ");
-        } else if ("popular".equals(sort)) {
-            query.append("fp.viewCount DESC ");
-        } else if ("most-liked".equals(sort)) {
-            query.append("fp.voteCount DESC ");
-        } else {
-            query.append("fp.createdDate DESC ");
-        }
-        query.append("LIMIT ? OFFSET ?");
-
-        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(query.toString())) {
-            // Set parameters
-            int paramIndex = 1;
-            for (Object param : parameters) {
-                stmt.setObject(paramIndex++, param);
-            }
-            stmt.setInt(paramIndex++, size);
-            stmt.setInt(paramIndex, (page - 1) * size);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    ForumPost post = new ForumPost();
-                    post.setId(rs.getInt("id"));
-                    post.setTitle(rs.getString("title"));
-                    post.setContent(rs.getString("content"));
-                    post.setPostedBy(rs.getString("postedBy"));
-                    post.setCreatedDate(rs.getTimestamp("createdDate"));
-                    post.setCategory(rs.getString("category"));
-                    post.setViewCount(rs.getInt("viewCount"));
-                    post.setVoteCount(rs.getInt("voteCount"));
-                    post.setPicture(rs.getString("picture"));
-                    post.setStatus(rs.getString("status"));
-                    post.setPinned(rs.getBoolean("isPinned"));
-
-                    String commentCountQuery = "SELECT COUNT(*) AS commentCount FROM ForumComment WHERE postID = ?";
-                    try (PreparedStatement countStmt = conn.prepareStatement(commentCountQuery)) {
-                        countStmt.setInt(1, post.getId());
-                        try (ResultSet countRs = countStmt.executeQuery()) {
-                            if (countRs.next()) {
-                                post.setCommentCount(countRs.getInt("commentCount"));
-                            }
-                        }
-                    }
-
-                    post.setComments(commentDAO.getCommentsByPostId(post.getId()));
-                    posts.add(post);
-                }
-                LOGGER.info("Retrieved " + posts.size() + " posts for user: " + userId);
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error retrieving posts: " + e.getMessage(), e);
-            throw e;
-        } finally {
-            dbContext.closeConnection();
-        }
-        return posts;
+    // Handle search by title
+    if (search != null && !search.trim().isEmpty()) {
+        conditions.add("fp.title LIKE ?");
+        parameters.add("%" + search.trim() + "%");
     }
 
+    // Handle filter conditions
+    if ("with-replies".equals(filter)) {
+        conditions.add("fp.id IN (SELECT postID FROM ForumComment)");
+    } else if ("no-replies".equals(filter)) {
+        conditions.add("fp.id NOT IN (SELECT postID FROM ForumComment)");
+    }
+
+    // Combine conditions
+    if (!conditions.isEmpty()) {
+        query.append("WHERE ").append(String.join(" AND ", conditions)).append(" ");
+    }
+
+    // Handle sorting
+    query.append("ORDER BY ");
+    query.append("fp.isPinned DESC, "); // Pinned posts come first
+    if (viewedPostIds != null && !viewedPostIds.isEmpty()) {
+        query.append("CASE WHEN fp.id IN (").append(String.join(",", viewedPostIds.stream().map(String::valueOf).toArray(String[]::new))).append(") THEN 1 ELSE 0 END DESC, ");
+    }
+    // Handle sorting options
+    if ("newest".equals(sort)) {
+        query.append("fp.createdDate DESC ");
+    } else if ("popular".equals(sort)) {
+        query.append("fp.viewCount DESC ");
+    } else if ("most-liked".equals(sort)) {
+        query.append("fp.voteCount DESC ");
+    } else {
+        query.append("fp.createdDate DESC ");
+    }
+    query.append("LIMIT ? OFFSET ?");
+
+    try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(query.toString())) {
+        // Set parameters
+        int paramIndex = 1;
+        for (Object param : parameters) {
+            stmt.setObject(paramIndex++, param);
+        }
+        stmt.setInt(paramIndex++, size);
+        stmt.setInt(paramIndex, (page - 1) * size);
+
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                ForumPost post = new ForumPost();
+                post.setId(rs.getInt("id"));
+                post.setTitle(rs.getString("title"));
+                post.setContent(rs.getString("content"));
+                post.setPostedBy(rs.getString("postedBy"));
+                post.setCreatedDate(rs.getTimestamp("createdDate"));
+                post.setCategory(rs.getString("category"));
+                post.setViewCount(rs.getInt("viewCount"));
+                post.setVoteCount(rs.getInt("voteCount"));
+                post.setPicture(rs.getString("picture"));
+                post.setStatus(rs.getString("status"));
+                post.setPinned(rs.getBoolean("isPinned"));
+
+                String commentCountQuery = "SELECT COUNT(*) AS commentCount FROM ForumComment WHERE postID = ?";
+                try (PreparedStatement countStmt = conn.prepareStatement(commentCountQuery)) {
+                    countStmt.setInt(1, post.getId());
+                    try (ResultSet countRs = countStmt.executeQuery()) {
+                        if (countRs.next()) {
+                            post.setCommentCount(countRs.getInt("commentCount"));
+                        }
+                    }
+                }
+
+                post.setComments(commentDAO.getCommentsByPostId(post.getId()));
+                posts.add(post);
+            }
+            LOGGER.info("Retrieved " + posts.size() + " posts for user: " + userId);
+        }
+    } catch (SQLException e) {
+        LOGGER.log(Level.SEVERE, "Error retrieving posts: " + e.getMessage(), e);
+        throw e;
+    } finally {
+        dbContext.closeConnection();
+    }
+    return posts;
+}
+    
     public ForumPost getPostById(int postId) throws SQLException {
         ForumPost post = null;
         String query = "SELECT fp.id, fp.title, fp.content, fp.postedBy, fp.createdDate, fp.category, fp.viewCount, fp.voteCount, fp.picture, fp.status, fp.isPinned, fp.isHidden, fp.moderatedBy, fp.moderatedDate, ua.username AS postedByUsername "

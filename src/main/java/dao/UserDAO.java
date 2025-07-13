@@ -595,39 +595,36 @@ public class UserDAO {
 
     //forum
     public UserAccount getUserProfileDetailById(String userID) throws SQLException, ClassNotFoundException {
-        String sql = "SELECT u.*, " +
-                     "IFNULL((SELECT COUNT(*) FROM UserFollow WHERE userID = u.userID), 0) AS followerCount, " +
-                     "IFNULL((SELECT COUNT(*) FROM UserFollow WHERE followerID = u.userID), 0) AS followingCount " +
-                     "FROM UserAccount u WHERE u.userID = ?";
-        try (Connection conn = dbContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, userID);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    UserAccount user = new UserAccount();
-                    // Copy all UserAccount fields
-                    user.setUserID(rs.getString("userID"));
-                    user.setUsername(rs.getString("username"));
-                    user.setFullName(rs.getString("fullName"));
-                    user.setEmail(rs.getString("email"));
-                    user.setPassword(rs.getString("password"));
-                    user.setRole(rs.getString("role"));
-                    user.setRegistrationDate(rs.getDate("registrationDate"));
-                    user.setProfilePicture(rs.getString("profilePicture"));
-                    user.setPhone(rs.getString("phone"));
-                    user.setBirthDate(rs.getDate("birthDate"));
-                    user.setIsActive(rs.getBoolean("isActive"));
-                    // Thêm các trường mở rộng
-                    try { user.setCoverPhoto(rs.getString("coverPhoto")); } catch (Exception e) {}
-                    try { user.setBio(rs.getString("bio")); } catch (Exception e) {}
-                    user.setFollowerCount(rs.getInt("followerCount"));
-                    user.setFollowingCount(rs.getInt("followingCount"));
-                    return user;
-                }
+    String sql = "SELECT * FROM UserAccount WHERE userID = ?";
+    
+    try (Connection conn = dbContext.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, userID);
+        
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                UserAccount user = new UserAccount();
+                user.setUserID(rs.getString("userID"));
+                user.setUsername(rs.getString("username"));
+                user.setFullName(rs.getString("fullName"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setRole(rs.getString("role"));
+                user.setRegistrationDate(rs.getDate("registrationDate"));
+                user.setProfilePicture(rs.getString("profilePicture"));
+                user.setPhone(rs.getString("phone"));
+                user.setBirthDate(rs.getDate("birthDate"));
+                user.setIsActive(rs.getBoolean("isActive"));
+                try { user.setCoverPhoto(rs.getString("coverPhoto")); } catch (Exception e) {}
+                try { user.setBio(rs.getString("bio")); } catch (Exception e) {}
+                return user;
             }
         }
-        return null;
     }
+    return null;
+}
+
 
     public void updateUserProfileDetail(UserAccount user) throws ClassNotFoundException, SQLException {
     String sql = "UPDATE UserAccount SET fullName = ?, username = ?, email = ?, phone = ?, birthDate = ?, profilePicture = ?, coverPhoto = ?, role = ?";
