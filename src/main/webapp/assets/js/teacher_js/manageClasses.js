@@ -440,7 +440,7 @@ class ClassManager {
                                 <button class="btn btn-outline-primary btn-sm" onclick="classManager.viewProfile('${student.studentID}')">
                                     <i class="fas fa-chart-line me-1"></i> Tiến độ
                                 </button>
-                                <button class="btn btn-outline-info btn-sm" onclick="classManager.sendMessage('${student.studentID}')">
+                                <button class="btn btn-outline-info btn-sm" onclick="classManager.sendMessage('${student.userID}')">
                                     <i class="fas fa-comment me-1"></i> Nhắn tin
                                 </button>
                             </div>
@@ -621,7 +621,7 @@ class ClassManager {
                                     <div class="detail-item"><i class="fas fa-phone me-2"></i>${profile.phone || "Chưa cập nhật"}</div>
                                 </div>
                                 <div class="profile-actions">
-                                    <button class="btn btn-primary btn-lg" onclick="classManager.sendMessage('${profile.studentID}')">
+                                    <button class="btn btn-primary btn-lg" onclick="classManager.sendMessage('${profile.userID}')">
                                         <i class="fas fa-comment me-2"></i>Nhắn tin
                                     </button>
                                 </div>
@@ -649,7 +649,8 @@ class ClassManager {
                     <div class="tab-pane fade show active" id="progress" role="tabpanel">
                         ${this.renderProgressTab(profile.progress)}
                     </div>
-                   
+                    <div class="tab-pane fade" id="messages" role="tabpanel">
+                    </div>
                 </div>
             </div>
         `;
@@ -803,9 +804,13 @@ class ClassManager {
     }
 
     // Message functionality
-    async sendMessage(studentId) {
-        window.location.href = `${this.contextPath}/message?studentId=${studentId}`;
+   async sendMessage(userID) {
+    if (!userID) {
+        this.showToast("ID người nhận không hợp lệ.", "error");
+        return;
     }
+    window.location.href = `${this.contextPath}/message?receiverID=${encodeURIComponent(userID)}`;
+}
 
     // Navigation handling
     handleNavigation(state) {
@@ -827,7 +832,40 @@ class ClassManager {
         }
     }
 
-  
+    // Toast notification system
+    showToast(message, type = "info") {
+        const toastContainer = document.getElementById("toastContainer");
+        if (!toastContainer) return;
+
+        const toastId = "toast-" + Date.now();
+        const toastHtml = `
+            <div class="toast toast-${type}" role="alert" aria-live="assertive" aria-atomic="true" id="${toastId}">
+                <div class="toast-header">
+                    <i class="fas fa-${this.getToastIcon(type)} me-2"></i>
+                    <strong class="me-auto">${this.getToastTitle(type)}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+
+        toastContainer.insertAdjacentHTML("beforeend", toastHtml);
+
+        const toastElement = document.getElementById(toastId);
+        const bootstrap = window.bootstrap;
+        const toast = new bootstrap.Toast(toastElement, {
+            autohide: true,
+            delay: 5000
+        });
+
+        toast.show();
+
+        toastElement.addEventListener("hidden.bs.toast", () => {
+            toastElement.remove();
+        });
+    }
 
     getToastIcon(type) {
         switch (type) {

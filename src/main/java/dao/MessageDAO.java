@@ -12,7 +12,7 @@ import utils.DBContext;
 
 public class MessageDAO extends DBContext {
 
-     public List<Message> getChatHistory(String user1, String user2) {
+    public List<Message> getChatHistory(String user1, String user2) {
         List<Message> messages = new ArrayList<>();
         String sql = "SELECT sender_id, receiver_id, content, imageUrl, timestamp FROM chat_messages "
                 + "WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) "
@@ -42,23 +42,23 @@ public class MessageDAO extends DBContext {
         return messages;
     }
 
-      public List<String> getChatPartners(String userID) {
+    public List<String> getChatPartners(String userID) {
         List<String> partners = new ArrayList<>();
-        String sql = 
-            "SELECT DISTINCT " +
-            "    CASE " +
-            "        WHEN cm.sender_id = ? THEN cm.receiver_id " +
-            "        WHEN cm.receiver_id = ? THEN cm.sender_id " +
-            "    END AS partner_id, " +
-            "    ua.fullName, " +
-            "    ua.profilePicture " +
-            "FROM chat_messages cm " +
-            "JOIN UserAccount ua ON " +
-            "    CASE " +
-            "        WHEN cm.sender_id = ? THEN cm.receiver_id " +
-            "        WHEN cm.receiver_id = ? THEN cm.sender_id " +
-            "    END = ua.userID " +
-            "WHERE cm.sender_id = ? OR cm.receiver_id = ?";
+        String sql
+                = "SELECT DISTINCT "
+                + "    CASE "
+                + "        WHEN cm.sender_id = ? THEN cm.receiver_id "
+                + "        WHEN cm.receiver_id = ? THEN cm.sender_id "
+                + "    END AS partner_id, "
+                + "    ua.fullName, "
+                + "    ua.profilePicture "
+                + "FROM chat_messages cm "
+                + "JOIN UserAccount ua ON "
+                + "    CASE "
+                + "        WHEN cm.sender_id = ? THEN cm.receiver_id "
+                + "        WHEN cm.receiver_id = ? THEN cm.sender_id "
+                + "    END = ua.userID "
+                + "WHERE cm.sender_id = ? OR cm.receiver_id = ?";
 
         try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, userID);
@@ -73,11 +73,12 @@ public class MessageDAO extends DBContext {
                 String partnerID = rs.getString("partner_id"); // Sửa từ "partner" thành "partner_id"
                 String fullName = rs.getString("fullName");
                 String profilePicture = rs.getString("profilePicture");
-                String partnerInfo = partnerID + "|" + 
-                                   (fullName != null ? fullName : "") + "|" + 
-                                   (profilePicture != null ? profilePicture : "");
+                String partnerInfo = partnerID + "|"
+                        + (fullName != null ? fullName : "") + "|"
+                        + (profilePicture != null ? profilePicture : "");
                 partners.add(partnerInfo);
                 System.out.println("Found partner: " + partnerInfo); // Ghi log
+
             }
             System.out.println("Total partners for user " + userID + ": " + partners.size()); // Ghi log
         } catch (SQLException e) {
@@ -105,6 +106,48 @@ public class MessageDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isValidUser(String userID) {
+        String sql = "SELECT COUNT(*) FROM UserAccount WHERE userID = ?";
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public String getUserFullName(String userID) {
+        String sql = "SELECT fullName FROM UserAccount WHERE userID = ?";
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("fullName");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getUserProfilePicture(String userID) {
+        String sql = "SELECT profilePicture FROM UserAccount WHERE userID = ?";
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("profilePicture");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static void main(String[] args) {
