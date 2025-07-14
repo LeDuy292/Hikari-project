@@ -37,7 +37,7 @@
         <a href="${pageContext.request.contextPath}/view/teacher/manageDocument.jsp" class="sidebar-nav-item <%= currentPage.equals("manageDocument.jsp") ? "active" : ""%>">
             <i class="fa fa-file-alt"></i><span>Quản Lý Tài Liệu</span>
         </a>   
-        <a href="${pageContext.request.contextPath}/view/teacher/forum.jsp" class="sidebar-nav-item <%= currentPage.equals("forum.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/forum" class="sidebar-nav-item <%= currentPage.equals("forum.jsp") ? "active" : ""%>">
             <i class="fa fa-comments"></i><span>Diễn Đàn</span>
         </a>
     </div>

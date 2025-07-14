@@ -16,6 +16,19 @@
         <servlet-name>EditCourseServlet</servlet-name>
         <servlet-class>controller.coordinator.EditCourseServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>LoadDashboardServlet</servlet-name>
+        <servlet-class>controller.coordinator.LoadDashboardServlet</servlet-class>
+    </servlet>
+     <servlet>
+        <servlet-name>LoadTeacherServlet</servlet-name>
+        <servlet-class>controller.coordinator.LoadTeacherServlet</servlet-class>
+    </servlet>
+     <servlet>
+        <servlet-name>TeacherAssignmentServlet</servlet-name>
+        <servlet-class>controller.coordinator.TeacherAssignmentServlet</servlet-class>
+    </servlet>
+    
     <servlet-mapping>
         <servlet-name>LoadCourseServlet</servlet-name>
         <url-pattern>/LoadCourse</url-pattern>
@@ -31,6 +44,18 @@
     <servlet-mapping>
         <servlet-name>EditCourseServlet</servlet-name>
         <url-pattern>/EditCourse</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoadDashboardServlet</servlet-name>
+        <url-pattern>/LoadDashboard</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoadTeacherServlet</servlet-name>
+        <url-pattern>/LoadTeacher</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TeacherAssignmentServlet</servlet-name>
+        <url-pattern>/TeacherAssignment</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
