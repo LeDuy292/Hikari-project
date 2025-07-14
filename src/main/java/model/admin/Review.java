@@ -1,6 +1,6 @@
 package model.admin;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Review {
     private int id;
@@ -9,47 +9,80 @@ public class Review {
     private int rating;
     private String reviewText;
     private Date reviewDate;
-    
-    // Additional fields for display
+    private String status;
     private String reviewerName;
     private String courseName;
-    private String instructorName;
-
-    public Review() {}
-
-    public Review(String courseID, String userID, int rating, String reviewText) {
-        this.courseID = courseID;
-        this.userID = userID;
-        this.rating = rating;
-        this.reviewText = reviewText;
-        this.reviewDate = new Date();
-    }
 
     // Getters and Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public String getCourseID() { return courseID; }
-    public void setCourseID(String courseID) { this.courseID = courseID; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public String getUserID() { return userID; }
-    public void setUserID(String userID) { this.userID = userID; }
+    public String getCourseID() {
+        return courseID;
+    }
 
-    public int getRating() { return rating; }
-    public void setRating(int rating) { this.rating = rating; }
+    public void setCourseID(String courseID) {
+        this.courseID = courseID;
+    }
 
-    public String getReviewText() { return reviewText; }
-    public void setReviewText(String reviewText) { this.reviewText = reviewText; }
+    public String getUserID() {
+        return userID;
+    }
 
-    public Date getReviewDate() { return reviewDate; }
-    public void setReviewDate(Date reviewDate) { this.reviewDate = reviewDate; }
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
 
-    public String getReviewerName() { return reviewerName; }
-    public void setReviewerName(String reviewerName) { this.reviewerName = reviewerName; }
+    public int getRating() {
+        return rating;
+    }
 
-    public String getCourseName() { return courseName; }
-    public void setCourseName(String courseName) { this.courseName = courseName; }
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
 
-    public String getInstructorName() { return instructorName; }
-    public void setInstructorName(String instructorName) { this.instructorName = instructorName; }
+    public String getReviewText() {
+        return reviewText;
+    }
+
+    public void setReviewText(String reviewText) {
+        this.reviewText = reviewText;
+    }
+
+    public Date getReviewDate() {
+        return reviewDate;
+    }
+
+    public void setReviewDate(Date reviewDate) {
+        this.reviewDate = reviewDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getReviewerName() {
+        return reviewerName;
+    }
+
+    public void setReviewerName(String reviewerName) {
+        this.reviewerName = reviewerName;
+    }
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
 }
