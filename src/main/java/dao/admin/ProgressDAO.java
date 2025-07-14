@@ -1,4 +1,4 @@
-package dao;
+package dao.admin;
 
 import utils.DBContext;
 import org.slf4j.Logger;

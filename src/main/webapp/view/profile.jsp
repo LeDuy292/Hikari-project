@@ -1,4 +1,4 @@
-<%@page import="dao.ProgressDAO"%>
+<%@page import="dao.admin.ProgressDAO"%>
 <%@page import="dao.student.CourseEnrollmentDAO"%>
 <%@page import="model.Course"%>
 <%@page import="dao.CourseDAO"%>
