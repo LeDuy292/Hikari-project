@@ -93,4 +93,9 @@ public class Class {
     public void setTeacherName(String teacherName) {
         this.teacherName = teacherName;
     }
+
+    @Override
+    public String toString() {
+        return "Class{" + "classID=" + classID + ", courseID=" + courseID + ", name=" + name + ", teacherID=" + teacherID + ", numberOfStudents=" + numberOfStudents + ", courseTitle=" + courseTitle + ", startDate=" + startDate + ", endDate=" + endDate + ", teacherName=" + teacherName + '}';
+    }
 }
