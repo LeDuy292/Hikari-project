@@ -2,6 +2,7 @@ package controller.message;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import dao.MessageDAO;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.EndpointConfig;
@@ -75,7 +76,7 @@ public class ChatServerEndPoint {
                 case "history": {
                     String sender = json.get("sender").getAsString();
                     String receiver = json.get("receiver").getAsString();
-
+                    
                     List<Message> messages = new MessageDAO().getChatHistory(sender, receiver);
 
                     String response = gson.toJson(messages);
@@ -97,11 +98,10 @@ public class ChatServerEndPoint {
                 default:
                     session.getBasicRemote().sendText("{\"error\":\"Unknown type\"}");
             }
-        } catch (Exception e) {
+        } catch (JsonSyntaxException | IOException e) {
             try {
                 session.getBasicRemote().sendText("{\"error\":\"" + e.getMessage() + "\"}");
             } catch (IOException ioException) {
-                ioException.printStackTrace();
             }
         }
     }
