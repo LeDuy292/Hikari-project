@@ -24,9 +24,17 @@
         <servlet-name>LoadTeacherServlet</servlet-name>
         <servlet-class>controller.coordinator.LoadTeacherServlet</servlet-class>
     </servlet>
-     <servlet>
+    <servlet>
         <servlet-name>TeacherAssignmentServlet</servlet-name>
         <servlet-class>controller.coordinator.TeacherAssignmentServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CallBackServlet</servlet-name>
+        <servlet-class>controller.login.CallBackServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GoogleLoginServlet</servlet-name>
+        <servlet-class>controller.login.GoogleLoginServlet</servlet-class>
     </servlet>
     
     <servlet-mapping>
@@ -56,6 +64,14 @@
     <servlet-mapping>
         <servlet-name>TeacherAssignmentServlet</servlet-name>
         <url-pattern>/TeacherAssignment</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CallBackServlet</servlet-name>
+        <url-pattern>/callback</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GoogleLoginServlet</servlet-name>
+        <url-pattern>/GoogleLogin</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
