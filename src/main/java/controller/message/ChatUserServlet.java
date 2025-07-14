@@ -52,13 +52,19 @@ public class ChatUserServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
    String userID = request.getParameter("userID");
-        MessageDAO dao = new MessageDAO();
-        List<String> users = dao.getChatPartners(userID); // lấy các user đã chat với userID
+        if (userID != null) {
+            MessageDAO dao = new MessageDAO();
+            List<String> users = dao.getChatPartners(userID);
 
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        out.print(new Gson().toJson(users));
-        out.flush();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            PrintWriter out = response.getWriter();
+            out.print(new Gson().toJson(users));
+            out.flush();
+            return;
+        }
+
+        request.getRequestDispatcher("/view/notification/messages.jsp").forward(request, response);
     } 
 
     /** 
