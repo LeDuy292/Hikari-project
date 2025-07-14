@@ -28,22 +28,22 @@
             <i class="fa fa-book-open"></i>
             <span>Quản lý khóa học </span>
         </a>
-        <a href="${pageContext.request.contextPath}/view/teacher/manageClasses.jsp" class="sidebar-nav-item <%= currentPage.equals("manageClasses.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/manageClass" class="sidebar-nav-item <%= currentPage.equals("manageClasses.jsp") ? "active" : ""%>">
             <i class="fa fa-chalkboard"></i><span>Quản Lý Lớp Học</span>
         </a>
         <a href="${pageContext.request.contextPath}/manageTests" class="sidebar-nav-item <%= currentPage.equals("manageTest.jsp") ? "active" : ""%>">
             <i class="fa fa-clipboard-check"></i><span>Bài Tập & Test</span>
         </a>
-        <a href="${pageContext.request.contextPath}/view/teacher/manageDocument.jsp" class="sidebar-nav-item <%= currentPage.equals("manageDocument.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/manageDocuments" class="sidebar-nav-item <%= currentPage.equals("manageDocument.jsp") ? "active" : ""%>">
             <i class="fa fa-file-alt"></i><span>Quản Lý Tài Liệu</span>
         </a>   
-        <a href="${pageContext.request.contextPath}/view/teacher/forum.jsp" class="sidebar-nav-item <%= currentPage.equals("forum.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/forum" class="sidebar-nav-item <%= currentPage.equals("forum.jsp") ? "active" : ""%>">
             <i class="fa fa-comments"></i><span>Diễn Đàn</span>
         </a>
     </div>
     <div class="sidebar-bottom">
         <img src="${pageContext.request.contextPath}/assets/img/learning.jpg" alt="Sidebar Image" class="sidebar-image" />
-        <a href="${pageContext.request.contextPath}/view/notification/messages.jsp" class="sidebar-message-link <%= currentPage.equals("messages.jsp") ? "active" : ""%>">
+        <a href="${pageContext.request.contextPath}/message" class="sidebar-message-link <%= currentPage.equals("messages.jsp") ? "active" : ""%>">
             <i class="fas fa-envelope"></i><span>Nhắn Tin</span></a>
     </div>
 </div>

@@ -66,7 +66,7 @@ public class UserProfileServlet extends HttpServlet {
             LOGGER.info("Viewing profile for userId: " + targetUserId + " by user: " + currentUserId);
 
             // Get target user information
-            UserAccount targetUser = userDAO.getUserById(targetUserId);
+            UserAccount targetUser = userDAO.getUserProfileDetailById(targetUserId);
             if (targetUser == null) {
                 LOGGER.warning("User not found: " + targetUserId);
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Người dùng không tồn tại");

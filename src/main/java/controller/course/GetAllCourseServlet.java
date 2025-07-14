@@ -1,4 +1,3 @@
-
 package controller.course;
 
 import dao.CourseDAO;
@@ -8,10 +7,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import model.Course;
+import model.UserAccount;
 
 /**
  *
@@ -57,6 +58,12 @@ public class GetAllCourseServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        UserAccount currentUser = (UserAccount) request.getSession().getAttribute("user");
+        System.out.println("ID " + currentUser);
+        if (currentUser == null || !"Teacher".equals(currentUser.getRole())) {
+            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            return;
+        }
         CourseDAO dao = new CourseDAO();
         List<Course> list = dao.getAllCourse();
         Map<String, Integer> studentCount = new HashMap<>();

@@ -1,184 +1,137 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher CV Review - Coordinator Dashboard</title>
+    <title>Phê duyệt CV Giảng viên - JLEARNING</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/static/css/coordinator_css/teacher-cv-review.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/assets/css/coordinator_css/teacher-cv-review.css" rel="stylesheet">
 </head>
 <body>
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-                             <jsp:include page="sidebarCoordinator.jsp" />
+            <jsp:include page="sidebarCoordinator.jsp" />
 
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
-            <jsp:include page="headerCoordinator.jsp" />
+                <jsp:include page="headerCoordinator.jsp" />
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Teacher CV Review</h1>
+                    <h1 class="h2">Phê duyệt CV Giảng viên</h1>
                 </div>
 
-                <!-- Search and Filter Section -->
-                <div class="row mb-4 search-filter-section">
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search by name or specialization...">
-                            <button class="btn btn-primary" type="button">
-                                <i class="fas fa-search"></i> Search
-                            </button>
-                        </div>
+                <!-- Thông báo lỗi hoặc thành công -->
+                <c:if test="${param.success == 'review'}">
+                    <div class="alert alert-success">Phê duyệt CV thành công!</div>
+                </c:if>
+                <c:if test="${param.error == 'please_login'}">
+                    <div class="alert alert-warning">Vui lòng <a href="login.jsp">đăng nhập</a> để tiếp tục.</div>
+                </c:if>
+                <c:if test="${param.error == 'unauthorized'}">
+                    <div class="alert alert-danger">Bạn không có quyền truy cập trang này.</div>
+                </c:if>
+
+                <!-- CV List (chỉ hiển thị cho Coordinator) -->
+                <c:if test="${sessionScope.user.role == 'Coordinator'}">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Mã CV</th>
+                                    <th>Họ và Tên</th>
+                                    <th>UserID</th>
+                                    <th>Email</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Tệp CV</th>
+                                    <th>Ngày tải lên</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="cv" items="${cvList}">
+                                    <tr>
+                                        <td>${cv.cvID}</td>
+                                        <td>${cv.fullName}</td>
+                                        <td>${cv.userID}</td>
+                                        <td>${cv.email}</td>
+                                        <td>${cv.phone}</td>
+                                        <td><a href="${cv.fileUrl}" target="_blank">Xem CV</a></td>
+                                        <td>${cv.uploadDate}</td>
+                                        <td><span class="badge bg-${cv.status == 'Approved' ? 'success' : cv.status == 'Rejected' ? 'danger' : 'warning'}">${cv.status}</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#reviewCVModal${cv.cvID}">
+                                                <i class="fas fa-eye"></i> Xem & Phê duyệt
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col-md-6">
-                        <div class="d-flex justify-content-end">
-                            <select class="form-select me-2" style="width: auto;">
-                                <option value="">All Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="approved">Approved</option>
-                                <option value="rejected">Rejected</option>
-                            </select>
-                            <select class="form-select" style="width: auto;">
-                                <option value="">All Specializations</option>
-                                <option value="math">Mathematics</option>
-                                <option value="science">Science</option>
-                                <option value="english">English</option>
-                                <option value="history">History</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+                </c:if>
 
-                <!-- Loading Spinner -->
-                <div class="loading-spinner">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
-
-                <!-- CV List -->
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Specialization</th>
-                                <th>Experience</th>
-                                <th>Education</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>John Doe</td>
-                                <td>Mathematics</td>
-                                <td>5 years</td>
-                                <td>MSc in Mathematics</td>
-                                <td><span class="badge bg-warning">Pending</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#viewCVModal">
-                                        <i class="fas fa-eye"></i> View
-                                    </button>
-                                    <button class="btn btn-sm btn-success">
-                                        <i class="fas fa-check"></i> Approve
-                                    </button>
-                                    <button class="btn btn-sm btn-danger">
-                                        <i class="fas fa-times"></i> Reject
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                <nav aria-label="Page navigation" class="mt-4">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Previous</a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
-                    </ul>
-                </nav>
-            </main>
-        </div>
-    </div>
-
-    <!-- View CV Modal -->
-    <div class="modal fade" id="viewCVModal" tabindex="-1" aria-labelledby="viewCVModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewCVModalLabel">Teacher CV Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <img src="assets/default-avatar.png" class="img-fluid rounded profile-image" alt="Profile Picture">
-                        </div>
-                        <div class="col-md-8">
-                            <h4>John Doe</h4>
-                            <p class="text-muted">Mathematics Teacher</p>
-                            <hr>
-                            <div class="cv-section">
-                                <h5>Personal Information</h5>
-                                <p><strong>Email:</strong> john.doe@example.com</p>
-                                <p><strong>Phone:</strong> +1234567890</p>
-                                <p><strong>Location:</strong> New York, USA</p>
+                <!-- Review CV Modal (chỉ cho Coordinator) -->
+                <c:if test="${sessionScope.user.role == 'Coordinator'}">
+                    <c:forEach var="cv" items="${cvList}">
+                        <div class="modal fade" id="reviewCVModal${cv.cvID}" tabindex="-1" aria-labelledby="reviewCVModalLabel${cv.cvID}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="reviewCVModalLabel${cv.cvID}">Phê duyệt CV - ${cv.fullName}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h5>Thông tin cá nhân</h5>
+                                                <p><strong>Họ và Tên:</strong> ${cv.fullName}</p>
+                                                <p><strong>UserID:</strong> ${cv.userID}</p>
+                                                <p><strong>Email:</strong> ${cv.email}</p>
+                                                <p><strong>Số điện thoại:</strong> ${cv.phone}</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h5>Tệp CV</h5>
+                                                <embed src="${cv.fileUrl}" type="application/pdf" width="100%" height="500px">
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <form action="${pageContext.request.contextPath}/cv" method="post">
+                                            <input type="hidden" name="action" value="review">
+                                            <input type="hidden" name="cvID" value="${cv.cvID}">
+                                            <input type="hidden" name="reviewerID" value="${sessionScope.user.userID}">
+                                            <div class="mb-3">
+                                                <label for="status${cv.cvID}" class="form-label">Trạng thái</label>
+                                                <select class="form-select" id="status${cv.cvID}" name="status" required>
+                                                    <option value="Pending" ${cv.status == 'Pending' ? 'selected' : ''}>Chờ duyệt</option>
+                                                    <option value="Approved" ${cv.status == 'Approved' ? 'selected' : ''}>Phê duyệt</option>
+                                                    <option value="Rejected" ${cv.status == 'Rejected' ? 'selected' : ''}>Từ chối</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="comments${cv.cvID}" class="form-label">Nhận xét</label>
+                                                <textarea class="form-control" id="comments${cv.cvID}" name="comments" rows="4">${cv.comments}</textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Lưu</button>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <hr>
-                    <div class="cv-section">
-                        <h5>Education</h5>
-                        <ul>
-                            <li>MSc in Mathematics - University of Example (2018-2020)</li>
-                            <li>BSc in Mathematics - University of Example (2014-2018)</li>
-                        </ul>
-                    </div>
-                    <div class="cv-section">
-                        <h5>Work Experience</h5>
-                        <ul>
-                            <li>Mathematics Teacher - High School XYZ (2020-Present)</li>
-                            <li>Teaching Assistant - University of Example (2018-2020)</li>
-                        </ul>
-                    </div>
-                    <div class="cv-section">
-                        <h5>Skills</h5>
-                        <div class="mb-3">
-                            <span class="skills-badge">Advanced Mathematics</span>
-                            <span class="skills-badge">Curriculum Development</span>
-                            <span class="skills-badge">Student Assessment</span>
-                            <span class="skills-badge">Classroom Management</span>
-                        </div>
-                    </div>
-                    <div class="cv-section">
-                        <h5>CV Document</h5>
-                        <div class="cv-preview">
-                            <embed src="path/to/cv.pdf" type="application/pdf" width="100%" height="500px">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-success">Approve</button>
-                    <button type="button" class="btn btn-danger">Reject</button>
-                </div>
-            </div>
+                    </c:forEach>
+                </c:if>
+            </main>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="static/js/main.js"></script>
+    <script src="${pageContext.request.contextPath}/static/js/main.js"></script>
 </body>
-</html> 
+</html>

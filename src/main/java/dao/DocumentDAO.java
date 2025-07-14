@@ -247,6 +247,6 @@ public List<Document> getDocumentsByLessonId(int lessonId) throws SQLException {
     public static void main(String[] args) {
         DocumentDAO dao = new DocumentDAO();
         System.out.println(dao.getALLDOcument());
-        System.out.println(dao.getDocumentByTeacher("T002"));
+        System.out.println(dao.getDocumentByTeacher("T001"));
     }
 }
