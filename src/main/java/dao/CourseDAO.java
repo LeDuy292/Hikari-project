@@ -1,7 +1,6 @@
 package dao;
 
 import java.sql.Connection;
-
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +17,7 @@ public class CourseDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(CourseDAO.class);
     private Connection con;
- private final CourseReponsitory rep = new CourseReponsitory();
+    private final CourseReponsitory rep = new CourseReponsitory();
 
     public CourseDAO() {
         DBContext dBContext = new DBContext();
@@ -163,7 +162,38 @@ public class CourseDAO {
         return course;
     }
 
-    // Removed the getCourseById(int id) method to enforce String usage.
+    // Thêm mới: Phương thức getCourseById để lấy thông tin khóa học bằng courseID
+    public Course getCourseById(String courseID) {
+        String sql = "SELECT courseID, title, description, fee, duration, imageUrl, startDate, endDate, isActive " +
+                     "FROM Courses WHERE courseID = ?";
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
+            pre.setString(1, courseID);
+            try (ResultSet rs = pre.executeQuery()) {
+                if (rs.next()) {
+                    Course course = new Course(
+                        rs.getString("courseID"),
+                        rs.getString("title"),
+                        rs.getString("description"),
+                        rs.getDouble("fee"),
+                        rs.getInt("duration"),
+                        rs.getDate("startDate"),
+                        rs.getDate("endDate"),
+                        rs.getBoolean("isActive"),
+                        rs.getString("imageUrl")
+                    );
+                    logger.debug("CourseDAO: Retrieved course with ID {}: {}", courseID, course);
+                    return course;
+                } else {
+                    logger.warn("CourseDAO: No course found for ID: {}", courseID);
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error getting course by ID {}: {}", courseID, e.getMessage(), e);
+            return null;
+        }
+    }
+
     public void editCourse(Course course) {
         String sql = "UPDATE Courses\n"
                 + "   SET title = ?,\n"

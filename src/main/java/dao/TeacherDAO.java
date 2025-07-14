@@ -13,8 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Class;
 import model.Teacher;
+import model.coordinator.Student;
 import utils.DBContext;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -22,6 +24,7 @@ import utils.DBContext;
  */
 public class TeacherDAO {
 
+    private static final Logger logger = LoggerFactory.getLogger(TeacherDAO.class);
     Connection con;
 
     public TeacherDAO() {
@@ -35,11 +38,10 @@ public class TeacherDAO {
     }
 
     public List<Teacher> getAllTeachers() {
-        String sql = "SELECT t.teacherID, t.userID, t.specialization, t.experienceYears, u.fullName " +
-                     "FROM Teacher t JOIN UserAccount u ON t.userID = u.userID";
+        String sql = "SELECT t.teacherID, t.userID, t.specialization, t.experienceYears, u.fullName "
+                + "FROM Teacher t JOIN UserAccount u ON t.userID = u.userID";
         List<Teacher> list = new ArrayList<>();
-        try (PreparedStatement pre = con.prepareStatement(sql);
-             ResultSet resultSet = pre.executeQuery()) {
+        try (PreparedStatement pre = con.prepareStatement(sql); ResultSet resultSet = pre.executeQuery()) {
             while (resultSet.next()) {
                 String teacherID = resultSet.getString("teacherID");
                 String userID = resultSet.getString("userID");
@@ -62,16 +64,29 @@ public class TeacherDAO {
         return list;
     }
 
+    public void addTeacher(Teacher teacher) {
+        String sql = "INSERT INTO Teacher (teacherID, userID, specialization, experienceYears) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
+            pre.setString(1, teacher.getTeacherID());
+            pre.setString(2, teacher.getUserID());
+            pre.setString(3, teacher.getSpecialization());
+            pre.setInt(4, teacher.getExperienceYears());
+            pre.executeUpdate();
+            logger.info("TeacherDAO: Added new teacher with ID: {}", teacher.getTeacherID());
+        } catch (SQLException e) {
+            logger.error("TeacherDAO: Error adding teacher {}: {}", teacher.getTeacherID(), e.getMessage(), e);
+        }
+    }
+
     public List<Class> getAllClasses() {
-        String sql = "SELECT c.classID, c.courseID, c.name, c.teacherID, c.numberOfStudents, " +
-                     "co.title, co.startDate, co.endDate, u.fullName as teacherName " +
-                     "FROM Class c " +
-                     "JOIN Courses co ON c.courseID = co.courseID " +
-                     "LEFT JOIN Teacher t ON c.teacherID = t.teacherID " +
-                     "LEFT JOIN UserAccount u ON t.userID = u.userID";
+        String sql = "SELECT c.classID, c.courseID, c.name, c.teacherID, c.numberOfStudents, "
+                + "co.title, co.startDate, co.endDate, u.fullName as teacherName "
+                + "FROM Class c "
+                + "JOIN Courses co ON c.courseID = co.courseID "
+                + "LEFT JOIN Teacher t ON c.teacherID = t.teacherID "
+                + "LEFT JOIN UserAccount u ON t.userID = u.userID";
         List<Class> list = new ArrayList<>();
-        try (PreparedStatement pre = con.prepareStatement(sql);
-             ResultSet resultSet = pre.executeQuery()) {
+        try (PreparedStatement pre = con.prepareStatement(sql); ResultSet resultSet = pre.executeQuery()) {
             while (resultSet.next()) {
                 String classID = resultSet.getString("classID");
                 String courseID = resultSet.getString("courseID");
@@ -101,7 +116,102 @@ public class TeacherDAO {
         }
         return list;
     }
+    
+    public List<Class> getClassesByCourseID(String courseID) {
+        String sql = "SELECT c.classID, c.courseID, c.name, c.teacherID, c.numberOfStudents, "
+                + "co.title, co.startDate, co.endDate, u.fullName as teacherName "
+                + "FROM Class c "
+                + "JOIN Courses co ON c.courseID = co.courseID "
+                + "LEFT JOIN Teacher t ON c.teacherID = t.teacherID "
+                + "LEFT JOIN UserAccount u ON t.userID = u.userID "
+                + (courseID != null && !courseID.trim().isEmpty() ? "WHERE c.courseID = ?" : "");
+        List<Class> list = new ArrayList<>();
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
+            if (courseID != null && !courseID.trim().isEmpty()) {
+                pre.setString(1, courseID);
+            }
+            try (ResultSet resultSet = pre.executeQuery()) {
+                while (resultSet.next()) {
+                    String classID = resultSet.getString("classID");
+                    String resultCourseID = resultSet.getString("courseID");
+                    String name = resultSet.getString("name");
+                    String teacherID = resultSet.getString("teacherID");
+                    int numberOfStudents = resultSet.getInt("numberOfStudents");
+                    String courseTitle = resultSet.getString("title");
+                    Date startDate = resultSet.getDate("startDate");
+                    Date endDate = resultSet.getDate("endDate");
+                    String teacherName = resultSet.getString("teacherName");
 
+                    Class classObj = new Class();
+                    classObj.setClassID(classID);
+                    classObj.setCourseID(resultCourseID);
+                    classObj.setName(name);
+                    classObj.setTeacherID(teacherID);
+                    classObj.setNumberOfStudents(numberOfStudents);
+                    classObj.setCourseTitle(courseTitle);
+                    classObj.setStartDate(startDate);
+                    classObj.setEndDate(endDate);
+                    classObj.setTeacherName(teacherName);
+
+                    list.add(classObj);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("error getClassesByCourseID: " + e);
+        }
+        return list;
+    }
+
+        public int countClassesByCourseID(String courseID) {
+        String sql = "SELECT COUNT(*) FROM Class WHERE courseID = ?";
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
+            pre.setString(1, courseID);
+            try (ResultSet resultSet = pre.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("error countClassesByCourseID: " + e);
+        }
+        return 0;
+    }
+        
+    public List<Student> getStudentsByClassID(String classID) {
+        String sql = "SELECT s.studentID, s.userID, u.fullName AS studentName, u.email, s.enrollmentDate, u.isActive "
+                + "FROM Student s "
+                + "JOIN Class_Students cs ON s.studentID = cs.studentID "
+                + "JOIN UserAccount u ON s.userID = u.userID "
+                + "WHERE cs.classID = ?";
+        List<Student> list = new ArrayList<>();
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
+            pre.setString(1, classID);
+            try (ResultSet resultSet = pre.executeQuery()) {
+                while (resultSet.next()) {
+                    String studentID = resultSet.getString("studentID");
+                    String userID = resultSet.getString("userID");
+                    String studentName = resultSet.getString("studentName");
+                    String email = resultSet.getString("email");
+                    Date enrollmentDate = resultSet.getDate("enrollmentDate");
+                    boolean active = resultSet.getBoolean("isActive");
+
+                    Student student = new Student();
+                    student.setStudentID(studentID);
+                    student.setUserID(userID);
+                    student.setStudentName(studentName);
+                    student.setEmail(email);
+                    student.setEnrollmentDate(enrollmentDate);
+                    student.setActive(active);
+
+                    list.add(student);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("error getStudentsByClassID: " + e);
+        }
+        return list;
+    }
+     
     public boolean assignTeacherToClass(String classID, String teacherID) {
         if (classID == null || teacherID == null || classID.trim().isEmpty() || teacherID.trim().isEmpty()) {
             System.out.println("error assignTeacherToClass: Invalid classID or teacherID");
@@ -149,9 +259,9 @@ public class TeacherDAO {
     }
 
     public Teacher getTeacherByID(String id) {
-        String sql = "SELECT t.teacherID, t.userID, t.specialization, t.experienceYears, u.fullName " +
-                     "FROM Teacher t JOIN UserAccount u ON t.userID = u.userID " +
-                     "WHERE t.teacherID = ?";
+        String sql = "SELECT t.teacherID, t.userID, t.specialization, t.experienceYears, u.fullName "
+                + "FROM Teacher t JOIN UserAccount u ON t.userID = u.userID "
+                + "WHERE t.teacherID = ?";
         Teacher teacher = new Teacher();
         try (PreparedStatement pre = con.prepareStatement(sql)) {
             pre.setString(1, id);
@@ -178,8 +288,7 @@ public class TeacherDAO {
     public int countAllTeachers() {
         String sql = "SELECT COUNT(*) FROM Teacher";
         int count = 0;
-        try (PreparedStatement pre = con.prepareStatement(sql);
-             ResultSet resultSet = pre.executeQuery()) {
+        try (PreparedStatement pre = con.prepareStatement(sql); ResultSet resultSet = pre.executeQuery()) {
             if (resultSet.next()) {
                 count = resultSet.getInt(1);
             }
@@ -191,14 +300,16 @@ public class TeacherDAO {
 
     public static void main(String[] args) {
         TeacherDAO dao = new TeacherDAO();
-        List<Teacher> listTeacher = dao.getAllTeachers();
-        System.out.println(listTeacher);
-        System.out.println("Test assign:");
-        boolean success = dao.assignTeacherToClass("CL001", "T002");
-        System.out.println("Assign success: " + success);
+//        List<Teacher> listTeacher = dao.getAllTeachers();
+//        System.out.println(listTeacher);
+//        System.out.println("Test assign:");
+//        boolean success = dao.assignTeacherToClass("CL001", "T002");
+//        System.out.println("Assign success: " + success);
+//        System.out.println(dao.getClassesByCourseID("CO001"));
+          System.out.println(dao.getStudentsByClassID("CL001"));
     }
 
-        public void closeConnection() {
+    public void closeConnection() {
         try {
             if (con != null && !con.isClosed()) {
                 con.close();

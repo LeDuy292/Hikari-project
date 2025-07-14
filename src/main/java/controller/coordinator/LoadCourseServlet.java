@@ -5,6 +5,7 @@
 package controller.coordinator;
 
 import dao.CourseDAO;
+import dao.TeacherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import model.Course;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -20,15 +23,9 @@ import model.Course;
  */
 public class LoadCourseServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    private static final Logger logger = LoggerFactory.getLogger(LoadCourseServlet.class);
+    private static final int PAGE_SIZE = 6;
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -58,15 +55,75 @@ public class LoadCourseServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         CourseDAO dao = new CourseDAO();
-        List<Course> listCourse = dao.getAll();
+        CourseDAO dao = new CourseDAO();
+        TeacherDAO tdao = new TeacherDAO();
         
-//        ClassDAO cdao = new ClassDAO();
-//        for(Course c : listCourse){
-//            c.setClassCount(cdao.countClassesByCourseID(c.getCourseID()));
-//        }   
+        String pageStr = request.getParameter("page");
+        int currentPage = 1;
+        try {
+            currentPage = Integer.parseInt(pageStr);
+            if (currentPage < 1) {
+                currentPage = 1;
+            }
+        } catch (NumberFormatException e) {
+            logger.warn("Invalid page parameter: {}. Defaulting to page 1.", pageStr);
+            currentPage = 1;
+        }
+
+       
+        int offset = (currentPage - 1) * PAGE_SIZE;
+
+       
+        String keyword = request.getParameter("keyword");
+        String status = request.getParameter("status");
+        String feeFromStr = request.getParameter("feeFrom");
+        String feeToStr = request.getParameter("feeTo");
+        String startDate = request.getParameter("startDate");
+        
+        Boolean isActive = null;
+        if (status != null && !status.isEmpty()) {
+            isActive = Boolean.parseBoolean(status);
+        }
+
+        Double feeFrom = null;
+        try {
+            if (feeFromStr != null && !feeFromStr.isEmpty()) {
+                feeFrom = Double.parseDouble(feeFromStr);
+            }
+        } catch (NumberFormatException e) {
+            logger.warn("Invalid feeFrom parameter: {}. Ignoring feeFrom filter.", feeFromStr);
+        }
+
+        Double feeTo = null;
+        try {
+            if (feeToStr != null && !feeToStr.isEmpty()) {
+                feeTo = Double.parseDouble(feeToStr);
+            }
+        } catch (NumberFormatException e) {
+            logger.warn("Invalid feeTo parameter: {}. Ignoring feeTo filter.", feeToStr);
+        }
+        
+        int totalCourses = dao.countCoursesWithFilters(keyword, isActive, feeFrom, feeTo, startDate);
+        int totalPages = (int) Math.ceil((double) totalCourses / PAGE_SIZE);
+
+        if (currentPage > totalPages && totalPages > 0) {
+            currentPage = totalPages;
+            offset = (currentPage - 1) * PAGE_SIZE;
+        }
+        
+        List<Course> listCourse = dao.getCoursesWithFilters(keyword, isActive, feeFrom, feeTo, startDate, offset, PAGE_SIZE);
+        
+        for(Course c : listCourse){
+            c.setClassCount(tdao.countClassesByCourseID(c.getCourseID()));
+        }
         request.setAttribute("list", listCourse);
+        request.setAttribute("currentPage", currentPage);
+        request.setAttribute("totalPages", totalPages);
+
         request.getRequestDispatcher("view/coordinator/course-monitoring.jsp").forward(request, response);
+
+        logger.info("Loaded {} courses for page {} with filters: keyword='{}', status={}, feeFrom={}, feeTo={}, startDate={}",
+                listCourse.size(), currentPage, keyword, isActive, feeFrom, feeTo, startDate);
     }
 
     /**
