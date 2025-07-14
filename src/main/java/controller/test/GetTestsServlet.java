@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Test;
+import model.UserAccount;
 
 public class GetTestsServlet extends HttpServlet {
     
@@ -24,15 +25,12 @@ public class GetTestsServlet extends HttpServlet {
             throws ServletException, IOException {
         
         // Kiểm tra teacherID trong session
-        HttpSession session = request.getSession();
-        String teacherID = session != null ? (String) session.getAttribute("teacherID") : null;
-
-        if (teacherID == null) {
-            teacherID = "T002" ; 
-            session.setAttribute("teacherID", teacherID);
-           // response.sendRedirect(request.getContextPath() + "/login.jsp");
+       UserAccount currentUser = (UserAccount) request.getSession().getAttribute("user");
+        System.out.println("ID " + currentUser);
+        if (currentUser == null || !"Teacher".equals(currentUser.getRole())) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
         }
-
         try {
             // Lấy danh sách bài test
             List<Test> testList = testDAO.getAllActiveTests();

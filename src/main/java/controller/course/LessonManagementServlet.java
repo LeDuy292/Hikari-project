@@ -5,6 +5,7 @@ import dao.AssignmentDAO;
 import dao.DocumentDAO;
 import dao.LessonDAO;
 import dao.TopicDAO;
+import dao.UserAccountDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -25,7 +26,9 @@ import java.util.stream.Collectors;
 import model.Assignment;
 import model.Document;
 import model.Lesson;
+import model.Teacher;
 import model.Topic;
+import model.UserAccount;
 
 /**
  *
@@ -39,16 +42,31 @@ public class LessonManagementServlet extends HttpServlet {
     private final LessonDAO lessonDao = new LessonDAO();
     private final AssignmentDAO assignmentDAO = new AssignmentDAO();
     private final Gson gson = new Gson();
+    private final UserAccountDAO userDAO = new UserAccountDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+         UserAccount currentUser = (UserAccount) request.getSession().getAttribute("user");
+        if (currentUser == null || !"Teacher".equals(currentUser.getRole())) {
+            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            return;
+        }
+
+        Teacher teacher = userDAO.getByUserID(currentUser.getUserID());
+
+        if (teacher == null) {
+            response.getWriter().println("Không tìm thấy thông tin giáo viên.");
+            return;
+        }
+
+        String teacherID = teacher.getTeacherID();
+        System.out.println("Teacher ID: " + teacherID);
 
         String action = request.getParameter("action");
         String courseId = request.getParameter("courseId");
-        String teacherID = request.getParameter("teacherID");
         String lessonId = request.getParameter("lessonId");
         Map<String, Object> result = new HashMap<>();
 

@@ -1,13 +1,7 @@
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%
-    String teacherID = (String) session.getAttribute("teacherID");
-    if (teacherID == null) {
-        teacherID = "T002"; // Giả lập cho test
-        session.setAttribute("teacherID", teacherID);
-    }
-%>
+
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -20,7 +14,6 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/teacher_css/manageCourse.css" />
         <script>
             window.contextPath = '${pageContext.request.contextPath}';
-            window.userID = '<%= teacherID%>';
         </script>
     </head>
     <body>

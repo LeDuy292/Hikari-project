@@ -5,16 +5,24 @@
         <servlet-class>controller.coordinator.LoadCourseServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>AddCourseServlet</servlet-name>
-        <servlet-class>controller.coordinator.AddCourseServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>NextEditCourseServlet</servlet-name>
         <servlet-class>controller.coordinator.NextEditCourseServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>EditCourseServlet</servlet-name>
-        <servlet-class>controller.coordinator.EditCourseServlet</servlet-class>
+        <servlet-name>ClassManagementServlet</servlet-name>
+        <servlet-class>controller.classes.ClassManagementServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ClassInfoServlet</servlet-name>
+        <servlet-class>controller.classes.ClassInfoServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StudentListServlet</servlet-name>
+        <servlet-class>controller.classes.StudentListServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StudentProfileServlet</servlet-name>
+        <servlet-class>controller.classes.StudentProfileServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>LoadDashboardServlet</servlet-name>
@@ -42,16 +50,152 @@
         <url-pattern>/LoadCourse</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>AddCourseServlet</servlet-name>
-        <url-pattern>/AddCourse</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>NextEditCourseServlet</servlet-name>
         <url-pattern>/NextEditCourse</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>GetAllCourseServlet</servlet-name>
+        <servlet-class>controller.course.GetAllCourseServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
-        <servlet-name>EditCourseServlet</servlet-name>
-        <url-pattern>/EditCourse</url-pattern>
+        <servlet-name>GetAllCourseServlet</servlet-name>
+        <url-pattern>/manageCourse</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetExercisesServlet</servlet-name>
+        <servlet-class>controller.course.GetExercisesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetExercisesServlet</servlet-name>
+        <url-pattern>/GetExercisesServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>LessonManagementServlet</servlet-name>
+        <servlet-class>controller.course.LessonManagementServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LessonManagementServlet</servlet-name>
+        <url-pattern>/LessonManagementServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>SaveQuestionServlet</servlet-name>
+        <servlet-class>controller.course.SaveQuestionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SaveQuestionServlet</servlet-name>
+        <url-pattern>/SaveQuestionServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>UploadFileExcel</servlet-name>
+        <servlet-class>controller.course.UploadFileExcel</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadFileExcel</servlet-name>
+        <url-pattern>/UploadFileExcel</url-pattern>
+    </servlet-mapping>
+    <!-- controller.document -->
+    <servlet>
+        <servlet-name>DocumentServlet</servlet-name>
+        <servlet-class>controller.document.DocumentServlet</servlet-class>
+    </servlet>
+    <!-- controller.message -->
+    <servlet>
+        <servlet-name>ChatUserServlet</servlet-name>
+        <servlet-class>controller.message.ChatUserServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ChatUserServlet</servlet-name>
+        <url-pattern>/message</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>UploadImageServlet</servlet-name>
+        <servlet-class>controller.message.UploadImageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadImageServlet</servlet-name>
+        <url-pattern>/UploadImageServlet</url-pattern>
+    </servlet-mapping>
+    <!-- WebSocket Config (không cần servlet-mapping) -->
+    <servlet>
+        <servlet-name>ChatServerConfigurator</servlet-name>
+        <servlet-class>controller.message.ChatServerConfigurator</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChatServerEndPoint</servlet-name>
+        <servlet-class>controller.message.ChatServerEndPoint</servlet-class>
+    </servlet>
+    <!-- controller.test -->
+    <servlet>
+        <servlet-name>AddQuestionServlet</servlet-name>
+        <servlet-class>controller.test.AddQuestionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddQuestionServlet</servlet-name>
+        <url-pattern>/AddQuestionServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>DeleteQuestionServlet</servlet-name>
+        <servlet-class>controller.test.DeleteQuestionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeleteQuestionServlet</servlet-name>
+        <url-pattern>/DeleteQuestionServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetStudentAnswersServlet</servlet-name>
+        <servlet-class>controller.test.GetStudentAnswersServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetStudentAnswersServlet</servlet-name>
+        <url-pattern>/GetStudentAnswersServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetTestDetailsServlet</servlet-name>
+        <servlet-class>controller.test.GetTestDetailsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetTestDetailsServlet</servlet-name>
+        <url-pattern>/GetTestDetailsServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetTestsServlet</servlet-name>
+        <servlet-class>controller.test.GetTestsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetTestsServlet</servlet-name>
+        <url-pattern>/manageTests</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>UpdateQuestionServlet</servlet-name>
+        <servlet-class>controller.test.UpdateQuestionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UpdateQuestionServlet</servlet-name>
+        <url-pattern>/UpdateQuestionServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>ViewTestResultsServlet</servlet-name>
+        <servlet-class>controller.test.ViewTestResultsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ViewTestResultsServlet</servlet-name>
+        <url-pattern>/ViewTestResultsServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ClassManagementServlet</servlet-name>
+        <url-pattern>/manageClass</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ClassInfoServlet</servlet-name>
+        <url-pattern>/ClassInfoServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentListServlet</servlet-name>
+        <url-pattern>/StudentListServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentProfileServlet</servlet-name>
+        <url-pattern>/StudentProfileServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoadDashboardServlet</servlet-name>

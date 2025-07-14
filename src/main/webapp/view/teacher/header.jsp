@@ -25,12 +25,11 @@
 
     <div class="header-actions">
         <div class="user-profile">
-            <img src="img/dashborad/defaultAvatar.jpg" alt="Ảnh Đại Diện Quản Trị" class="avatar" />
+            <img src="${pageContext.request.contextPath}/assets/img/dashborad/defaultAvatar.jpg" alt="User Avatar" class="avatar" />
             <div class="user-info">
-                <span class="user-name">Xin Chào, Quản Trị</span>
-                <a href="/LogoutServlet" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Đăng Xuất
+                <span class="user-name">${sessionScope.user != null ? sessionScope.user.fullName : 'Teacher'}</span>
+                <a href="${pageContext.request.contextPath}/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Đăng Xuất
                 </a>
             </div>
         </div>
