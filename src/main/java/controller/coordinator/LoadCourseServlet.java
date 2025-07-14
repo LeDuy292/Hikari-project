@@ -5,6 +5,7 @@
 package controller.coordinator;
 
 import dao.CourseDAO;
+import dao.TeacherDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -55,7 +56,7 @@ public class LoadCourseServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         CourseDAO dao = new CourseDAO();
-
+        TeacherDAO tdao = new TeacherDAO();
         
         String pageStr = request.getParameter("page");
         int currentPage = 1;
@@ -111,7 +112,10 @@ public class LoadCourseServlet extends HttpServlet {
         }
         
         List<Course> listCourse = dao.getCoursesWithFilters(keyword, isActive, feeFrom, feeTo, startDate, offset, PAGE_SIZE);
-
+        
+        for(Course c : listCourse){
+            c.setClassCount(tdao.countClassesByCourseID(c.getCourseID()));
+        }
         request.setAttribute("list", listCourse);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);

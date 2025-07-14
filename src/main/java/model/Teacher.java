@@ -55,4 +55,9 @@ public class Teacher {
     public void setExperienceYears(int experienceYears) {
         this.experienceYears = experienceYears;
     }
+
+    @Override
+    public String toString() {
+        return "Teacher{" + "teacherID=" + teacherID + ", userID=" + userID + ", fullName=" + fullName + ", specialization=" + specialization + ", experienceYears=" + experienceYears + '}';
+    }
 }
