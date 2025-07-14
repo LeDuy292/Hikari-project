@@ -51,7 +51,7 @@
   </div>
   <div class="sidebar-bottom">
     <img src="${pageContext.request.contextPath}/assets/img/dashborad/learning.jpg" alt="Sidebar Image" class="sidebar-image" />
-    <a href="${pageContext.request.contextPath}/admin/messages" class="sidebar-message-link <%= currentPage.equals("manageMessages.jsp") ? "active" : "" %>">
+    <a href="${pageContext.request.contextPath}/message" class="sidebar-message-link <%= currentPage.equals("manageMessages.jsp") ? "active" : "" %>">
       <i class="fas fa-envelope"></i>
       <span>Nhắn Tin</span>
     </a>
