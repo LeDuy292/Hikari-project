@@ -121,7 +121,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="course-actions">
-                                                        <a href="#" class="btn btn-sm btn-outline-secondary" title="Xem lớp học">
+                                                        <a href="LoadClass?courseID=${course.courseID}"" class="btn btn-sm btn-outline-secondary" title="Xem lớp học">
                                                             <i class="fas fa-chalkboard-teacher"></i>
                                                         </a>
                                                         <a href="NextEditCourse?id=${course.courseID}" class="btn btn-sm btn-outline-primary" title="Chỉnh sửa khóa học">

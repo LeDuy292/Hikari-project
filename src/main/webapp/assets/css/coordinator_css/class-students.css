@@ -1,0 +1,219 @@
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #34495e;
+    --accent-color: #f39c12;
+    --background-color: #f7f9fb;
+    --text-color: #ffffff;
+    --text-dark: #333333;
+    --table-header-color: #34495e;
+    --yellow-accent: #ffca28;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --filter-button-color: #17a2b8;
+    --reset-button-color: #6c757d;
+}
+
+body {
+    background-color: var(--background-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    display: flex;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.container-fluid {
+    display: flex;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.main-content {
+    flex: 1;
+    padding: 32px;
+    margin-left: 300px;
+    background-color: #f1f5f9;
+}
+
+.content-wrapper {
+    background: white;
+    border-radius: 24px;
+    padding: 32px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+    background-color: #f1f5f9;
+}
+
+.page-header {
+    margin-bottom: 25px;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.page-subtitle {
+    font-size: 0.95rem;
+    color: var(--secondary-color);
+}
+
+.search-container {
+    margin-bottom: 25px;
+    background: linear-gradient(135deg, #ffffff, #f8fafc);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.search-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.15);
+}
+
+.search-input-group {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    max-width: 400px;
+}
+
+.search-input {
+    border: none;
+    background: transparent;
+    padding: 10px;
+    width: 100%;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.search-button {
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-button:hover {
+    color: #5ba0f2;
+}
+
+.table {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.table thead {
+    background: linear-gradient(135deg, var(--table-header-color), #4a5a6e);
+    color: var(--text-color);
+}
+
+.table th {
+    font-weight: 600;
+    padding: 15px;
+    text-align: left;
+}
+
+.table td {
+    padding: 15px;
+    vertical-align: middle;
+    color: var(--text-dark);
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.badge.bg-success {
+    background: linear-gradient(135deg, var(--success-color), #34ce57) !important;
+    color: var(--text-color);
+}
+
+.badge.bg-danger {
+    background: linear-gradient(135deg, var(--danger-color), #e85d75) !important;
+    color: var(--text-color);
+}
+
+.action-button {
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+}
+
+.btn-view {
+    background: linear-gradient(135deg, var(--primary-color), #5ba0f2);
+    color: var(--text-color);
+    border: none;
+}
+
+.btn-view:hover {
+    background: linear-gradient(135deg, #5ba0f2, var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+.alert {
+    border-radius: 12px;
+    border: none;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeeba);
+    color: #856404;
+    border-left: 4px solid var(--yellow-accent);
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+    border-left: 4px solid var(--danger-color);
+}
+
+@media (max-width: 1200px) {
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-input-group {
+        max-width: 100%;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .action-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
