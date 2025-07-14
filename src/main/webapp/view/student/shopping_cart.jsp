@@ -7,6 +7,7 @@
   <title>HIKARI | Giỏ hàng</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/student_css/header_student.css?v=1"/>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/student_css/sidebar_student.css?v=1"/>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/footer.css?v=1"/>
@@ -57,34 +58,42 @@
           </div>
           <!-- Cart Content -->
           <div class="bg-white rounded-3xl shadow-xl p-6 mb-8">
-              <h2 class="text-2xl font-bold text-gray-800 mb-6">Giỏ hàng của bạn</h2>
-              <div id="cartList" class="divide-y divide-gray-200">
-                  <!-- Cart items will be dynamically loaded here -->
-              </div>
-              <div id="cartLoading" class="text-center py-10">
-                  <i class="fa fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
-                  <p class="text-gray-500 text-lg">Đang tải giỏ hàng...</p>
-              </div>
-              <div id="cartEmpty" class="hidden text-center py-10">
-                  <i class="fa fa-shopping-cart text-4xl text-gray-400 mb-4"></i>
-                  <p class="text-gray-500 text-lg">Giỏ hàng của bạn đang trống</p>
-                  <a href="${pageContext.request.contextPath}/courses" class="text-orange-500 font-semibold hover:underline">Quay lại mua sắm</a>
-              </div>
-              <div class="mt-6">
-                  <div class="flex flex-col sm:flex-row gap-4 mb-6">
-                      <div class="relative flex-1">
-                          <input type="text" id="discountCode" placeholder="Nhập mã giảm giá" class="border border-orange-200 px-5 py-2 rounded-full w-full pl-11 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-200">
-                          <i class="fa fa-ticket-alt absolute left-4 top-1/2 transform -translate-y-1/2 text-orange-400"></i>
+              <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent animate-pulse-slow">
+                  Giỏ hàng của bạn
+              </h2>
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div class="lg:col-span-2">
+                      <div id="cartList" class="divide-y divide-gray-200 border-t border-gray-200">
+                          <!-- Cart items will be dynamically loaded here -->
                       </div>
-                      <button id="applyDiscount" class="bg-orange-500 text-white font-bold py-2 px-6 rounded-full hover:bg-orange-600 transition">Áp dụng</button>
+                      <div id="cartLoading" class="text-center py-10">
+                          <i class="fa fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+                          <p class="text-gray-500 text-lg">Đang tải giỏ hàng...</p>
+                      </div>
+                      <div id="cartEmpty" class="hidden text-center py-10">
+                          <i class="fa fa-shopping-cart text-4xl text-gray-400 mb-4"></i>
+                          <p class="text-gray-500 text-lg mb-4">Giỏ hàng của bạn đang trống</p>
+                          <a href="${pageContext.request.contextPath}/courses" class="text-orange-500 font-semibold hover:underline text-lg">Quay lại mua sắm</a>
+                      </div>
                   </div>
-                  <div id="discountMessage" class="text-sm text-gray-500 mb-4 hidden"></div>
-                  <div class="flex justify-between items-center">
-                      <div class="text-lg font-semibold text-gray-800">
-                          Tổng cộng: <span id="cartTotal">0 VNĐ</span>
+                  <div class="lg:col-span-1 bg-gray-50 p-6 rounded-2xl shadow-md">
+                      <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-3 border-gray-200">Tóm tắt đơn hàng</h3>
+                      <div class="flex justify-between items-center mb-4">
+                          <span class="text-gray-700 font-medium">Tổng cộng:</span>
+                          <span id="cartTotal" class="text-xl font-bold text-orange-600">0 VNĐ</span>
                       </div>
-                      <button id="checkoutBtn" class="bg-orange-500 text-white font-bold py-2 px-6 rounded-full hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                          Thanh toán
+                      <div class="mb-6">
+                          <label for="discountCode" class="block text-sm font-medium text-gray-700 mb-2">Mã giảm giá</label>
+                          <div class="relative flex">
+                              <input type="text" id="discountCode" placeholder="Nhập mã giảm giá" 
+                                     class="flex-1 border border-orange-200 px-4 py-2 rounded-l-full w-full pl-10 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-200">
+                              <i class="fa fa-ticket-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-400"></i>
+                              <button id="applyDiscount" class="bg-orange-500 text-white font-bold py-2 px-6 rounded-r-full hover:bg-orange-600 transition-colors">Áp dụng</button>
+                          </div>
+                          <div id="discountMessage" class="text-sm text-gray-500 mt-2 hidden"></div>
+                      </div>
+                      <button id="checkoutBtn" class="w-full bg-orange-500 text-white font-bold py-3 px-6 rounded-xl hover:bg-orange-600 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-1">
+                          Thanh toán ngay
                       </button>
                   </div>
               </div>
@@ -93,6 +102,6 @@
           <%@ include file="footer.jsp" %>
       </main>
   </div>
-  <script src="${pageContext.request.contextPath}/assets/js/student_js/shopping.js?v=3"></script>
+  <script src="${pageContext.request.contextPath}/assets/js/student_js/shopping.js?v=4"></script>
 </body>
 </html>
