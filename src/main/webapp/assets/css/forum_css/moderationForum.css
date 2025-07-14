@@ -1,0 +1,158 @@
+/* Additional styles for read/unread posts */
+.post-card.read {
+    background: #f8f9fa;
+    border-left: 4px solid #28a745;
+    opacity: 0.85;
+}
+
+.post-card.read .post-title {
+    color: #6c757d;
+}
+
+.post-card.read:hover {
+    opacity: 1;
+}
+
+.read-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #28a745;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+.unread-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #007bff;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+.post-card.read .post-meta {
+    color: #adb5bd;
+}
+
+.post-card.read .post-body {
+    color: #6c757d;
+}
+
+/* Pulse animation for new posts */
+.post-card.unread {
+    animation: subtle-pulse 2s ease-in-out infinite;
+}
+
+@keyframes subtle-pulse {
+    0%, 100% {
+        box-shadow: var(--shadow);
+    }
+    50% {
+        box-shadow: 0 8px 32px 0 rgba(0, 123, 255, 0.15);
+    }
+}
+
+/* Role-based styling */
+.role-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.role-badge.admin {
+    background: linear-gradient(90deg, #dc2626, #ef4444);
+    color: white;
+}
+
+.role-badge.coordinator {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    color: white;
+}
+
+.role-badge.teacher {
+    background: linear-gradient(90deg, #059669, #10b981);
+    color: white;
+}
+
+.role-badge.student {
+    background: linear-gradient(90deg, #2563eb, #3b82f6);
+    color: white;
+}
+
+/* Post status indicators */
+.post-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+.post-status.pinned {
+    background: #fbbf24;
+    color: #92400e;
+}
+
+.post-status.hidden {
+    background: #ef4444;
+    color: white;
+}
+
+/* Moderation controls */
+.moderation-controls {
+    display: none;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.moderation-controls.show {
+    display: flex;
+}
+
+.mod-btn {
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.8em;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mod-btn.hide {
+    background: #ef4444;
+    color: white;
+}
+
+.mod-btn.pin {
+    background: #f59e0b;
+    color: white;
+}
+
+.mod-btn.unpin {
+    background: #f59e0b;
+    color: white;
+}
+
+.mod-btn.delete {
+    background: #dc2626;
+    color: white;
+}
+
+.mod-btn:hover {
+    opacity: 0.8;
+}
