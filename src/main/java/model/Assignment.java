@@ -11,7 +11,7 @@ public class Assignment {
     private double totalMark;
     private int duration;
     private int totalQuestions;
-    private boolean isActive;
+    private boolean isComplete;
     private List<Question> questions;
 
     public List<Question> getQuestions() {
@@ -25,7 +25,7 @@ public class Assignment {
     public Assignment() {
     }
 
-    public Assignment(int id, String topicID, String title, String description, double totalMark, int duration, int totalQuestions, boolean isActive) {
+    public Assignment(int id, String topicID, String title, String description, double totalMark, int duration, int totalQuestions, boolean isComplete) {
         this.id = id;
         this.topicID = topicID;
         this.title = title;
@@ -33,10 +33,10 @@ public class Assignment {
         this.totalMark = totalMark;
         this.duration = duration;
         this.totalQuestions = totalQuestions;
-        this.isActive = isActive;
+        this.isComplete = isComplete;
     }
 
-    public Assignment(int id, String topicID, String title, String description, double totalMark, int duration, int totalQuestions, boolean isActive, List<Question> questions) {
+    public Assignment(int id, String topicID, String title, String description, double totalMark, int duration, int totalQuestions, boolean isComplete, List<Question> questions) {
         this.id = id;
         this.topicID = topicID;
         this.title = title;
@@ -44,7 +44,7 @@ public class Assignment {
         this.totalMark = totalMark;
         this.duration = duration;
         this.totalQuestions = totalQuestions;
-        this.isActive = isActive;
+        this.isComplete = isComplete;
         this.questions = questions;
     }
 
@@ -104,18 +104,19 @@ public class Assignment {
         this.totalQuestions = totalQuestions;
     }
 
-    public boolean isIsActive() {
-        return isActive;
+    public boolean isIsComplete() {
+        return isComplete;
     }
 
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
+    public void setIsComplete(boolean isComplete) {
+        this.isComplete = isComplete;
     }
 
     @Override
     public String toString() {
-        return "Assignment{" + "id=" + id + ", topicID=" + topicID + ", title=" + title + ", description=" + description + ", totalMark=" + totalMark + ", duration=" + duration + ", totalQuestions=" + totalQuestions + ", isActive=" + isActive + '}';
+        return "Assignment{" + "id=" + id + ", topicID=" + topicID + ", title=" + title + ", description=" + description + ", totalMark=" + totalMark + ", duration=" + duration + ", totalQuestions=" + totalQuestions + ", isComplete=" + isComplete + ", questions=" + questions + '}';
     }
 
-    
+   
+
 }
