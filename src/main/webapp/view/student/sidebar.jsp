@@ -8,10 +8,10 @@
         </div>
     </div>
     <div class="menu">
-        <a href="${pageContext.request.contextPath}/view/student/home.jsp" class="menu-item">
+        <a href="${pageContext.request.contextPath}/" class="menu-item">
             <i class="fa fa-home"></i>Trang chủ
         </a>
-        <a href="${pageContext.request.contextPath}/view/student/index.jsp" class="menu-item">
+        <a href="${pageContext.request.contextPath}/documents" class="menu-item">
             <i class="fa fa-book"></i>Tài liệu
         </a>
         <a href="${pageContext.request.contextPath}/courses?category=paid"  class="menu-item"><i class="fa fa-play-circle"></i>Khóa học online</a>
@@ -29,6 +29,6 @@
         <div class="image-placeholder">
             <img src="${pageContext.request.contextPath}/assets/img/img_student/study.jpg" alt="Placeholder Image" />
         </div>
-        <a href="#" class="menu-item"><i class="fa fa-comments"></i>Chat</a>
+        <a href="${pageContext.request.contextPath}/message" class="menu-item"><i class="fa fa-comments"></i>Chat</a>
     </div>
 </aside>

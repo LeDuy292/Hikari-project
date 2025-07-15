@@ -342,17 +342,10 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="lessonDurationInput" class="form-label">Thời lượng (phút)</label>
-                                        <input type="number" class="form-control" id="lessonDurationInput" readonly>
-                                    </div>
-                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Video bài học</label>
                                 <div class="video-upload-section">
-                                    <!-- Video Upload Options -->
                                         <!-- File Upload Section -->
                                         <div class="video-file-section" id="videoFileSection" ">
                                             <div class="video-upload-area" id="videoUploadArea">

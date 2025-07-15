@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <welcome-file-list>
+        <welcome-file>view/student/home.jsp</welcome-file>
+    </welcome-file-list>
+
     <servlet>
         <servlet-name>LoadCourseServlet</servlet-name>
         <servlet-class>controller.coordinator.LoadCourseServlet</servlet-class>
@@ -28,7 +32,7 @@
         <servlet-name>LoadDashboardServlet</servlet-name>
         <servlet-class>controller.coordinator.LoadDashboardServlet</servlet-class>
     </servlet>
-     <servlet>
+    <servlet>
         <servlet-name>LoadTeacherServlet</servlet-name>
         <servlet-class>controller.coordinator.LoadTeacherServlet</servlet-class>
     </servlet>
@@ -44,7 +48,10 @@
         <servlet-name>GoogleLoginServlet</servlet-name>
         <servlet-class>controller.login.GoogleLoginServlet</servlet-class>
     </servlet>
-    
+    <servlet>
+        <servlet-name>TeacherProfileServlet</servlet-name>
+        <servlet-class>controller.teacher.TeacherProfileServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoadCourseServlet</servlet-name>
         <url-pattern>/LoadCourse</url-pattern>
@@ -216,6 +223,10 @@
     <servlet-mapping>
         <servlet-name>GoogleLoginServlet</servlet-name>
         <url-pattern>/GoogleLogin</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TeacherProfileServlet</servlet-name>
+        <url-pattern>/teacherProfile</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
