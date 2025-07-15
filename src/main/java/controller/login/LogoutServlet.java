@@ -35,7 +35,7 @@ public class LogoutServlet extends HttpServlet {
         } else {
             System.out.println("No active session found during logout at " + new java.util.Date());
         }
-        response.sendRedirect(request.getContextPath() + "/view/student/home.jsp");
+        response.sendRedirect(request.getContextPath() + "/");
     }
     
     @Override

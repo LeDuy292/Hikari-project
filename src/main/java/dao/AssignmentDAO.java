@@ -10,7 +10,7 @@ import model.Question;
 public class AssignmentDAO {
 
     public int insertAndReturnId(Assignment assignment) {
-        String sql = "INSERT INTO Assignment (topicID, title, description, duration, totalMarks, totalQuestions, isActive) "
+        String sql = "INSERT INTO Assignment (topicID, title, description, duration, totalMarks, totalQuestions, isComplete) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -21,7 +21,7 @@ public class AssignmentDAO {
             ps.setInt(4, assignment.getDuration());
             ps.setDouble(5, assignment.getTotalMark());
             ps.setInt(6, assignment.getTotalQuestions());
-            ps.setBoolean(7, assignment.isIsActive());
+            ps.setBoolean(7, assignment.isIsComplete());
 
             int affected = ps.executeUpdate();
             if (affected > 0) {
@@ -42,7 +42,7 @@ public class AssignmentDAO {
 
     public List<Assignment> getAllAssignments() {
         List<Assignment> list = new ArrayList<>();
-        String sql = "SELECT * FROM Assignment";
+        String sql = "SELECT * FROM Assignment a JOIN Assignment_Reviews ar  on a.id = ar.assignmentID WHERE  ar.reviewStatus = Approved";
 
         try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
@@ -55,7 +55,7 @@ public class AssignmentDAO {
                 a.setDuration(rs.getInt("duration"));
                 a.setTotalMark(rs.getDouble("totalMarks"));
                 a.setTotalQuestions(rs.getInt("totalQuestions"));
-                a.setIsActive(rs.getBoolean("isActive"));
+                a.setIsComplete(rs.getBoolean("isComplete"));
                 list.add(a);
             }
             rs.close();
@@ -84,7 +84,7 @@ public class AssignmentDAO {
                 a.setDuration(rs.getInt("duration"));
                 a.setTotalMark(rs.getDouble("totalMarks"));
                 a.setTotalQuestions(rs.getInt("totalQuestions"));
-                a.setIsActive(rs.getBoolean("isActive"));
+                a.setIsComplete(rs.getBoolean("isComplete"));
             }
             rs.close();
 
@@ -96,7 +96,7 @@ public class AssignmentDAO {
     }
 
     public boolean updateAssignment(Assignment assignment) {
-        String sql = "UPDATE Assignment SET topicID = ?, title = ?, description = ?, duration = ?, totalMarks = ?, totalQuestions = ?, isActive = ? WHERE id = ?";
+        String sql = "UPDATE Assignment SET topicID = ?, title = ?, description = ?, duration = ?, totalMarks = ?, totalQuestions = ?, isComplete = ? WHERE id = ?";
 
         try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -106,7 +106,7 @@ public class AssignmentDAO {
             ps.setInt(4, assignment.getDuration());
             ps.setDouble(5, assignment.getTotalMark());
             ps.setInt(6, assignment.getTotalQuestions());
-            ps.setBoolean(7, assignment.isIsActive());
+            ps.setBoolean(7, assignment.isIsComplete());
             ps.setInt(8, assignment.getId());
 
             return ps.executeUpdate() > 0;
@@ -133,29 +133,29 @@ public class AssignmentDAO {
 
     public List<Assignment> getAssignmentsByTopicId(String topicID) {
         List<Assignment> list = new ArrayList<>();
-        String sql = "SELECT * FROM Assignment WHERE topicID = ? AND isActive = true";
+        String sql = "SELECT * FROM Assignment a JOIN Assignment_Reviews ar  on a.id = ar.assignmentID WHERE a.topicID = ? AND ar.reviewStatus = Approved";
 
         try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             QuestionDAO questionDAO = new QuestionDAO();
 
             ps.setString(1, topicID);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Assignment a = new Assignment();
-                a.setId(rs.getInt("id"));
-                a.setTopicID(rs.getString("topicID"));
-                a.setTitle(rs.getString("title"));
-                a.setDescription(rs.getString("description"));
-                a.setDuration(rs.getInt("duration"));
-                a.setTotalMark(rs.getDouble("totalMarks"));
-                a.setTotalQuestions(rs.getInt("totalQuestions"));
-                a.setIsActive(rs.getBoolean("isActive"));
-                list.add(a);
-                List<Question> questions = questionDAO.getQuestionsByEntity("assignment", a.getId());
-                a.setQuestions(questions);
-                System.out.println("Questions for assignment " + a.getId() + ": " + questions.size()); // Debug
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Assignment a = new Assignment();
+                    a.setId(rs.getInt("id"));
+                    a.setTopicID(rs.getString("topicID"));
+                    a.setTitle(rs.getString("title"));
+                    a.setDescription(rs.getString("description"));
+                    a.setDuration(rs.getInt("duration"));
+                    a.setTotalMark(rs.getDouble("totalMarks"));
+                    a.setTotalQuestions(rs.getInt("totalQuestions"));
+                    a.setIsComplete(rs.getBoolean("isComplete"));
+                    list.add(a);
+                    List<Question> questions = questionDAO.getQuestionsByEntity("assignment", a.getId());
+                    a.setQuestions(questions);
+                    System.out.println("Questions for assignment " + a.getId() + ": " + questions.size()); // Debug
+                }
             }
-            rs.close();
 
         } catch (SQLException e) {
             System.out.println("Error getAssignmentsByTopicId: " + e.getMessage());

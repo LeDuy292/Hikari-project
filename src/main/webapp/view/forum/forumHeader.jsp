@@ -32,7 +32,7 @@
                         homeUrl = request.getContextPath() + "/LoadDashboard";
                         break;
                     case "Teacher":
-                        homeUrl = request.getContextPath() + "/view/teacher/manageCourse.jsp";
+                        homeUrl = request.getContextPath() + "/manageCourse";
                         break;
                     case "Student":
                     default:
