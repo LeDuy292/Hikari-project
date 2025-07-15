@@ -94,50 +94,51 @@ document.addEventListener("DOMContentLoaded", () => {
 })
 
 // Button click handlers
-function startLearning() {
-  // Add loading state
+function startLearning(event) {
   const button = event.target.closest("button")
   button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang chuyển hướng...'
-
-  // Simulate navigation delay
   setTimeout(() => {
-    window.location.href = "courseInfo.jsp"
+    window.location.href = contextPath + "/courseInfo";
   }, 1000)
 }
 
-function viewCourses() {
+function viewCourses(event) {
   const button = event.target.closest("button")
   button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải...'
-
   setTimeout(() => {
-    window.location.href = "courseInfo.jsp"
+    window.location.href = contextPath + "/courseInfo";
   }, 1000)
 }
 
-function viewAllCourses() {
+function viewAllCourses(event) {
   const button = event.target.closest("button")
   button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải khóa học...'
-
   setTimeout(() => {
-    window.location.href = "courseInfo.jsp"
+    window.location.href = contextPath + "/courseInfo";
   }, 1000)
 }
 
-function registerNow() {
+function registerNow(event) {
   const button = event.target.closest("button")
   button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...'
-
   setTimeout(() => {
-    window.location.href = "register.jsp"
+    window.location.href = contextPath + "/register";
   }, 1000)
 }
 
-function contactUs() {
+function contactUs(event) {
   const button = event.target.closest("button")
   button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang kết nối...'
-
   setTimeout(() => {
-    window.location.href = "contact.jsp"
+    window.location.href = contextPath + "/contact";
+  }, 1000)
+}
+
+function applyCV(event) {
+  const button = event.target.closest("button")
+  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang chuyển hướng...'
+  setTimeout(() => {
+    window.location.href = contextPath + "/cv";
   }, 1000)
 }
 

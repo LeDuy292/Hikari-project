@@ -1,12 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="model.UserAccount" %>
+
+<!-- Add CSS for notifications -->
+<link href="${pageContext.request.contextPath}/assets/css/student/notifications.css" rel="stylesheet" />
+
 <div class="main-header" style="justify-content:space-between; padding:32px 0 0 0; width:100%; max-width:1100px;">
     <div style="display:flex; align-items:center; gap:12px;">
         <span style="font-size:26px; font-weight:bold; color:#000000; letter-spacing:1px; transition: color 0.3s ease;"></span>
     </div>
     <div style="display:flex; align-items:center; gap:12px;">
-        <button class="icon-btn" onclick="window.location.href='${pageContext.request.contextPath}/view/student/shopping_cart.jsp'" style="transition: transform 0.3s ease;"><i class="fa fa-shopping-cart"></i></button>
-        <button class="icon-btn" style="transition: transform 0.3s ease;"><i class="fa fa-bell"></i></button>
+        <button class="icon-btn" onclick="window.location.href='${pageContext.request.contextPath}/view/student/shopping_cart.jsp'" style="transition: transform 0.3s ease; color: #ff9800;"><i class="fa fa-shopping-cart"></i></button>
+        <button class="icon-btn notification-bell-btn" style="transition: transform 0.3s ease; color: #ff9800;"><i class="fa fa-bell"></i></button>
         <% 
             UserAccount user = (UserAccount) session.getAttribute("user");
             if (user != null) { 
@@ -28,6 +32,13 @@
         <% } %>
     </div>
 </div>
+
+<!-- Add JavaScript for notifications -->
+<script>
+    window.contextPath = '${pageContext.request.contextPath}';
+</script>
+<script src="${pageContext.request.contextPath}/assets/js/student/notifications.js"></script>
+
 <script>
     function confirmLogout(logoutUrl) {
         if (confirm("Bạn có chắc muốn đăng xuất?")) {
@@ -45,7 +56,10 @@
     }
     .main-header .icon-btn:hover {
         transform: scale(1.1);
-        color: #ff9800;
+        background: linear-gradient(135deg, #ff9800, #ffb347);
+        color: white !important;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
     }
     .main-header img:hover {
         transform: scale(1.1);
@@ -68,5 +82,15 @@
     }
     .user-info button:hover {
         background: linear-gradient(90deg, #e06e4c 60%, #ffaa66 100%);
+    }
+    
+    /* Icon buttons styling */
+    .icon-btn {
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        border-radius: 50%;
+        font-size: 18px;
     }
 </style>
