@@ -51,7 +51,7 @@ public class LoginServlet extends HttpServlet {
                             System.out.println("Redirecting user to original URL: " + redirectUrl);
                             response.sendRedirect(redirectUrl);
                         } else if((user.getRole()).equals("Student")){
-                            response.sendRedirect(request.getContextPath() + "/view/student/home.jsp");
+                            response.sendRedirect(request.getContextPath() + "/");
                         } 
                         else if((user.getRole()).equals("Coordinator")){
                             response.sendRedirect(request.getContextPath() + "/LoadDashboard");

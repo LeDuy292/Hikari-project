@@ -16,8 +16,8 @@ public class LessonDAO {
     // Lấy tất cả bài học theo topicID
     public List<Lesson> getAllLessonsByTopicID(String topicID) {
         List<Lesson> lessonList = new ArrayList<>();
-        String sql = "SELECT id, topicID, topicName, title, description, mediaUrl, duration, isCompleted, isActive "
-                   + "FROM Lesson WHERE topicID = ? AND isActive = TRUE";
+        String sql = "SELECT l.id, l.topicID, l.title, l.description, l.mediaUrl, l.isCompleted "
+                   + "FROM Lesson l join Lesson_Reviews lr WHERE l.topicID = ? AND lr.reviewStatus = Approved";
         try (Connection conn = new DBContext().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -27,13 +27,10 @@ public class LessonDAO {
                     lessonList.add(new Lesson(
                             rs.getInt("id"),
                             rs.getString("topicID"),
-                            rs.getString("topicName"),
                             rs.getString("title"),
                             rs.getString("description"),
                             rs.getString("mediaUrl"),
-                            rs.getInt("duration"),
-                            rs.getBoolean("isCompleted"),
-                            rs.getBoolean("isActive")
+                            rs.getBoolean("isCompleted")
                     ));
                 }
             }
@@ -44,10 +41,9 @@ public class LessonDAO {
         return lessonList;
     }
 
-    // Lấy tất cả bài học (kể cả không active)
     public List<Lesson> getAllLessons() {
         List<Lesson> lessonList = new ArrayList<>();
-        String sql = "SELECT id, topicID, topicName, title, description, mediaUrl, duration, isCompleted, isActive "
+        String sql = "SELECT id, topicID, title, description, mediaUrl,  isCompleted "
                    + "FROM Lesson";
 
         try (Connection conn = new DBContext().getConnection();
@@ -58,13 +54,10 @@ public class LessonDAO {
                 lessonList.add(new Lesson(
                         rs.getInt("id"),
                         rs.getString("topicID"),
-                        rs.getString("topicName"),
                         rs.getString("title"),
                         rs.getString("description"),
                         rs.getString("mediaUrl"),
-                        rs.getInt("duration"),
-                        rs.getBoolean("isCompleted"),
-                        rs.getBoolean("isActive")
+                        rs.getBoolean("isCompleted")
                 ));
             }
         } catch (SQLException e) {
@@ -75,8 +68,8 @@ public class LessonDAO {
     }
  // Thêm bài học mới
     public boolean addLesson(Lesson lesson, Part videoPart, String courseId) {
-        String sql = "INSERT INTO Lesson (topicID, topicName, title, description, mediaUrl, duration, isCompleted, isActive) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Lesson (topicID, title, description, mediaUrl,  isCompleted ) "
+                   + "VALUES (?, ?, ?, ?, ?)";
 
         String mediaUrl = lesson.getMediaUrl();
         if (videoPart != null && videoPart.getSize() > 0) {
@@ -95,13 +88,10 @@ public class LessonDAO {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, lesson.getTopicID());
-            pstmt.setString(2, lesson.getTopic());
-            pstmt.setString(3, lesson.getTitle());
-            pstmt.setString(4, lesson.getDescription());
-            pstmt.setString(5, mediaUrl);
-            pstmt.setInt(6, lesson.getDuration());
-            pstmt.setBoolean(7, lesson.isIsCompleted());
-            pstmt.setBoolean(8, lesson.isActive());
+            pstmt.setString(2, lesson.getTitle());
+            pstmt.setString(3, lesson.getDescription());
+            pstmt.setString(4, mediaUrl);
+            pstmt.setBoolean(5, lesson.isIsCompleted());
 
             int rowsAffected = pstmt.executeUpdate();
             System.out.println("Lesson added successfully with mediaUrl: " + mediaUrl);
