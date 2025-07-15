@@ -15,7 +15,7 @@
                     : (request.getContextPath() + "/assets/img/default-avatar.png"); // Ảnh mặc định
         %>
             <div class="user-info" style="display:flex; align-items:center; gap:15px; padding:5px 10px; background-color:#f8f9fa; border-radius:5px;">
-                <a href="${pageContext.request.contextPath}/view/profile.jsp" style="text-decoration:none;">
+                <a href="${pageContext.request.contextPath}/view/authentication/profile.jsp" style="text-decoration:none;">
                     <img src="<%= profilePic %>?t=<%= java.lang.System.currentTimeMillis() %>" alt="Avatar" style="width:40px; height:40px; border-radius:50%; object-fit:cover; transition: transform 0.3s ease;">
                 </a>
                 <span style="font-weight:bold; color:#333; transition: color 0.3s ease;"><%= user.getUsername() != null ? user.getUsername() : user.getFullName() %></span>
@@ -24,7 +24,7 @@
                 </form>
             </div>
         <% } else { %>
-            <button style="background:linear-gradient(90deg,#ff9800 60%,#ffb347 100%);color:#fff;font-weight:bold;padding:8px 28px;border:none;border-radius:8px;font-size:16px;cursor:pointer; transition: transform 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" onclick="window.location.href='${pageContext.request.contextPath}/view/login.jsp'">Đăng nhập</button>
+            <button style="background:linear-gradient(90deg,#ff9800 60%,#ffb347 100%);color:#fff;font-weight:bold;padding:8px 28px;border:none;border-radius:8px;font-size:16px;cursor:pointer; transition: transform 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" onclick="window.location.href='${pageContext.request.contextPath}/loginPage'">Đăng nhập</button>
         <% } %>
     </div>
 </div>

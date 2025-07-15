@@ -306,103 +306,125 @@
     </div>
 
     <script>
-        function toggleEditMode() {
-            const spans = document.querySelectorAll('.info-value');
-            const inputs = document.querySelectorAll('.info-input');
-            const editBtn = document.querySelector('.edit-btn');
-            const saveBtn = document.querySelector('.save-btn');
-            const cancelBtn = document.querySelector('.cancel-btn');
+    function toggleEditMode() {
+        const spans = document.querySelectorAll('.info-value');
+        const inputs = document.querySelectorAll('.info-input');
+        const editBtn = document.querySelector('.edit-btn');
+        const saveBtn = document.querySelector('.save-btn');
+        const cancelBtn = document.querySelector('.cancel-btn');
 
-            if (editBtn.style.display === 'none') {
-                spans.forEach(span => span.style.display = 'block');
-                inputs.forEach(input => input.style.display = 'none');
-                editBtn.style.display = 'flex';
-                saveBtn.style.display = 'none';
-                cancelBtn.style.display = 'none';
-                document.querySelector('.message').innerText = '';
-            } else {
-                spans.forEach(span => {
-                    if (span.dataset.field !== 'username' && span.dataset.field !== 'role' && span.dataset.field !== 'registrationDate') {
-                        span.style.display = 'none';
+        if (editBtn.style.display === 'none') {
+            spans.forEach(span => span.style.display = 'block');
+            inputs.forEach(input => input.style.display = 'none');
+            editBtn.style.display = 'flex';
+            saveBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+            document.querySelector('.message').innerText = '';
+        } else {
+            spans.forEach(span => {
+                if (span.dataset.field !== 'username' && span.dataset.field !== 'role' && span.dataset.field !== 'registrationDate') {
+                    span.style.display = 'none';
+                }
+            });
+            inputs.forEach(input => {
+                const field = input.name;
+                if (field === 'fullName' || field === 'phone' || field === 'birthDate' || field === 'email') {
+                    input.style.display = 'block';
+                    const spanValue = input.parentElement.querySelector('.info-value').innerText;
+                    if (spanValue !== 'Chưa cập nhật') {
+                        if (field === 'birthDate') {
+                            const parts = spanValue.split('/');
+                            if (parts.length === 3) {
+                                input.value = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                            }
+                        } else {
+                            input.value = spanValue;
+                        }
                     }
-                });
-                inputs.forEach(input => {
-                    const field = input.name;
-                    if (field === 'fullName' || field === 'phone' || field === 'birthDate' || field === 'email') {
-                        input.style.display = 'block';
-                        const spanValue = input.parentElement.querySelector('.info-value').innerText;
-                        input.value = spanValue !== 'Chưa cập nhật' ? spanValue : '';
-                    }
-                });
-                editBtn.style.display = 'none';
-                saveBtn.style.display = 'flex';
-                cancelBtn.style.display = 'flex';
-            }
+                }
+            });
+            editBtn.style.display = 'none';
+            saveBtn.style.display = 'flex';
+            cancelBtn.style.display = 'flex';
+        }
+    }
+
+    function saveProfile() {
+        const fullName = document.querySelector('input[name="fullName"]').value.trim();
+        const phone = document.querySelector('input[name="phone"]').value.trim();
+        const birthDate = document.querySelector('input[name="birthDate"]').value.trim();
+        const email = document.querySelector('input[name="email"]').value.trim();
+        const fileInput = document.querySelector('#profileImage');
+        const messageDiv = document.querySelector('.message');
+
+        // Validation
+        if (!fullName.match(/^[\p{L} ]{2,50}$/u)) {
+            messageDiv.className = 'message error';
+            messageDiv.innerText = 'Họ và tên không hợp lệ';
+            return;
         }
 
-        function saveProfile() {
-            const fullName = document.querySelector('input[name="fullName"]').value;
-            const phone = document.querySelector('input[name="phone"]').value;
-            const birthDate = document.querySelector('input[name="birthDate"]').value;
-            const email = document.querySelector('input[name="email"]').value;
-            const fileInput = document.querySelector('#profileImage');
-            const messageDiv = document.querySelector('.message');
+        if (phone && !phone.match(/^0\d{9}$/)) {
+            messageDiv.className = 'message error';
+            messageDiv.innerText = 'Số điện thoại không hợp lệ';
+            return;
+        }
 
-            if (!fullName.match(/^[a-zA-ZÀ-ỹ\s]{2,50}$/)) {
-                messageDiv.className = 'message error';
-                messageDiv.innerText = 'Họ và tên không hợp lệ';
-                return;
-            }
-
-            if (phone && !phone.match(/^\d{10,11}$/)) {
-                messageDiv.className = 'message error';
-                messageDiv.innerText = 'Số điện thoại không hợp lệ';
-                return;
-            }
-
-            if (birthDate && !birthDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        if (birthDate) {
+            const today = new Date().toISOString().split('T')[0];
+            if (!birthDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
                 messageDiv.className = 'message error';
                 messageDiv.innerText = 'Ngày sinh không hợp lệ';
                 return;
             }
-
-            if (email && !email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/)) {
+            if (birthDate > today) {
                 messageDiv.className = 'message error';
-                messageDiv.innerText = 'Email không hợp lệ';
+                messageDiv.innerText = 'Ngày sinh không được ở tương lai';
                 return;
             }
-
-            const formData = new FormData();
-            formData.append('fullName', fullName);
-            formData.append('phone', phone);
-            formData.append('birthDate', birthDate);
-            formData.append('email', email);
-            if (fileInput.files.length > 0) {
-                formData.append('profileImage', fileInput.files[0]);
-            }
-
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '${pageContext.request.contextPath}/UpdateProfileServlet', true);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    const response = JSON.parse(xhr.responseText);
-                    messageDiv.className = 'message ' + (response.success ? 'success' : 'error');
-                    messageDiv.innerText = response.message;
-
-                    if (response.success) {
-                        document.querySelector('.info-value[data-field="fullName"]').innerText = fullName || 'Chưa cập nhật';
-                        document.querySelector('.info-value[data-field="phone"]').innerText = phone || 'Chưa cập nhật';
-                        document.querySelector('.info-value[data-field="birthDate"]').innerText = birthDate || 'Chưa cập nhật';
-                        document.querySelector('.info-value[data-field="email"]').innerText = email || 'Chưa cập nhật';
-                        if (response.profilePicture) {
-                            document.querySelector('.profile-avatar').src = '${pageContext.request.contextPath}' + response.profilePicture;
-                        }
-                        toggleEditMode();
-                    }
-                }
-            };
-            xhr.send(formData);
         }
-    </script>
+
+        if (email && !email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/)) {
+            messageDiv.className = 'message error';
+            messageDiv.innerText = 'Email không hợp lệ';
+            return;
+        }
+
+        // Chuẩn bị form gửi
+        const formData = new FormData();
+        formData.append('fullName', fullName);
+        formData.append('phone', phone);
+        formData.append('birthDate', birthDate);
+        formData.append('email', email);
+        if (fileInput.files.length > 0) {
+            formData.append('profileImage', fileInput.files[0]);
+        }
+
+        messageDiv.className = 'message';
+        messageDiv.innerText = 'Đang cập nhật...';
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '${pageContext.request.contextPath}/UpdateProfileServlet', true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                const response = JSON.parse(xhr.responseText);
+                messageDiv.className = 'message ' + (response.success ? 'success' : 'error');
+                messageDiv.innerText = response.message;
+
+                if (response.success) {
+                    document.querySelector('.info-value[data-field="fullName"]').innerText = fullName || 'Chưa cập nhật';
+                    document.querySelector('.info-value[data-field="phone"]').innerText = phone || 'Chưa cập nhật';
+                    document.querySelector('.info-value[data-field="birthDate"]').innerText = birthDate || 'Chưa cập nhật';
+                    document.querySelector('.info-value[data-field="email"]').innerText = email || 'Chưa cập nhật';
+                    if (response.profilePicture) {
+                        document.querySelector('.profile-avatar').src = '${pageContext.request.contextPath}' + response.profilePicture;
+                    }
+                    toggleEditMode();
+                }
+            }
+        };
+        xhr.send(formData);
+    }
+</script>
 </body>
 </html>

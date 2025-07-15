@@ -165,7 +165,7 @@
 
                 <div class="switch-form">
                     <span>Nhớ ra mật khẩu?</span>
-                    <a href="${pageContext.request.contextPath}/view/login.jsp?formType=login" class="switch-link">
+                    <a href="${pageContext.request.contextPath}/loginPage?formType=login" class="switch-link">
                         Đăng nhập
                     </a>
                 </div>

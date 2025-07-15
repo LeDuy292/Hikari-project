@@ -160,10 +160,11 @@
                                 <input type="checkbox" name="remember" style="accent-color: #ff835d" />
                                 <span class="checkbox-label">Ghi nhớ đăng nhập</span>
                             </label>
-                            <a href="${pageContext.request.contextPath}/view/forgot-password.jsp" class="forgot-link">Quên mật khẩu?</a>
+                            <a href="${pageContext.request.contextPath}/forgot-password-page" class="forgot-link">Quên mật khẩu?</a>
                         </div>
                         <button type="submit" class="submit-btn" id="submitBtn">
-                            <%= isSignUp ? "Đăng ký" : "Đăng nhập" %>
+                            <%= isSignUp ?
+                                    "Đăng ký" : "Đăng nhập" %>
                         </button>
                         <div class="divider"><span>hoặc</span></div>
                         <button type="button" class="google-btn" onclick="window.location.href = 'https://accounts.google.com/o/oauth2/auth?client_id=<%= Constant.GOOGLE_CLIENT_ID%>&redirect_uri=<%= Constant.GOOGLE_REDIRECT_URI%>&response_type=code&scope=email%20profile'">
@@ -178,7 +179,7 @@
                         </button>
                         <div class="switch-form">
                             <span id="switchText"><%= isSignUp ? "Đã có tài khoản?" : "Chưa có tài khoản?" %></span>
-                            <a href="login.jsp?formType=<%= isSignUp ? "login" : "signup" %>" class="switch-link" id="switchLink">
+                            <a href="loginPage?formType=<%= isSignUp ? "login" : "signup" %>" class="switch-link" id="switchLink">
                                 <%= isSignUp ? "Đăng nhập" : "Đăng ký" %>
                             </a>
                         </div>

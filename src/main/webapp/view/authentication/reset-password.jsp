@@ -79,7 +79,7 @@
                     }
                     
                     if (resetUserNum == null) {
-                        response.sendRedirect(request.getContextPath() + "/view/forgot-password.jsp");
+                        response.sendRedirect(request.getContextPath() + "/view/authentication/forgot-password.jsp");
                         return;
                     }
                 %>
@@ -141,7 +141,7 @@
                     
                     <div class="switch-form">
                         <span>Có vấn đề?</span>
-                        <a href="${pageContext.request.contextPath}/view/forgot-password.jsp" class="switch-link">
+                        <a href="${pageContext.request.contextPath}/view/authentication/forgot-password.jsp" class="switch-link">
                             Yêu cầu lại mã OTP
                         </a>
                     </div>
