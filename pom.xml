@@ -175,7 +175,7 @@
             <version>2.1.0</version>
         </dependency>
 
-        <!-- Yasson (JSON-B Implementation) -->
+        <!-- Yasson -->
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>yasson</artifactId>
@@ -198,6 +198,14 @@
     </dependencies>
 
     <build>
+        <!-- ✅ Đã bổ sung để copy file resources -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
