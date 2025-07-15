@@ -20,15 +20,19 @@
     }
 %>
 
+<!-- Add CSS for notifications -->
+<link href="${pageContext.request.contextPath}/assets/css/admin/admin-notifications.css" rel="stylesheet" />
+
 <div class="header">
     <h2 class="header-title"><%= pageTitle%></h2>
-    <!--<div class="header">
-      <h2 class="header-title">Dashboard</h2>-->
     <div class="header-actions">
+        
+        <!-- Notification will be inserted here by JavaScript -->
+        
         <div class="user-profile">
             <img src="${pageContext.request.contextPath}/img/dashborad/defaultAvatar.jpg" alt="Ảnh Đại Diện Quản Trị" class="avatar" />
             <div class="user-info">
-                <span class="user-name">Xin Chào, Quản Trị</span>
+                <span class="user-name">Xin Chào, Điều phối viên</span>
                 <a href="${pageContext.request.contextPath}/logout" class="logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
                     Đăng Xuất
@@ -37,6 +41,34 @@
         </div>
     </div>
 </div>
+
+<!-- Add JavaScript for notifications -->
+<script>
+    window.contextPath = '${pageContext.request.contextPath}';
+    
+    // Ensure only one notification system
+    if (window.adminNotificationManager) {
+        window.adminNotificationManager.destroy()
+        window.adminNotificationManager = null
+    }
+    
+    // Initialize after DOM is ready
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            try {
+                // Remove any existing notification containers
+                const existingContainers = document.querySelectorAll('.admin-notification-container')
+                existingContainers.forEach(container => container.remove())
+                
+                // Initialize new notification manager
+                window.adminNotificationManager = new AdminNotificationManager("coordinator")
+            } catch (error) {
+                console.error("Failed to initialize coordinator notifications:", error)
+            }
+        }, 200)
+    })
+</script>
+<script src="${pageContext.request.contextPath}/assets/js/admin/admin-notifications.js"></script>
 
 <script>
     function confirmLogout(logoutUrl) {
