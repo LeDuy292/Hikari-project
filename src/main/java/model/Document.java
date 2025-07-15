@@ -1,6 +1,6 @@
 package model;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class Document {
 
@@ -11,22 +11,12 @@ public class Document {
     private String description;
     private String fileUrl;
     private String imgUrl;
-    private Date uploadDate;
+    private Timestamp uploadDate;
     private String uploadedBy;
+    
 
-    public Document() {
-    }
-
-    public Document(String classID , String title, String description, String fileUrl, String uploadedBy, String imgUrl) {
-        this.classID= classID ; 
-        this.title = title;
-        this.description = description;
-        this.fileUrl = fileUrl;
-        this.uploadedBy = uploadedBy;
-        this.imgUrl = imgUrl;
-    }
-
-    public Document(int id, int lessonID, String classID, String title, String description, String fileUrl, String imgUrl, Date uploadDate, String uploadedBy) {
+    // Constructor đầy đủ (9 tham số)
+    public Document(int id, int lessonID, String classID, String title, String description, String fileUrl, String imgUrl, Timestamp uploadDate, String uploadedBy) {
         this.id = id;
         this.lessonID = lessonID;
         this.classID = classID;
@@ -38,25 +28,22 @@ public class Document {
         this.uploadedBy = uploadedBy;
     }
 
-    public String getClassID() {
-        return classID;
-    }
-
-    public void setClassID(String classID) {
+    // Constructor cho việc tạo mới (6 tham số)
+    public Document(String classID, String title, String description, String fileUrl, String uploadedBy, String imgUrl) {
         this.classID = classID;
-    }
-
-    
-
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
+        this.title = title;
+        this.description = description;
+        this.fileUrl = fileUrl;
+        this.uploadedBy = uploadedBy;
         this.imgUrl = imgUrl;
+        this.lessonID = 0; // Default value
+        this.uploadDate = new Timestamp(System.currentTimeMillis());
     }
 
-    // Getters and setters
+    // Constructor mặc định
+    public Document() {
+    }
+
     public int getId() {
         return id;
     }
@@ -71,6 +58,14 @@ public class Document {
 
     public void setLessonID(int lessonID) {
         this.lessonID = lessonID;
+    }
+
+    public String getClassID() {
+        return classID;
+    }
+
+    public void setClassID(String classID) {
+        this.classID = classID;
     }
 
     public String getTitle() {
@@ -97,11 +92,19 @@ public class Document {
         this.fileUrl = fileUrl;
     }
 
-    public Date getUploadDate() {
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public Timestamp getUploadDate() {
         return uploadDate;
     }
 
-    public void setUploadDate(Date uploadDate) {
+    public void setUploadDate(Timestamp uploadDate) {
         this.uploadDate = uploadDate;
     }
 
@@ -117,5 +120,4 @@ public class Document {
     public String toString() {
         return "Document{" + "id=" + id + ", lessonID=" + lessonID + ", classID=" + classID + ", title=" + title + ", description=" + description + ", fileUrl=" + fileUrl + ", imgUrl=" + imgUrl + ", uploadDate=" + uploadDate + ", uploadedBy=" + uploadedBy + '}';
     }
-    
 }

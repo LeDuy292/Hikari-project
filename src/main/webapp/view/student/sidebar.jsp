@@ -11,7 +11,7 @@
         <a href="${pageContext.request.contextPath}/view/student/home.jsp" class="menu-item">
             <i class="fa fa-home"></i>Trang chủ
         </a>
-        <a href="${pageContext.request.contextPath}/view/student/index.jsp" class="menu-item">
+        <a href="${pageContext.request.contextPath}/documents" class="menu-item">
             <i class="fa fa-book"></i>Tài liệu
         </a>
         <a href="${pageContext.request.contextPath}/courses?category=paid"  class="menu-item"><i class="fa fa-play-circle"></i>Khóa học online</a>
