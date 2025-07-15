@@ -37,7 +37,7 @@ import model.UserAccount;
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, maxFileSize = 1024 * 1024 * 100, maxRequestSize = 1024 * 1024 * 200)
 public class LessonManagementServlet extends HttpServlet {
 
-    private LessonDAO lessonDAO = new LessonDAO();
+    private final LessonDAO lessonDAO = new LessonDAO();
     private final TopicDAO topicDao = new TopicDAO();
     private final LessonDAO lessonDao = new LessonDAO();
     private final AssignmentDAO assignmentDAO = new AssignmentDAO();
@@ -81,7 +81,6 @@ public class LessonManagementServlet extends HttpServlet {
                 System.out.println("Retrieved " + topicList.size() + " topics for courseId=" + courseId);
             } catch (Exception e) {
                 System.err.println("Error fetching topics for courseId: " + courseId + ", teacherID: " + teacherID);
-                e.printStackTrace();
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 response.getWriter().write("{\"status\": \"error\", \"message\": \"Lỗi khi lấy danh sách chủ đề.\"}");
                 return;
@@ -238,12 +237,9 @@ public class LessonManagementServlet extends HttpServlet {
                 // Tạo đối tượng Lesson
                 Lesson lesson = new Lesson();
                 lesson.setTopicID(topicId);
-                lesson.setTopic(topicName != null ? topicName : "");
                 lesson.setTitle(title);
                 lesson.setDescription(description != null ? description : "");
-                lesson.setDuration(duration);
                 lesson.setIsCompleted(false);
-                lesson.setActive(true);
 
                 // Log videoPart
                 System.out.println("videoPart: " + (videoPart != null ? videoPart.getSubmittedFileName() : "null"));
@@ -258,7 +254,6 @@ public class LessonManagementServlet extends HttpServlet {
                 }
             } catch (Exception e) {
                 System.out.println("Lỗi khi thêm bài học: " + e.getMessage());
-                e.printStackTrace();
                 out.println("{\"status\": \"error\", \"message\": \"Lỗi server: " + e.getMessage() + "\"}");
             }
         }

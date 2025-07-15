@@ -138,7 +138,7 @@ public class SaveQuestionServlet extends HttpServlet {
                     a.setDuration(Integer.parseInt(duration));
                     a.setTotalMark(totalMarks);
                     a.setTotalQuestions(totalQuestions);
-                    a.setIsActive(true);
+                    a.setIsComplete(true);
                     id = assignmentDAO.insertAndReturnId(a);
                     for (Question q : uploadedQuestions) {
                         q.setEntityID(id);
