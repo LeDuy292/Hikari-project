@@ -15,6 +15,7 @@ public class CV {
     private String reviewerID;
     private Date reviewDate;
     private String comments;
+    private String interviewStatus;
 
     public CV() {
     }
@@ -121,4 +122,18 @@ public class CV {
     public void setComments(String comments) {
         this.comments = comments;
     }
+
+    public String getInterviewStatus() {
+        return interviewStatus;
+    }
+
+    public void setInterviewStatus(String interviewStatus) {
+        this.interviewStatus = interviewStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "CV{" + "cvID=" + cvID + ", userID=" + userID + ", fullName=" + fullName + ", email=" + email + ", phone=" + phone + ", fileUrl=" + fileUrl + ", uploadDate=" + uploadDate + ", status=" + status + ", reviewerID=" + reviewerID + ", reviewDate=" + reviewDate + ", comments=" + comments + ", interviewStatus=" + interviewStatus + '}';
+    }
+
 }

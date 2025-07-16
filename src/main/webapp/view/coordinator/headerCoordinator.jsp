@@ -26,7 +26,7 @@
       <h2 class="header-title">Dashboard</h2>-->
     <div class="header-actions">
         <div class="user-profile">
-            <img src="${pageContext.request.contextPath}/img/dashborad/defaultAvatar.jpg" alt="Ảnh Đại Diện Quản Trị" class="avatar" />
+            <img src="${pageContext.request.contextPath}/assets/img/avatar.png" alt="Ảnh Đại Diện Quản Trị" class="avatar" />
             <div class="user-info">
                 <span class="user-name">Xin Chào, Quản Trị</span>
                 <a href="${pageContext.request.contextPath}/logout" class="logout-btn">

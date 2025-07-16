@@ -1,4 +1,4 @@
-body {
+/*body {
     background-color: #f8f9fa;
     font-family: 'Arial', sans-serif;
 }
@@ -56,4 +56,183 @@ body {
 
 .alert {
     border-radius: 5px;
+}*/
+/* Reset và base styles */
+.badge.bg-success {
+    background-color: #28a745 !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background: #f7f7fa; /* Đồng bộ với home.css */
+}
+
+/* Main content */
+.main-content {
+  padding: 24px 32px; /* Đồng bộ với home.css */
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Card */
+.card {
+  border-radius: 12px; /* Đồng bộ với feature-card */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Đồng bộ với home.css */
+  background: #fafbfc; /* Nền giống feature-card */
+  border: 1px solid #f0f2f5; /* Đồng bộ viền */
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease; /* Hiệu ứng mượt */
+}
+
+.card:hover {
+  transform: translateY(-4px); /* Hiệu ứng hover giống feature-card */
+  box-shadow: 0 8px 25px rgba(255, 152, 0, 0.15); /* Shadow cam */
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ff9100 0%, #ffb347 100%); /* Gradient cam */
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.card:hover::before {
+  transform: scaleX(1); /* Hiệu ứng viền khi hover */
+}
+
+/* Card Header */
+.card-header {
+  font-weight: 600; /* Đồng bộ với feature-title */
+  font-size: 1.1rem; /* Kích thước chữ giống feature-title */
+  color: #1a1a1a !important; /* Màu tiêu đề giống home.css */
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #fff9f0 0%, #fff4e5 100%); /* Nền giống hero-section */
+  border-bottom: 1px solid #f0f2f5;
+}
+
+/* Table */
+.table {
+  background: white; /* Nền trắng giống feature-card */
+  border-radius: 12px; /* Đồng bộ với card */
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Shadow nhẹ */
+  margin-bottom: 20px;
+}
+
+.table th, .table td {
+  vertical-align: middle;
+  color: #444; /* Màu văn bản giống testimonial-text */
+  font-size: 0.95rem; /* Kích thước chữ giống course-description */
+  padding: 12px 16px;
+}
+
+.table th {
+  font-weight: 600;
+  color: #1a1a1a; /* Màu tiêu đề giống section-title */
+  background: #f7f7fa; /* Nền nhẹ */
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(90deg, #ff9100 0%, #ffb347 100%); /* Gradient cam */
+  color: white;
+  border: none;
+  border-radius: 9999px; /* Đồng bộ với home.css */
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px); /* Hiệu ứng hover giống home.css */
+  box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
+  opacity: 0.9;
+}
+
+/* Form Elements */
+.form-control, .form-select {
+  border-radius: 5px;
+  border: 1px solid #f0f2f5; /* Viền nhẹ giống feature-card */
+  padding: 10px;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #ff9800; /* Viền cam khi focus */
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.2);
+  outline: none;
+}
+
+.form-label {
+  font-weight: 600; /* Đồng bộ với feature-title */
+  font-size: 1.1rem;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+/* Alert */
+.alert {
+  border-radius: 12px; /* Đồng bộ với card */
+  padding: 16px;
+  font-size: 0.95rem;
+  color: #444;
+  background: #fafbfc; /* Nền giống feature-card */
+  border: 1px solid #f0f2f5;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.alert-success {
+  background: linear-gradient(135deg, #fff9f0 0%, #fff4e5 100%); /* Nền giống hero-section */
+  color: #1a1a1a;
+  border-color: #ff9800;
+}
+
+.alert-danger {
+  background: #666; /* Xám đậm cho thông báo lỗi */
+  color: white;
+  border-color: #444;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card, .table, .alert {
+  animation: fadeInUp 0.6s ease-out; /* Thêm animation giống home.css */
 }
