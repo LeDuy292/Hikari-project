@@ -30,7 +30,7 @@
         <!-- Notification will be inserted here by JavaScript -->
         
         <div class="user-profile">
-            <img src="${pageContext.request.contextPath}/img/dashborad/defaultAvatar.jpg" alt="Ảnh Đại Diện Quản Trị" class="avatar" />
+            <img src="${pageContext.request.contextPath}/assets/img/avatar.png" alt="Ảnh Đại Diện Quản Trị" class="avatar" />
             <div class="user-info">
                 <span class="user-name">Xin Chào, Điều phối viên</span>
                 <a href="${pageContext.request.contextPath}/logout" class="logout-btn">
