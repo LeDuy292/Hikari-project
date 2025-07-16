@@ -14,6 +14,10 @@ public class NotificationService {
         return notificationDAO.getAllNotifications();
     }
 
+    public List<Notification> getNotificationsForUser(String userRole) throws SQLException {
+        return notificationDAO.getNotificationsForUser(userRole);
+    }
+
     public List<Notification> getNotificationsWithFilters(String type, String recipient, String search, String sendDateFrom, String sendDateTo, int page, int pageSize) throws SQLException {
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 10;

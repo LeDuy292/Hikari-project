@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
+
 import com.google.gson.Gson;
 import model.UserAccount;
 import dao.UserDAO;
@@ -20,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @WebServlet("/UpdateProfileServlet")
-@MultipartConfig(maxFileSize = 10485760) // 10MB max file size
+@MultipartConfig(maxFileSize = 10485760) // 10MB
 public class UpdateProfileServlet extends HttpServlet {
     private UserDAO userDAO = new UserDAO();
     private static final String UPLOAD_DIR = "assets/img/uploads";
@@ -28,6 +29,7 @@ public class UpdateProfileServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
@@ -45,26 +47,27 @@ public class UpdateProfileServlet extends HttpServlet {
         Part filePart = request.getPart("profileImage");
         String profilePicture = user.getProfilePicture();
 
+        // === Validation nâng cao ===
         if (!ValidationUtil.isValidFullName(fullName)) {
-            response.getWriter().write(new Gson().toJson(new Result(false, "Họ và tên không hợp lệ")));
+            response.getWriter().write(new Gson().toJson(new Result(false, "Họ và tên không hợp lệ (chỉ chứa chữ cái có dấu và khoảng trắng)")));
             return;
         }
-        if (phone != null && !phone.isEmpty() && !phone.matches("\\d{10,11}")) {
-            response.getWriter().write(new Gson().toJson(new Result(false, "Số điện thoại không hợp lệ")));
+
+        if (phone != null && !phone.isEmpty() && !ValidationUtil.isValidPhoneNumber(phone)) {
+            response.getWriter().write(new Gson().toJson(new Result(false, "Số điện thoại không hợp lệ (phải có 10 số và bắt đầu bằng 0)")));
             return;
         }
-        if (birthDate != null && !birthDate.isEmpty()) {
-            try {
-                java.sql.Date.valueOf(birthDate);
-            } catch (IllegalArgumentException e) {
-                response.getWriter().write(new Gson().toJson(new Result(false, "Ngày sinh không hợp lệ")));
-                return;
-            }
+
+        if (birthDate != null && !birthDate.isEmpty() && !ValidationUtil.isValidDateOfBirth(birthDate)) {
+            response.getWriter().write(new Gson().toJson(new Result(false, "Ngày sinh không hợp lệ (sai định dạng hoặc là ngày tương lai)")));
+            return;
         }
+
         if (email != null && !email.isEmpty() && !email.matches("^[\\w.-]+@([\\w-]+\\.)+[a-zA-Z]{2,}$")) {
             response.getWriter().write(new Gson().toJson(new Result(false, "Email không hợp lệ")));
             return;
         }
+
         if (email != null && !email.isEmpty() && !email.equals(user.getEmail())) {
             try {
                 if (userDAO.findByEmail(email) != null) {
@@ -83,7 +86,9 @@ public class UpdateProfileServlet extends HttpServlet {
             user.setFullName(fullName);
             user.setPhone(phone);
             user.setBirthDate(birthDate != null && !birthDate.isEmpty() ? java.sql.Date.valueOf(birthDate) : null);
-            if (email != null && !email.isEmpty()) user.setEmail(email);
+            if (email != null && !email.isEmpty()) {
+                user.setEmail(email);
+            }
 
             if (filePart != null && filePart.getSize() > 0) {
                 String fileName = user.getUserID() + "_" + System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
@@ -94,19 +99,20 @@ public class UpdateProfileServlet extends HttpServlet {
                 }
                 String filePath = uploadPath + File.separator + fileName;
                 filePart.write(filePath);
-                profilePicture = "/assets/img/uploads/" + fileName; // Đường dẫn tương đối
+                profilePicture = "/assets/img/uploads/" + fileName;
                 user.setProfilePicture(profilePicture);
-                System.out.println("Saved profile picture: " + filePath); // Log để debug
+                System.out.println("Saved profile picture: " + filePath);
             }
 
-            userDAO.updateUserProfile(user); // Đảm bảo lưu vào database
-            session.setAttribute("user", user); // Cập nhật session
+            userDAO.updateUserProfile(user);
+            session.setAttribute("user", user);
             response.getWriter().write(new Gson().toJson(new Result(true, "Cập nhật thành công", profilePicture)));
+
         } catch (IllegalArgumentException e) {
             response.getWriter().write(new Gson().toJson(new Result(false, "Dữ liệu không hợp lệ: " + e.getMessage())));
         } catch (Exception e) {
             response.getWriter().write(new Gson().toJson(new Result(false, "Cập nhật thất bại: " + e.getMessage())));
-            e.printStackTrace(); // Log lỗi chi tiết
+            e.printStackTrace();
         }
     }
 

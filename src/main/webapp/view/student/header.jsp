@@ -1,12 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="model.UserAccount" %>
+
+<!-- Add CSS for notifications -->
+<link href="${pageContext.request.contextPath}/assets/css/student/notifications.css" rel="stylesheet" />
+
 <div class="main-header" style="justify-content:space-between; padding:32px 0 0 0; width:100%; max-width:1100px;">
     <div style="display:flex; align-items:center; gap:12px;">
         <span style="font-size:26px; font-weight:bold; color:#000000; letter-spacing:1px; transition: color 0.3s ease;"></span>
     </div>
     <div style="display:flex; align-items:center; gap:12px;">
-        <button class="icon-btn" onclick="window.location.href='${pageContext.request.contextPath}/view/student/shopping_cart.jsp'" style="transition: transform 0.3s ease;"><i class="fa fa-shopping-cart"></i></button>
-        <button class="icon-btn" style="transition: transform 0.3s ease;"><i class="fa fa-bell"></i></button>
+        <button class="icon-btn" onclick="window.location.href='${pageContext.request.contextPath}/view/student/shopping_cart.jsp'" style="transition: transform 0.3s ease; color: #ff9800;"><i class="fa fa-shopping-cart"></i></button>
+        <button class="icon-btn notification-bell-btn" style="transition: transform 0.3s ease; color: #ff9800;"><i class="fa fa-bell"></i></button>
         <% 
             UserAccount user = (UserAccount) session.getAttribute("user");
             if (user != null) { 
@@ -15,7 +19,7 @@
                     : (request.getContextPath() + "/assets/img/default-avatar.png"); // Ảnh mặc định
         %>
             <div class="user-info" style="display:flex; align-items:center; gap:15px; padding:5px 10px; background-color:#f8f9fa; border-radius:5px;">
-                <a href="${pageContext.request.contextPath}/view/profile.jsp" style="text-decoration:none;">
+                <a href="${pageContext.request.contextPath}/view/authentication/profile.jsp" style="text-decoration:none;">
                     <img src="<%= profilePic %>?t=<%= java.lang.System.currentTimeMillis() %>" alt="Avatar" style="width:40px; height:40px; border-radius:50%; object-fit:cover; transition: transform 0.3s ease;">
                 </a>
                 <span style="font-weight:bold; color:#333; transition: color 0.3s ease;"><%= user.getUsername() != null ? user.getUsername() : user.getFullName() %></span>
@@ -24,10 +28,17 @@
                 </form>
             </div>
         <% } else { %>
-            <button style="background:linear-gradient(90deg,#ff9800 60%,#ffb347 100%);color:#fff;font-weight:bold;padding:8px 28px;border:none;border-radius:8px;font-size:16px;cursor:pointer; transition: transform 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" onclick="window.location.href='${pageContext.request.contextPath}/view/login.jsp'">Đăng nhập</button>
+            <button style="background:linear-gradient(90deg,#ff9800 60%,#ffb347 100%);color:#fff;font-weight:bold;padding:8px 28px;border:none;border-radius:8px;font-size:16px;cursor:pointer; transition: transform 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" onclick="window.location.href='${pageContext.request.contextPath}/loginPage'">Đăng nhập</button>
         <% } %>
     </div>
 </div>
+
+<!-- Add JavaScript for notifications -->
+<script>
+    window.contextPath = '${pageContext.request.contextPath}';
+</script>
+<script src="${pageContext.request.contextPath}/assets/js/student/notifications.js"></script>
+
 <script>
     function confirmLogout(logoutUrl) {
         if (confirm("Bạn có chắc muốn đăng xuất?")) {
@@ -45,7 +56,10 @@
     }
     .main-header .icon-btn:hover {
         transform: scale(1.1);
-        color: #ff9800;
+        background: linear-gradient(135deg, #ff9800, #ffb347);
+        color: white !important;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
     }
     .main-header img:hover {
         transform: scale(1.1);
@@ -68,5 +82,15 @@
     }
     .user-info button:hover {
         background: linear-gradient(90deg, #e06e4c 60%, #ffaa66 100%);
+    }
+    
+    /* Icon buttons styling */
+    .icon-btn {
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        border-radius: 50%;
+        font-size: 18px;
     }
 </style>

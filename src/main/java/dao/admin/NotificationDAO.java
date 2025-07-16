@@ -251,6 +251,31 @@ public class NotificationDAO {
         return null;
     }
 
+    public List<Notification> getNotificationsForUser(String userRole) throws SQLException {
+        List<Notification> notifications = new ArrayList<>();
+        String sql = "SELECT a.*, u.fullName as postedByName FROM Announcement a " +
+                    "LEFT JOIN UserAccount u ON a.postedBy = u.userID " +
+                    "WHERE a.isActive = TRUE AND (a.recipient = ? OR a.recipient = 'Tất cả') " +
+                    "ORDER BY a.postedDate DESC LIMIT 10";
+
+        try (Connection conn = dbContext.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, userRole);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Notification notification = mapResultSetToNotification(rs);
+                    notifications.add(notification);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting notifications for user role: " + userRole, e);
+            throw e;
+        }
+        return notifications;
+    }
+
     private Notification mapResultSetToNotification(ResultSet rs) throws SQLException {
         Notification notification = new Notification();
         notification.setId(rs.getInt("id"));

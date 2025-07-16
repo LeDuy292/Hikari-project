@@ -33,45 +33,40 @@ public class LoginServlet extends HttpServlet {
                 if (user != null) {
                     HttpSession session = request.getSession();
                     try {
-                        // Set user session using existing UserAuthentication utility
                         UserAuthentication.setUserSession(session, user.getUserID(), user.getRole());
 
-                        // Also store the full user object for compatibility with existing code
                         session.setAttribute("user", user);
                         session.setAttribute("role", user.getRole());
                         session.setAttribute("userId", user.getUserID());
                         session.setAttribute("username", user.getUsername());
-                        // Update session using existing SessionManager
                         sessionManager.updateSession(user, session);
                         
-                        // Check if there's a redirect URL stored in session
                         String redirectUrl = (String) session.getAttribute("redirectUrl");
-                         if (redirectUrl != null) {
+                        if (redirectUrl != null) {
                             session.removeAttribute("redirectUrl");
                             System.out.println("Redirecting user to original URL: " + redirectUrl);
                             response.sendRedirect(redirectUrl);
+
                         } else if((user.getRole()).equals("Student")){
                             response.sendRedirect(request.getContextPath() + "/");
                         } 
                         else if((user.getRole()).equals("Coordinator")){
                             response.sendRedirect(request.getContextPath() + "/LoadDashboard");
+                        } else if ((user.getRole()).equals("Admin")) {
+                            response.sendRedirect(request.getContextPath() + "/AdminDashboard");
+                        } else if ((user.getRole()).equals("Teacher")) {
+                            response.sendRedirect(request.getContextPath() + "/ManageCourse");
+                        } else {
+                            response.sendRedirect(request.getContextPath() + "/StudentHome");
                         }
-                         else if((user.getRole()).equals("Admin")){
-                            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
-                        }
-                        else if((user.getRole()).equals("Teacher")){
-                            response.sendRedirect(request.getContextPath() + "/manageCourse");
-                        }
-                         else 
-                             response.sendRedirect(request.getContextPath() + "/view/student/home.jsp");
                     } catch (Exception e) {
                         session.invalidate();
                         request.setAttribute("error", "Lỗi đăng nhập: " + e.getMessage());
-                        request.getRequestDispatcher("/view/login.jsp").forward(request, response);
+                        request.getRequestDispatcher("/view/authentication/login.jsp").forward(request, response);
                     }
                 } else {
                     request.setAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng.");
-                    request.getRequestDispatcher("/view/login.jsp").forward(request, response);
+                    request.getRequestDispatcher("/view/authentication/login.jsp").forward(request, response);
                 }
             } else if ("signup".equals(action)) {
                 String email = request.getParameter("email");
@@ -81,28 +76,33 @@ public class LoginServlet extends HttpServlet {
 
                 if (!ValidationUtil.isValidEmail(email)) {
                     request.setAttribute("error", "Email không hợp lệ. Vui lòng kiểm tra lại.");
-                    request.getRequestDispatcher("/view/login.jsp?formType=signup").forward(request, response);
+                    request.setAttribute("formType", "signup");
+                    request.getRequestDispatcher("/view/authentication/login.jsp").forward(request, response);
                     return;
                 }
                 if (!ValidationUtil.isValidUsername(username)) {
                     request.setAttribute("error", "Tên đăng nhập phải dài 3-20 ký tự và chỉ chứa chữ cái/số.");
-                    request.getRequestDispatcher("/view/login.jsp?formType=signup").forward(request, response);
+                    request.setAttribute("formType", "signup");
+                    request.getRequestDispatcher("/view/authentication/login.jsp").forward(request, response);
                     return;
                 }
                 if (!ValidationUtil.isValidPassword(password)) {
                     request.setAttribute("error", "Mật khẩu phải dài 6-50 ký tự và chứa ít nhất một chữ và một số.");
-                    request.getRequestDispatcher("/view/login.jsp?formType=signup").forward(request, response);
+                    request.setAttribute("formType", "signup");
+                    request.getRequestDispatcher("/view/authentication/login.jsp").forward(request, response);
                     return;
                 }
                 if (!password.equals(confirmPassword)) {
                     request.setAttribute("error", "Mật khẩu xác nhận không khớp.");
-                    request.getRequestDispatcher("/view/login.jsp?formType=signup").forward(request, response);
+                    request.setAttribute("formType", "signup");
+                    request.getRequestDispatcher("/view/authentication/login.jsp").forward(request, response);
                     return;
                 }
 
                 if (userService.isEmailExists(email)) {
                     request.setAttribute("error", "Email đã tồn tại. Vui lòng chọn email khác.");
-                    request.getRequestDispatcher("/view/login.jsp?formType=signup").forward(request, response);
+                    request.setAttribute("formType", "signup");
+                    request.getRequestDispatcher("/view/authentication/login.jsp").forward(request, response);
                     return;
                 }
 
@@ -113,30 +113,29 @@ public class LoginServlet extends HttpServlet {
                 newUser.setFullName(username);
                 newUser.setRole("Student");
                 
-                // Generate userID BEFORE registering
                 try {
                     String newUserID = new UserDAO().generateNewUserID();
                     newUser.setUserID(newUserID);
                     System.out.println("Generated userID: " + newUserID);
                 } catch (SQLException e) {
                     request.setAttribute("error", "Lỗi tạo ID người dùng: " + e.getMessage());
-                    request.getRequestDispatcher("/view/login.jsp?formType=signup").forward(request, response);
+                    request.setAttribute("formType", "signup");
+                    request.getRequestDispatcher("/view/authentication/login.jsp").forward(request, response);
                     return;
                 }
                 
                 boolean isRegistered = userService.registerUser(newUser);
                 if (isRegistered) {
                     request.setAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
-                    request.getRequestDispatcher("/view/login.jsp").forward(request, response);
                 } else {
                     request.setAttribute("error", "Đăng ký thất bại. Vui lòng thử lại.");
-                    request.getRequestDispatcher("/view/login.jsp").forward(request, response);
                 }
+                request.getRequestDispatcher("/view/authentication/login.jsp").forward(request, response);
             }
         } catch (ServletException | IOException | ClassNotFoundException | SQLException e) {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
-            request.getRequestDispatcher("/view/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/authentication/login.jsp").forward(request, response);
         }
     }
 }
