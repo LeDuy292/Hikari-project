@@ -54,7 +54,7 @@ body {
 .main-content {
   flex: 1;
   padding: 24px 32px;
-  max-width: 1700px; /* Khớp với max-width của main-header */
+  max-width: 1660px; /* Khớp với max-width của main-header */
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
@@ -63,7 +63,7 @@ body {
 /* Content wrapper - Khớp chiều rộng và vị trí với main-header */
 .content-wrapper {
   width: 100%;
-  max-width: 1600px; /* Khớp với max-width của main-header */
+  max-width: 1700px; /* Khớp với max-width của main-header */
   margin: 0 auto; /* Căn giữa giống main-header */
   box-sizing: border-box;
 }
