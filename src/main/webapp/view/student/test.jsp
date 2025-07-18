@@ -19,7 +19,7 @@
             <!-- Sidebar -->
             <%@ include file="sidebar.jsp" %>
             <!-- Main Content -->
-            <div class="flex-1 ml-64 flex flex-col">
+            <div class="flex-1 flex flex-col" style="margin-left: 320px;">
                 <!-- Header -->
                 <%@ include file="header.jsp" %>
                 <!-- Test Content -->
