@@ -206,7 +206,7 @@
             <i class="fa fa-chalkboard"></i>
             <span>Diễn đàn</span>
         </a>
-        <a href="${pageContext.request.contextPath}/view/student/test.jsp" class="sidebar-nav-item <%= currentPage.equals("test.jsp") ? "active" : "" %>" aria-label="Bài kiểm tra">
+        <a href="${pageContext.request.contextPath}/view/student/tests.jsp" class="sidebar-nav-item <%= currentPage.equals("test.jsp") ? "active" : "" %>" aria-label="Bài kiểm tra">
             <i class="fa fa-file-alt"></i>
             <span>Bài kiểm tra</span>
         </a>
