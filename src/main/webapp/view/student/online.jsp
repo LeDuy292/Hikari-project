@@ -78,7 +78,7 @@
     <!-- Sidebar -->
     <%@ include file="sidebar.jsp" %>
     <!-- Main content -->
-    <main class="flex-1 px-8 py-6 flex flex-col min-h-screen" style="margin-left: 270px;">
+    <main class="flex-1 px-8 py-6 flex flex-col min-h-screen" style="margin-left: 320px;">
         <!-- Header -->
         <%@ include file="header.jsp" %>
         

@@ -109,7 +109,7 @@
         border-radius: 8px;
         border-left: 4px solid #3b82f6;
     }
-    
+
     .feature-item {
         display: flex;
         align-items: center;
@@ -118,21 +118,21 @@
         font-size: 0.8rem;
         color: #64748b;
     }
-    
+
     .feature-item i {
         color: #3b82f6;
         width: 16px;
     }
-    
+
     .test-btn {
         background: #f59e0b !important;
         color: white !important;
     }
-    
+
     .test-btn:hover {
         background: #d97706 !important;
     }
-    
+
     .debug-info {
         position: fixed;
         top: 10px;
@@ -145,26 +145,26 @@
         z-index: 9999;
         display: none;
     }
-    
+
     /* All existing styles remain the same */
     .status-indicator {
         display: flex;
         align-items: center;
         margin-left: 10px;
     }
-    
+
     .feature-list {
         list-style: none;
         padding: 0;
         margin: 10px 0;
     }
-    
+
     .feature-list li {
         padding: 5px 0;
         font-size: 0.875rem;
         color: #64748b;
     }
-    
+
     .database-info {
         margin-top: 15px;
         padding: 8px 12px;
@@ -176,13 +176,13 @@
         align-items: center;
         gap: 6px;
     }
-    
+
     .quick-actions {
         display: flex;
         gap: 8px;
         margin-top: 8px;
     }
-    
+
     .quick-btn {
         flex: 1;
         padding: 6px 12px;
@@ -197,12 +197,12 @@
         justify-content: center;
         gap: 4px;
     }
-    
+
     .quick-btn:hover {
         background: #f1f5f9;
         border-color: #cbd5e1;
     }
-    
+
     .notification-badge {
         position: absolute;
         top: -5px;
@@ -218,7 +218,7 @@
         justify-content: center;
         font-weight: bold;
     }
-    
+
     #chatbox-toggle {
         position: fixed;
         bottom: 2rem;
@@ -445,6 +445,31 @@
         transform: scale(1.1);
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
+
+    .chatbox-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #ff4d4d;  /* màu đỏ */
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.2s, transform 0.2s;
+        z-index: 1000;
+    }
+
+    .chatbox-close:hover {
+        background-color: #e60000;
+        transform: scale(1.1);
+    }
 </style>
 
 <div id="debug-info" class="debug-info"></div>
@@ -472,41 +497,41 @@
     // Load database statistics
     function loadDatabaseStats() {
         fetch('chat?action=stats')
-            .then(response => response.json())
-            .then(data => {
-                qaCount = data.totalQA || 0;
-                document.getElementById('qa-count').textContent = qaCount.toLocaleString();
-                debugLog('Loaded ' + qaCount + ' Q&A pairs');
-            })
-            .catch(error => {
-                console.error('Error loading database stats:', error);
-                document.getElementById('qa-count').textContent = 'N/A';
-            });
+                .then(response => response.json())
+                .then(data => {
+                    qaCount = data.totalQA || 0;
+                    document.getElementById('qa-count').textContent = qaCount.toLocaleString();
+                    debugLog('Loaded ' + qaCount + ' Q&A pairs');
+                })
+                .catch(error => {
+                    console.error('Error loading database stats:', error);
+                    document.getElementById('qa-count').textContent = 'N/A';
+                });
     }
 
     // Load suggested questions
     function loadSuggestions() {
         fetch('chat?action=suggestions')
-            .then(response => response.json())
-            .then(data => {
-                const suggestedList = document.getElementById("suggested-questions");
-                suggestedList.innerHTML = "";
-                
-                if (data.suggestions && data.suggestions.length > 0) {
-                    data.suggestions.forEach(question => {
-                        const li = document.createElement("li");
-                        li.textContent = question;
-                        li.onclick = () => sendSuggestedMessage(question);
-                        suggestedList.appendChild(li);
-                    });
-                } else {
+                .then(response => response.json())
+                .then(data => {
+                    const suggestedList = document.getElementById("suggested-questions");
+                    suggestedList.innerHTML = "";
+
+                    if (data.suggestions && data.suggestions.length > 0) {
+                        data.suggestions.forEach(question => {
+                            const li = document.createElement("li");
+                            li.textContent = question;
+                            li.onclick = () => sendSuggestedMessage(question);
+                            suggestedList.appendChild(li);
+                        });
+                    } else {
+                        populateDefaultSuggestions();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading suggestions:', error);
                     populateDefaultSuggestions();
-                }
-            })
-            .catch(error => {
-                console.error('Error loading suggestions:', error);
-                populateDefaultSuggestions();
-            });
+                });
     }
 
     function populateDefaultSuggestions() {
@@ -517,10 +542,10 @@
             "Cách đăng ký khóa học trên Hikari?",
             "Có mã giảm giá không?"
         ];
-        
+
         const suggestedList = document.getElementById("suggested-questions");
         suggestedList.innerHTML = "";
-        
+
         defaultSuggestions.forEach(question => {
             const li = document.createElement("li");
             li.textContent = question;
@@ -540,7 +565,7 @@
             badge.style.display = "none";
             scrollToBottom();
             autoResizeTextarea();
-            
+
             if (document.querySelector('.welcome-message')) {
                 loadSuggestions();
                 loadDatabaseStats();
@@ -560,7 +585,8 @@
 
     function sendMessage() {
         var userInput = document.getElementById("userInput").value.trim();
-        if (!userInput || isTyping) return;
+        if (!userInput || isTyping)
+            return;
 
         debugLog('Sending message: ' + userInput);
 
@@ -637,7 +663,8 @@
     }
 
     function showTypingIndicator() {
-        if (isTyping) return;
+        if (isTyping)
+            return;
         isTyping = true;
 
         var history = document.getElementById("chatbox-history");
@@ -703,7 +730,7 @@
                 </div>
             `;
             loadSuggestions();
-            
+
             // Clear server session
             fetch('chat', {
                 method: 'POST',
