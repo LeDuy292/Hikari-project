@@ -24,7 +24,7 @@ import model.UserAccount;
 
 @WebServlet(urlPatterns = {"/manageDocuments/*"})
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, maxFileSize = 1024 * 1024 * 10, maxRequestSize = 1024 * 1024 * 50)
-public class ManageDocumentByTeacherServlet extends HttpServlet {
+public class ManageDocumentServlet extends HttpServlet {
 
     private final DocumentDAO dao = new DocumentDAO();
     private final ClassDAO classDao = new ClassDAO();
