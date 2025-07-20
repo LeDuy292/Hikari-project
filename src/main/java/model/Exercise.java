@@ -90,5 +90,10 @@ private List<Question> questions;
     public void setActive(boolean isActive) {
         this.isActive = isActive;
     }
+
+    @Override
+    public String toString() {
+        return "Exercise{" + "id=" + id + ", lessonID=" + lessonID + ", title=" + title + ", description=" + description + ", isActive=" + isActive + ", questions=" + questions + '}';
+    }
     
 }

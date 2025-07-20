@@ -3,29 +3,57 @@ package model;
 import java.sql.Date;
 
 public class Progress {
+
     private int progressID;
     private String studentID;
     private int lessonID;
+    private int assignmentID;
+    private String enrollmentID ;
     private String completionStatus;
     private Date startDate;
     private Date endDate;
-    private int score;
-    private String feedback;
-    
-    // Additional lesson information
+    private double score;
+    private String assignmentTitle;
+    private String assignmentDescription;
     private String lessonTitle;
     private String topicName;
-    private String  topicID;
+    private String topicID;
     private String lessonDescription;
     private int duration;
 
     // Constructors
-    public Progress() {}
+    public Progress() {
+    }
 
-    public Progress(String studentID, int lessonID, String completionStatus) {
+    public Progress(String studentID, int assignmentID, int lessonID, String completionStatus) {
         this.studentID = studentID;
+        this.assignmentID = assignmentID;
         this.lessonID = lessonID;
         this.completionStatus = completionStatus;
+    }
+
+    public String getAssignmentTitle() {
+        return assignmentTitle;
+    }
+
+    public void setAssignmentTitle(String assignmentTitle) {
+        this.assignmentTitle = assignmentTitle;
+    }
+
+    public String getAssignmentDescription() {
+        return assignmentDescription;
+    }
+
+    public void setAssignmentDescription(String assignmentDescription) {
+        this.assignmentDescription = assignmentDescription;
+    }
+
+    public int getAssignmentID() {
+        return assignmentID;
+    }
+
+    public void setAssignmentID(int assignmentID) {
+        this.assignmentID = assignmentID;
     }
 
     // Getters and Setters
@@ -77,20 +105,12 @@ public class Progress {
         this.endDate = endDate;
     }
 
-    public int getScore() {
+    public double getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(double score) {
         this.score = score;
-    }
-
-    public String getFeedback() {
-        return feedback;
-    }
-
-    public void setFeedback(String feedback) {
-        this.feedback = feedback;
     }
 
     public String getLessonTitle() {
@@ -125,6 +145,14 @@ public class Progress {
         this.lessonDescription = lessonDescription;
     }
 
+    public String getEnrollmentID() {
+        return enrollmentID;
+    }
+
+    public void setEnrollmentID(String enrollmentID) {
+        this.enrollmentID = enrollmentID;
+    }
+
     public int getDuration() {
         return duration;
     }
@@ -135,12 +163,13 @@ public class Progress {
 
     @Override
     public String toString() {
-        return "Progress{" +
-                "progressID=" + progressID +
-                ", studentID='" + studentID + '\'' +
-                ", lessonID=" + lessonID +
-                ", completionStatus='" + completionStatus + '\'' +
-                ", score=" + score +
-                '}';
+        return "Progress{"
+                + "progressID=" + progressID
+                + ", studentID='" + studentID + '\''
+                + ", lessonID=" + lessonID
+                + ", completionStatus='" + completionStatus + '\''
+                + ", score=" + score
+                + '}';
     }
 }
+    

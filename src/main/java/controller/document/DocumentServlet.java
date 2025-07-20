@@ -19,6 +19,8 @@ import model.Document;
 import model.Teacher;
 import model.UserAccount;
 
+
+
 @WebServlet(urlPatterns = {"/manageDocuments/*"})
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, maxFileSize = 1024 * 1024 * 10, maxRequestSize = 1024 * 1024 * 50)
 public class DocumentServlet extends HttpServlet {

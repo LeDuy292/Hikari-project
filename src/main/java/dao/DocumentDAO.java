@@ -41,9 +41,7 @@ public List<Document> getDocumentsByLessonId(int lessonId) throws SQLException {
                 ));
             }
         }
-        Logger.getLogger(DocumentDAO.class.getName()).log(Level.INFO, 
-                "Retrieved {0} documents for lessonId: {1}", 
-                new Object[]{documents.size(), lessonId});
+
     } catch (SQLException ex) {
         Logger.getLogger(DocumentDAO.class.getName()).log(Level.SEVERE, 
                 "Error fetching documents for lessonId: " + lessonId, ex);
