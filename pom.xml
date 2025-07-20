@@ -1,7 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mycompany</groupId>
     <artifactId>Hikari</artifactId>
@@ -17,25 +16,31 @@
     </properties>
 
     <dependencies>
-        <!-- Jakarta EE -->
+        <!-- Jakarta EE Platform -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
             <version>${jakartaee}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Servlet API (Cập nhật phiên bản phù hợp với Jakarta EE 10) -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>5.0.0</version>
-            <scope>compile</scope>
+            <version>6.0.0</version> <!-- Cập nhật từ 5.0.0 -->
+            <scope>provided</scope>
         </dependency>
+
+        <!-- JSP API -->
         <dependency>
             <groupId>jakarta.servlet.jsp</groupId>
             <artifactId>jakarta.servlet.jsp-api</artifactId>
             <version>3.0.0</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- JSTL -->
         <dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
             <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
@@ -47,14 +52,14 @@
             <version>3.0.1</version>
         </dependency>
 
-        <!-- Gson -->
+        <!-- Gson for JSON parsing -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.12.1</version>
         </dependency>
 
-        <!-- JSON -->
+        <!-- JSON Processing -->
         <dependency>
             <groupId>jakarta.json</groupId>
             <artifactId>jakarta.json-api</artifactId>
@@ -67,12 +72,14 @@
             <type>jar</type>
         </dependency>
 
-        <!-- JDBC -->
+        <!-- MySQL Connector -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>9.3.0</version>
         </dependency>
+
+        <!-- MSSQL JDBC (nếu cần) -->
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
@@ -80,14 +87,14 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- HikariCP -->
+        <!-- HikariCP (Connection Pool) -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>5.1.0</version>
         </dependency>
 
-        <!-- Mail -->
+        <!-- Jakarta Mail -->
         <dependency>
             <groupId>jakarta.mail</groupId>
             <artifactId>jakarta.mail-api</artifactId>
@@ -99,7 +106,7 @@
             <version>2.0.1</version>
         </dependency>
 
-        <!-- PayOS -->
+        <!-- PayOS Java SDK (nếu cần) -->
         <dependency>
             <groupId>vn.payos</groupId>
             <artifactId>payos-java</artifactId>
@@ -128,21 +135,21 @@
             <version>2.0.9</version>
         </dependency>
 
-        <!-- AWS S3 -->
+        <!-- AWS SDK for S3 (nếu cần) -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
             <version>2.26.29</version>
         </dependency>
 
-        <!-- JBCrypt -->
+        <!-- jBCrypt for password hashing (nếu cần) -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
 
-        <!-- HttpClient -->
+        <!-- Apache HttpComponents -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>fluent-hc</artifactId>
@@ -153,52 +160,64 @@
             <artifactId>httpcore</artifactId>
             <version>4.4.9</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
+        </dependency>
 
-        <!-- Commons Logging -->
+        <!-- Commons Logging (nếu cần) -->
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.2</version>
         </dependency>
 
-        <!-- Apache POI -->
+        <!-- Apache POI for Excel (nếu cần) -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.3</version>
         </dependency>
 
-        <!-- WebSocket -->
+        <!-- WebSocket API (nếu cần) -->
         <dependency>
             <groupId>jakarta.websocket</groupId>
             <artifactId>jakarta.websocket-api</artifactId>
             <version>2.1.0</version>
         </dependency>
 
-        <!-- Yasson -->
+        <!-- Yasson for JSON-B (nếu cần) -->
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>yasson</artifactId>
             <version>3.0.3</version>
         </dependency>
 
-        <!-- Lombok -->
+        <!-- Lombok (nếu cần) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.32</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Thêm JUnit cho unit test (tùy chọn) -->
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.14</version>
-            <type>jar</type>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.10.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.10.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
-        <!-- ✅ Đã bổ sung để copy file resources -->
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
