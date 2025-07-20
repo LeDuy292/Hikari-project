@@ -212,8 +212,6 @@
                     <span>Bài kiểm tra</span>
                 </a>
             </div>
-
-
             <div class="bottom-section">
                 <div class="image-placeholder">
                     <img src="${pageContext.request.contextPath}/assets/img/img_student/study.jpg" alt="Study Image" onerror="this.src='/fallback-image.png'" />
@@ -224,4 +222,5 @@
             </div>
         </div>
     </body>
+    
 </html>
