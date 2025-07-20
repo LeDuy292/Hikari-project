@@ -37,7 +37,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
 
     UserAccount currentUser = (UserAccount) request.getSession().getAttribute("user");
     if (currentUser == null || !"Teacher".equals(currentUser.getRole())) {
-        response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+        response.sendRedirect(request.getContextPath() + "/view/authentication/login.jsp");
         return;
     }
 

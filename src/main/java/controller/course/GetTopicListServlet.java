@@ -46,7 +46,7 @@ public class GetTopicListServlet extends HttpServlet {
         UserAccount currentUser = (UserAccount) request.getSession().getAttribute("user");
         if (currentUser == null || !"Student".equals(currentUser.getRole())) {
 
-            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/view/authentication/login.jsp");
             return;
         }
         String userID = currentUser.getUserID();        
