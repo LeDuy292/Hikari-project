@@ -311,7 +311,7 @@
                                         </a>
                                         <a class="btn-secondary" href="${pageContext.request.contextPath}/cv">
                                             <i class="fas fa-file-upload"></i>
-                                            Apply CV
+                                            Nộp CV ứng tuyển
                                         </a>
                                     </div>
                                 </div>
