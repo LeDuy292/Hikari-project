@@ -1,0 +1,1062 @@
+/* CSS từ file manageCourse.css */
+:root {
+    --primary-blue: #2563eb;
+    --primary-blue-dark: #1d4ed8;
+    --primary-blue-light: #3b82f6;
+    --secondary-blue: #dbeafe;
+    --accent-blue: #60a5fa;
+    --warning-color: #f59e0b;
+    --warning-light: #fef3c7;
+    --success-color: #10b981;
+    --success-light: #d1fae5;
+    --text-dark: #1e293b;
+    --text-light: #64748b;
+    --background-light: #f8fafc;
+    --border-color: #e2e8f0;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --card-shadow-hover: 0 10px 25px -3px rgba(37, 99, 235, 0.2);
+}
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-light);
+    color: var(--text-dark);
+    margin: 0;
+    padding: 20px;
+}
+
+.preview-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: var(--card-shadow);
+}
+
+.lesson-detail-container {
+    display: flex;
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.lesson-sidebar {
+    width: 320px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    height: fit-content;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.lesson-content-area {
+    flex: 1;
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--card-shadow);
+    min-height: 600px;
+}
+
+/* Content Placeholder - Default State */
+.content-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 500px;
+    text-align: center;
+    color: var(--text-light);
+}
+
+.placeholder-icon {
+    font-size: 5rem;
+    margin-bottom: 24px;
+    color: var(--primary-blue);
+    opacity: 0.4;
+}
+
+.content-placeholder h3 {
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    font-size: 1.5rem;
+}
+
+.content-placeholder p {
+    font-size: 1.1rem;
+    max-width: 400px;
+    line-height: 1.6;
+}
+
+.lesson-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.lesson-list-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.lesson-count {
+    font-size: 0.9rem;
+    color: var(--primary-blue);
+    background: var(--secondary-blue);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: var(--primary-blue);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.topic {
+    margin-bottom: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.topic-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 12px 16px;
+    background-color: var(--background-light);
+    transition: background-color 0.3s ease;
+}
+
+.topic-header:hover {
+    background-color: var(--secondary-blue);
+}
+
+.topic-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.topic-toggle {
+    color: var(--primary-blue);
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.topic-content {
+    background: white;
+    display: block;
+}
+
+.lesson-item,
+.assignment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.lesson-item:last-child,
+.assignment-item:last-child {
+    border-bottom: none;
+}
+
+.lesson-item:hover {
+    background-color: var(--secondary-blue);
+}
+
+.assignment-item:hover {
+    background-color: var(--warning-light);
+    border-left: 4px solid var(--warning-color);
+}
+
+.lesson-item.active {
+    background-color: var(--secondary-blue);
+    border-left: 4lesspx solid var(--primary-blue);
+    font-weight: 500;
+}
+
+.assignment-item.active {
+    background-color: var(--warning-light);
+    border-left: 4px solid var(--warning-color);
+    font-weight: 500;
+}
+
+.lesson-item i {
+    margin-right: 8px;
+    width: 16px;
+    color: var(--primary-blue);
+}
+
+.assignment-item i {
+    margin-right: 8px;
+    width: 16px;
+    color: var(--warning-color);
+}
+
+.lesson-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--border-color);
+}
+
+.lesson-status.completed {
+    background-color: var(--success-color);
+}
+
+.back-btn {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    transition: color 0.3s ease;
+}
+
+.back-btn:hover {
+    color: var(--primary-blue-dark);
+}
+
+/* Lesson Content Styles */
+.lesson-content {
+    display: none;
+}
+.lesson-video-container {
+    margin-bottom: 24px;
+    /* Đảm bảo không có max-width hoặc width cố định nào khác ở đây
+       mà có thể làm cho nó nhỏ hơn lesson-content-area */
+    width: 100%; /* Rất quan trọng: Đảm bảo container chiếm toàn bộ chiều rộng có thể */
+}
+
+.lesson-video {
+    aspect-ratio: 16 / 9; /* Đặt tỷ lệ khung hình cho vùng chứa video */
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-radius: 12px;
+    position: relative; /* Cần thiết để video con có thể định vị tuyệt đối */
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    width: 100%; /* Rất quan trọng: Đảm bảo .lesson-video chiếm 100% chiều rộng của .lesson-video-container */
+}
+
+.lesson-video:hover {
+    transform: scale(1.02);
+}
+
+/* Thêm hoặc điều chỉnh quy tắc này cho thẻ <video> bên trong */
+.lesson-video video {
+    position: absolute; /* Video con được định vị tuyệt đối trong .lesson-video */
+    top: 0;
+    left: 0;
+    width: 100%; /* Video chiếm toàn bộ chiều rộng của .lesson-video */
+    height: 100%; /* Video chiếm toàn bộ chiều cao của .lesson-video */
+    object-fit: contain; /* Hoặc 'cover' - xem giải thích dưới đây */
+    display: block; /* Loại bỏ khoảng trắng không mong muốn */
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    transition: opacity 0.3s ease;
+}
+
+.play-button {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--primary-blue);
+    transition: all 0.3s ease;
+}
+
+.play-button:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.video-info {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.lesson-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.lesson-badge {
+    background: var(--secondary-blue);
+    color: var(--primary-blue);
+}
+
+.assignment-badge {
+    background: var(--warning-light);
+    color: var(--warning-color);
+}
+
+/* Lesson Tabs */
+.lesson-tabs {
+    margin-top: 24px;
+}
+
+.lesson-tab-buttons {
+    display: flex;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 24px;
+    gap: 8px;
+}
+
+.lesson-tab-btn {
+    background: none;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lesson-tab-btn.active {
+    color: var(--primary-blue);
+    border-bottom-color: var(--primary-blue);
+    background-color: var(--secondary-blue);
+}
+
+.lesson-tab-btn:hover:not(.active) {
+    color: var(--primary-blue-light);
+    background-color: var(--background-light);
+}
+
+.lesson-tab-content {
+    display: none;
+}
+
+.lesson-tab-content.active {
+    display: block;
+}
+
+/* Lesson Info Tab */
+.lesson-info-topic {
+    background: var(--background-light);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.lesson-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+}
+
+.lesson-meta {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.meta-item i {
+    color: var(--primary-blue);
+}
+
+.lesson-description {
+    color: var(--text-dark);
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* Documents Section */
+.documents-topic {
+    margin-top: 24px;
+}
+
+.documents-topic h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.document-item {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+}
+
+.document-item:hover {
+    border-color: var(--primary-blue);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+.document-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--secondary-blue);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-blue);
+    font-size: 1.2rem;
+}
+
+.document-info {
+    flex: 1;
+}
+
+.document-name {
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.document-size {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.document-download {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 16px;
+    border: 1px solid var(--primary-blue);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.document-download:hover {
+    background: var(--primary-blue);
+    color: white;
+}
+
+/* Transcript Section */
+.transcript-topic {
+    margin-top: 24px;
+}
+
+.transcript-topic h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.transcript-content {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.transcript-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.transcript-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.transcript-time {
+    font-size: 0.8rem;
+    color: var(--primary-blue);
+    font-weight: 500;
+    min-width: 60px;
+    cursor: pointer;
+}
+
+.transcript-time:hover {
+    text-decoration: underline;
+}
+
+.transcript-text {
+    flex: 1;
+    color: var(--text-dark);
+    line-height: 1.5;
+}
+
+/* Exercise Tab */
+.exercise-topic {
+    background: var(--background-light);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.exercise-item {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--primary-blue);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.exercise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.exercise-title {
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 1.1rem;
+}
+
+.exercise-difficulty {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.difficulty-easy {
+    background: var(--success-light);
+    color: #166534;
+}
+
+.difficulty-medium {
+    background: var(--warning-light);
+    color: #92400e;
+}
+
+.difficulty-hard {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.exercise-description {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.exercise-question {
+    background: var(--background-light);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.question-text {
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: var(--text-dark);
+}
+
+.option-item {
+    padding: 10px 16px;
+    margin: 8px 0;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+}
+
+/*.option-item:hover {
+  border-color: var(--primary-blue);
+  background-color: var(--secondary-blue);
+}
+
+.option-item.correct {
+  background-color: var(--success-light);
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  font-weight: 500;
+}
+
+.option-item:not(.correct) {
+  background-color: #f8fafc;
+  color: var(--text-dark);
+}*/
+
+/* Quy tắc mặc định cho phần giải thích */
+.question-explanation {
+    display: none; /* RẤT QUAN TRỌNG: Ẩn giải thích mặc định */
+    margin-top: 16px;
+    padding: 16px;
+    background-color: var(--secondary-blue); /* Hoặc màu e9ecef như tôi gợi ý trước đó nếu bạn muốn nền xám nhạt hơn */
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--primary-blue-dark);
+    border-left: 3px solid var(--primary-blue);
+    /* Thêm các style khác nếu muốn */
+    font-style: italic; /* Giữ style nghiêng */
+}
+
+.exercise-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.btn-check-answer {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-check-answer:hover {
+    background: var(--primary-blue-dark);
+}
+
+.btn-reset {
+    background: var(--border-color);
+    color: var(--text-dark);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-reset:hover {
+    background: var(--text-light);
+    color: white;
+}
+
+/* Exam Content - No Video Layout */
+.assignment-content {
+    display: none;
+}
+
+.assignment-header-card {
+    background: var(--warning-light);
+    border-radius: 12px;
+    padding: 32px 24px;
+    margin-bottom: 24px;
+    border: 2px solid var(--warning-color);
+    text-align: center;
+}
+
+.assignment-icon-large {
+    font-size: 4rem;
+    color: var(--warning-color);
+    margin-bottom: 20px;
+}
+
+.assignment-stats {
+    display: flex;
+    gap: 40px;
+    margin: 24px 0;
+    justify-content: center;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--warning-color);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 1rem;
+    color: var(--text-light);
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+.assignment-questions-topic {
+    margin-top: 24px;
+}
+
+.topic-header h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.assignment-questions {
+    background: var(--background-light);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.question-item {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--warning-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+    .lesson-detail-container {
+        flex-direction: column;
+    }
+
+    .lesson-sidebar {
+        width: 100%;
+        margin-bottom: 20px;
+        max-height: 300px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .lesson-meta,
+    .assignment-stats {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .assignment-stats {
+        gap: 20px;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+
+    .lesson-tab-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .lesson-tab-btn {
+        border-radius: 8px;
+        border-bottom: none;
+        border-left: 3px solid transparent;
+    }
+
+    .lesson-tab-btn.active {
+        border-left-color: var(--primary-blue);
+        border-bottom-color: transparent;
+    }
+}
+
+.exercise-header-topic {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.exercise-header-topic h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Pagination Styles */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 8px;
+}
+
+.pagination-button {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.pagination-button:hover:not(:disabled) {
+    background-color: var(--primary-blue-dark);
+}
+
+.pagination-button:disabled {
+    background-color: var(--border-color);
+    color: var(--text-light);
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+/* --- Styles for Exercise Answer Reveal (Thêm vào cuối file CSS của bạn) --- */
+
+/* Màu đỏ cho đáp án người dùng chọn và là đáp án sai */
+.question-item.revealed-answer .option-item.selected-incorrect {
+    background-color: #fecaca; /* Màu đỏ nhạt */
+    color: #991b1b;           /* Màu chữ đỏ đậm */
+    border-color: #ef4444;    /* Viền đỏ */
+    font-weight: 500;
+}
+
+/* Đảm bảo đáp án đúng hiển thị màu xanh khi đã tiết lộ */
+.question-item.revealed-answer .option-item.correct {
+    background-color: var(--success-light); /* Màu xanh lá nhạt, đảm bảo biến CSS này được định nghĩa */
+    color: #166534;           /* Màu chữ xanh đậm */
+    border-color: var(--success-color); /* Viền xanh, đảm bảo biến CSS này được định nghĩa */
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.3); /* Thêm bóng nhẹ */
+}
+
+/* Các tùy chọn khác không được chọn và không phải đáp án đúng khi đã tiết lộ */
+.question-item.revealed-answer .option-item:not(.selected-incorrect):not(.correct) {
+    background-color: #f8f9fa; /* Nền xám rất nhạt */
+    color: var(--text-light); /* Màu chữ xám nhạt hơn */
+    border-color: var(--border-color);
+    opacity: 0.7; /* Làm mờ nhẹ các tùy chọn không liên quan */
+}
+
+/* Đảm bảo giải thích được hiển thị sau khi tiết lộ */
+.question-item.revealed-answer .question-explanation {
+    display: block !important; /* Đảm bảo hiển thị */
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #e6f7ff; /* Màu nền xanh nhạt cho giải thích */
+    border-left: 5px solid #33b5e5; /* Đường viền bên trái */
+    border-radius: 4px;
+    color: #333;
+}
+.submit-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.submit-button {
+    background-color: var(--success-color, #28a745);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.submit-button:hover {
+    background-color: var(--success-dark, #218838);
+}
+
+.submit-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    overflow: auto;
+    animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+.modal-content {
+    background: linear-gradient(135deg, #ffffff, #e6f0fa);
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 12px;
+    width: 80%;
+    max-width: 450px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    animation: scaleUp 0.3s ease-in-out;
+    border: 1px solid #d0e3ff;
+}
+@keyframes scaleUp {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+.modal-header h3 {
+    margin: 0;
+    font-size: 26px;
+    color: #1a3c87;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+.close-btn {
+    font-size: 28px;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s;
+}
+.close-btn:hover {
+    color: #1a3c87;
+}
+.modal-body {
+    padding: 20px 0;
+}
+.modal-body p {
+    margin: 10px 0;
+    font-size: 18px;
+    color: #333;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+.modal-body .score {
+    font-size: 36px;
+    font-weight: bold;
+    color: #28a745;
+    margin: 15px 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+.modal-body .icon-success {
+    font-size: 50px;
+    color: #28a745;
+    margin-bottom: 15px;
+}
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 15px;
+}
+.modal-footer button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    transition: background-color 0.2s, transform 0.1s;
+}
+.modal-footer .btn-close {
+    background-color: #007bff;
+    color: white;
+}
+.modal-footer .btn-close:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+.modal-footer .btn-review {
+    background-color: #6c757d;
+    color: white;
+}
+.modal-footer .btn-review:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+}

@@ -2,33 +2,37 @@
 <%@ page import="model.UserAccount" %>
 
 <!-- Add CSS for notifications -->
-<link href="${pageContext.request.contextPath}/assets/css/student/notifications.css" rel="stylesheet" />
+<link href="${pageContext.request.contextPath}/assets/css/student/notifications.css" rel="stylesheet">
 
-<div class="main-header" style="justify-content:space-between; padding:32px 0 0 0; width:100%; max-width:1100px;">
-    <div style="display:flex; align-items:center; gap:12px;">
-        <span style="font-size:26px; font-weight:bold; color:#000000; letter-spacing:1px; transition: color 0.3s ease;"></span>
+<div class="main-header">
+    <div class="header-left">
+        <span class="site-title"></span> <!-- Placeholder for title/logo -->
     </div>
-    <div style="display:flex; align-items:center; gap:12px;">
-        <button class="icon-btn" onclick="window.location.href='${pageContext.request.contextPath}/view/student/shopping_cart.jsp'" style="transition: transform 0.3s ease; color: #ff9800;"><i class="fa fa-shopping-cart"></i></button>
-        <button class="icon-btn notification-bell-btn" style="transition: transform 0.3s ease; color: #ff9800;"><i class="fa fa-bell"></i></button>
+    <div class="header-right">
+        <button class="icon-btn" aria-label="Shopping Cart" onclick="window.location.href='${pageContext.request.contextPath}/view/student/shopping_cart.jsp'">
+            <i class="fa fa-shopping-cart"></i>
+        </button>
+        <button class="icon-btn notification-bell-btn" aria-label="Notifications">
+            <i class="fa fa-bell"></i>
+        </button>
         <% 
             UserAccount user = (UserAccount) session.getAttribute("user");
             if (user != null) { 
                 String profilePic = (user.getProfilePicture() != null && !user.getProfilePicture().isEmpty()) 
-                    ? (request.getContextPath() + user.getProfilePicture()) 
-                    : (request.getContextPath() + "/assets/img/default-avatar.png"); // Ảnh mặc định
+                    ? request.getContextPath() + "/uploads/" + user.getProfilePicture() // Sanitized path
+                    : request.getContextPath() + "/assets/img/default-avatar.png";
         %>
-            <div class="user-info" style="display:flex; align-items:center; gap:15px; padding:5px 10px; background-color:#f8f9fa; border-radius:5px;">
-                <a href="${pageContext.request.contextPath}/view/authentication/profile.jsp" style="text-decoration:none;">
-                    <img src="<%= profilePic %>?t=<%= java.lang.System.currentTimeMillis() %>" alt="Avatar" style="width:40px; height:40px; border-radius:50%; object-fit:cover; transition: transform 0.3s ease;">
+            <div class="user-info">
+                <a href="${pageContext.request.contextPath}/view/authentication/profile.jsp" aria-label="View Profile">
+                    <img src="<%= profilePic %>?t=<%= System.currentTimeMillis() %>" alt="User Avatar" class="user-avatar">
                 </a>
-                <span style="font-weight:bold; color:#333; transition: color 0.3s ease;"><%= user.getUsername() != null ? user.getUsername() : user.getFullName() %></span>
-                <form action="${pageContext.request.contextPath}/logout" method="post" style="margin:0;">
-                    <button type="submit" style="padding:8px 16px; background:linear-gradient(90deg,#ff9800 60%,#ffb347 100%); color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer; transition: all 0.3s ease;">Đăng xuất</button>
+                <span class="user-name"><%= user.getUsername() != null ? user.getUsername() : user.getFullName() %></span>
+                <form action="${pageContext.request.contextPath}/logout" method="post" class="logout-form">
+                    <button type="submit" class="logout-btn" onclick="return confirm('Bạn có chắc muốn đăng xuất?')">Đăng xuất</button>
                 </form>
             </div>
         <% } else { %>
-            <button style="background:linear-gradient(90deg,#ff9800 60%,#ffb347 100%);color:#fff;font-weight:bold;padding:8px 28px;border:none;border-radius:8px;font-size:16px;cursor:pointer; transition: transform 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" onclick="window.location.href='${pageContext.request.contextPath}/loginPage'">Đăng nhập</button>
+            <button class="login-btn" onclick="window.location.href='${pageContext.request.contextPath}/loginPage'">Đăng nhập</button>
         <% } %>
     </div>
 </div>
@@ -39,52 +43,50 @@
 </script>
 <script src="${pageContext.request.contextPath}/assets/js/student/notifications.js"></script>
 
-<script>
-    function confirmLogout(logoutUrl) {
-        if (confirm("Bạn có chắc muốn đăng xuất?")) {
-            window.location.href = logoutUrl;
-        }
-    }
-</script>
 <style>
-    .main-header:hover .icon-btn,
-    .main-header:hover img,
-    .main-header:hover span,
-    .main-header:hover a,
-    .main-header:hover button {
-        transition: all 0.3s ease;
+    :root {
+        --primary-color: #ff9800;
+        --secondary-color: #ffb347;
+        --text-color: #333;
+        --bg-light: #f8f9fa;
     }
-    .main-header .icon-btn:hover {
-        transform: scale(1.1);
-        background: linear-gradient(135deg, #ff9800, #ffb347);
-        color: white !important;
-        border-radius: 50%;
-        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+
+    .main-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 32px 0;
+        width: 100%;
+        max-width: 1600px;
+        margin: 0 auto;
     }
-    .main-header img:hover {
-        transform: scale(1.1);
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-left: 50px;
     }
-    .main-header span:hover {
-        color: #ff9800;
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-left: auto;
     }
-    .main-header a:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        color: #ff6600;
+
+    .site-title {
+        font-size: 26px;
+        font-weight: bold;
+        color: var(--text-color);
+        letter-spacing: 1px;
+        transition: color 0.3s ease;
     }
-    .main-header button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+
+    .site-title:hover {
+        color: var(--primary-color);
     }
-    /* Thêm style cho user-info */
-    .user-info a {
-        text-decoration: none;
-    }
-    .user-info button:hover {
-        background: linear-gradient(90deg, #e06e4c 60%, #ffaa66 100%);
-    }
-    
-    /* Icon buttons styling */
+
     .icon-btn {
         background: none;
         border: none;
@@ -92,5 +94,73 @@
         cursor: pointer;
         border-radius: 50%;
         font-size: 18px;
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+
+    .icon-btn:hover {
+        transform: scale(1.1);
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 5px 10px;
+        background-color: var(--bg-light);
+        border-radius: 5px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .user-avatar:hover {
+        transform: scale(1.1);
+    }
+
+    .user-name {
+        font-weight: bold;
+        color: var(--text-color);
+        transition: color 0.3s ease;
+    }
+
+    .user-name:hover {
+        color: var(--primary-color);
+    }
+
+    .user-info a {
+        text-decoration: none;
+    }
+
+    .logout-btn, .login-btn {
+        padding: 8px 16px;
+        background: linear-gradient(90deg, var(--primary-color) 60%, var(--secondary-color) 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .login-btn {
+        padding: 8px 28px;
+        font-size: 16px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .logout-btn:hover, .login-btn:hover {
+        transform: translateY(-2px);
+        background: linear-gradient(90deg, #e06e4c 60%, #ffaa66 100%);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 </style>

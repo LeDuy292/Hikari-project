@@ -119,9 +119,35 @@ public class StudentDAO {
         
         return student;
     }
+    
+     public String getStudentIdByUserId(String userID) {
+        if (userID == null || userID.trim().isEmpty()) {
+            return null;
+        }
+        
+        String sql = "SELECT studentID FROM Student WHERE userID = ?";
+        
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, userID);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getString("studentID");
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+     
     public static void main(String[] args) {
         StudentDAO dao = new StudentDAO();
         System.out.println(dao.getStudentsByClass("CL001"));
         System.out.println(dao.getStudentById("S003"));
+        System.out.println(dao.getStudentIdByUserId("U003"));
     }
 }

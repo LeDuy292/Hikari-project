@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 public class Lesson {
     private int id;
     private String topicID;
@@ -7,7 +9,8 @@ public class Lesson {
     private String description;
     private String mediaUrl;
     private boolean isCompleted;
-
+ private List<Document> documents; // Thêm thuộc tính này
+    private List<Exercise> exercises;
     // Constructors
     public Lesson() {}
 
@@ -69,6 +72,22 @@ public class Lesson {
 
     public void setMediaUrl(String mediaUrl) {
         this.mediaUrl = mediaUrl;
+    }
+
+    public List<Document> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(List<Document> documents) {
+        this.documents = documents;
+    }
+
+    public List<Exercise> getExercises() {
+        return exercises;
+    }
+
+    public void setExercises(List<Exercise> exercises) {
+        this.exercises = exercises;
     }
 
     @Override

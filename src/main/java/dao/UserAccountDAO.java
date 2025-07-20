@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import model.Student;
 import model.Teacher;
 import model.UserAccount;
 import utils.DBContext;
@@ -46,6 +47,24 @@ public class UserAccountDAO extends DBContext {
         } catch (Exception e) {
         }
         return user ; 
+    }
+    public Student getStudentByUserID(String userID){
+        Student student = null ; 
+        String sql = "Select * from Student where userID = ?";
+        try (Connection con = new DBContext().getConnection(); 
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, userID);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            student = new Student();
+            student.setStudentID(rs.getString("studentID"));
+            student.setUserID(rs.getString("userID"));
+            student.setEnrollmentDate(rs.getTimestamp("enrollmentDate"));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+        return student ;
     }
     public Teacher getByUserID(String userID) {
     Teacher teacher = null;
