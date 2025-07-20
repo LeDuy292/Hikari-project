@@ -10,9 +10,9 @@
     </head>
     <body>
         <div class="container">
-            <%--<%@ include file="header.jsp" %>--%>
+            <%@ include file="header.jsp" %>
             <div class="main-content">
-                <%--<%@ include file="sidebar.jsp" %>--%>
+                <%@ include file="sidebar.jsp" %>
                 <div class="content">
                     <div class="section">
                         <h2>Kỳ Thi JLPT</h2>
