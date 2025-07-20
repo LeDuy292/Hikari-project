@@ -59,7 +59,7 @@ public class CVServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             logger.warn("CVServlet: Unauthorized access attempt, redirecting to login.");
-            response.sendRedirect("view/coordinator/login.jsp?error=please_login");
+            response.sendRedirect("view/login.jsp?error=please_login");
             return;
         }
 
@@ -91,7 +91,7 @@ public class CVServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             logger.warn("CVServlet: Unauthorized access attempt, redirecting to login.");
-            response.sendRedirect("view/coordinator/login.jsp?error=please_login");
+            response.sendRedirect("view/login.jsp?error=please_login");
             return;
         }
 
@@ -127,12 +127,14 @@ public class CVServlet extends HttpServlet {
             cv.setPhone(user.getPhone());
             cv.setFileUrl(fileUrl);
             cv.setStatus("Pending");
+            cv.setInterviewStatus("Pending"); // CHANGED: Thêm khởi tạo interviewStatus khi upload CV mới
 
             try {
                 cvDAO.addCV(cv);
 //                sendEmail(user.getEmail(), "CV Submitted", "Your CV has been submitted successfully and is pending review.");
                 logger.info("CVServlet: CV uploaded successfully for user {}.", user.getUserID());
-                response.sendRedirect("view/coordinator/upload-cv.jsp?success=upload");
+//                response.sendRedirect("view/coordinator/upload-cv.jsp?success=upload");
+                response.sendRedirect(request.getContextPath() + "/cv?success=upload");
             } catch (Exception e) {
                 cvRepository.deleteFile(fileUrl);
                 logger.error("CVServlet: Error uploading CV for user {}: {}", user.getUserID(), e.getMessage(), e);
@@ -149,6 +151,7 @@ public class CVServlet extends HttpServlet {
             String status = request.getParameter("status");
             String reviewerID = user.getUserID();
             String comments = request.getParameter("comments");
+            String interviewStatus = request.getParameter("interviewStatus");
 
             try {
                 CV cv = cvDAO.getCVByID(cvID);
@@ -157,16 +160,22 @@ public class CVServlet extends HttpServlet {
                     response.sendRedirect("view/coordinator/teacher-cv-review.jsp?error=cv_not_found");
                     return;
                 }
-
+                String finalInterviewStatus = interviewStatus != null && 
+                    (interviewStatus.equals("Pending") || interviewStatus.equals("Pass") || interviewStatus.equals("Fail")) 
+                    ? interviewStatus : cv.getInterviewStatus();
+                
+                // CHANGED: Cập nhật cả status và interviewStatus
                 cvDAO.updateCVStatus(cvID, status, reviewerID, comments);
+                cvDAO.updateInterviewStatus(cvID, interviewStatus); // Gọi phương thức mới để cập nhật interviewStatus
 
                 String subject = status.equals("Approved") ? "CV Approved" : "CV Rejected";
                 String message = status.equals("Approved") ?
-                    "Congratulations! Your CV has been approved. You are now a Teacher. Please contact us for the next steps." :
+                    "Congratulations! Your CV has been approved. Your interview status is: " + interviewStatus + ". Please contact us for the next steps." : // CHANGED: Thêm thông tin interviewStatus vào email
                     "We regret to inform you that your CV has been rejected. Reason: " + comments;
 //                sendEmail(cv.getEmail(), subject, message);
 
-                if (status.equals("Approved")) {
+                // CHANGED: Chỉ thêm Teacher nếu cả status là Approved và interviewStatus là Pass
+                if (status.equals("Approved") && interviewStatus.equals("Pass")) {
                     String newTeacherID = generateTeacherID();
                     Teacher teacher = new Teacher();
                     teacher.setTeacherID(newTeacherID);
@@ -175,7 +184,7 @@ public class CVServlet extends HttpServlet {
                     teacher.setExperienceYears(0);
                     teacherDAO.addTeacher(teacher);
                     userAccountDAO.updateUserRole(cv.getUserID(), "Teacher");
-                    logger.info("CVServlet: CV {} approved, created teacher {} for user {}.", cvID, newTeacherID, cv.getUserID());
+                    logger.info("CVServlet: CV {} approved with interview status Pass, created teacher {} for user {}.", cvID, newTeacherID, cv.getUserID());
                 }
 
                 if (status.equals("Rejected")) {
@@ -183,7 +192,7 @@ public class CVServlet extends HttpServlet {
                     logger.info("CVServlet: CV {} rejected, deleted file from S3.", cvID);
                 }
 
-                response.sendRedirect("view/coordinator/teacher-cv-review.jsp?success=review");
+                response.sendRedirect(request.getContextPath() + "/cv?success=review");
             } catch (Exception e) {
                 logger.error("CVServlet: Error reviewing CV {}: {}", cvID, e.getMessage(), e);
                 throw new ServletException("Error reviewing CV", e);

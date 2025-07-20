@@ -233,4 +233,12 @@
             30
         </session-timeout>
     </session-config>
+    <servlet>
+        <servlet-name>TestServlet</servlet-name>
+        <servlet-class>controller.test.TestServlet</servlet-class>
+        <init-param>
+            <param-name>responseBufferSize</param-name>
+            <param-value>65536</param-value>
+        </init-param>
+    </servlet>
 </web-app>

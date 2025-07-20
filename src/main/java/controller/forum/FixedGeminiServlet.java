@@ -83,11 +83,6 @@ public class FixedGeminiServlet extends HttpServlet {
                 
                 // Add source indicator
                 String responseWithSource = textResponse;
-                if (fromDatabase) {
-                    responseWithSource += "\n\n💡 *Thông tin từ cơ sở dữ liệu Hikari*";
-                } else {
-                    responseWithSource += "\n\n🤖 *Phản hồi từ AI Assistant*";
-                }
                 
                 chatHistory.add(new String[]{userInput, responseWithSource});
                 session.setAttribute("chatHistory", chatHistory);
@@ -129,38 +124,67 @@ public class FixedGeminiServlet extends HttpServlet {
     }
     
     private String getGeminiResponse(String userInput) throws Exception {
-        String contextualPrompt = "Bạn là AI Assistant của hệ thống học tiếng Nhật HIKARI. " +
-                "HIKARI là nền tảng học tiếng Nhật trực tuyến với các khóa học từ N5 đến N1. " +
-                "Học phí các khóa học: N5 (2 triệu), N4 (2.5 triệu), N3 (3 triệu), N2 (3.5 triệu), N1 (4 triệu), " +
-                "Kanji Mastery (1.8 triệu), Hội thoại Thực tế (2.2 triệu), Văn hóa Nhật (1.5 triệu), " +
-                "Tiếng Nhật Thương mại (3.2 triệu), Luyện nghe N3-N2 (1.9 triệu). " +
-                "Hãy trả lời câu hỏi sau một cách hữu ích và chính xác. " +
-                "Nếu không biết chắc chắn, hãy gợi ý liên hệ support@hikari.edu.vn. " +
-                "Câu hỏi: " + userInput;
-        
-        String jsonPayload = "{\"contents\":[{\"parts\":[{\"text\":\"" + 
-                            contextualPrompt.replace("\"", "\\\"").replace("\n", "\\n") + "\"}]}]}";
-        
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest apiRequest = HttpRequest.newBuilder()
-                .uri(URI.create(GEMINI_ENDPOINT + "?key=" + GEMINI_API_KEY))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                .build();
-        
-        HttpResponse<String> apiResponse = client.send(apiRequest, HttpResponse.BodyHandlers.ofString());
+    // Bối cảnh trò chuyện để giúp Gemini hiểu đúng hệ thống Hikari
+    String contextualPrompt = "Bạn là AI Assistant của hệ thống học tiếng Nhật HIKARI. " +
+            "HIKARI là nền tảng học tiếng Nhật trực tuyến với các khóa học từ N5 đến N1. " +
+            "Học phí các khóa học: N5 (2 triệu), N4 (2.5 triệu), N3 (3 triệu), N2 (3.5 triệu), N1 (4 triệu), " +
+            "Kanji Mastery (1.8 triệu), Hội thoại Thực tế (2.2 triệu), Văn hóa Nhật (1.5 triệu), " +
+            "Tiếng Nhật Thương mại (3.2 triệu), Luyện nghe N3-N2 (1.9 triệu). " +
+            "Hãy trả lời câu hỏi sau một cách hữu ích và chính xác. " +
+            "Nếu không biết chắc chắn, hãy gợi ý liên hệ support@hikari.edu.vn. " +
+            "Câu hỏi: " + userInput;
 
-        try {
-            JSONObject json = new JSONObject(apiResponse.body());
+    // Tạo JSON payload
+    JSONObject payload = new JSONObject();
+    JSONObject part = new JSONObject();
+    part.put("text", contextualPrompt);
+
+    JSONObject content = new JSONObject();
+    content.put("parts", List.of(part));
+
+    payload.put("contents", List.of(content));
+
+    // Tạo yêu cầu HTTP
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest apiRequest = HttpRequest.newBuilder()
+            .uri(URI.create(GEMINI_ENDPOINT + "?key=" + GEMINI_API_KEY))
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
+            .build();
+
+    HttpResponse<String> apiResponse = client.send(apiRequest, HttpResponse.BodyHandlers.ofString());
+
+    // In log phản hồi để debug
+    System.out.println("➡️ Gemini Request Payload: " + payload.toString(2));
+    System.out.println("⬅️ Gemini Response Code: " + apiResponse.statusCode());
+    System.out.println("⬅️ Gemini Response Body: " + apiResponse.body());
+
+    try {
+        JSONObject json = new JSONObject(apiResponse.body());
+
+        // Nếu có lỗi từ API
+        if (json.has("error")) {
+            JSONObject error = json.getJSONObject("error");
+            System.err.println("❌ Gemini API Error: " + error.toString(2));
+            return "Lỗi từ Gemini API: " + error.optString("message", "Không rõ nguyên nhân.");
+        }
+
+        // Lấy nội dung trả lời
+        if (json.has("candidates")) {
             return json.getJSONArray("candidates")
                     .getJSONObject(0)
                     .getJSONObject("content")
                     .getJSONArray("parts")
                     .getJSONObject(0)
                     .getString("text");
-        } catch (Exception e) {
-            System.err.println("Error parsing Gemini response: " + e.getMessage());
-            return "Xin lỗi, tôi không thể xử lý câu hỏi này lúc này. Vui lòng thử lại sau hoặc liên hệ support@hikari.edu.vn để được hỗ trợ.";
+        } else {
+            System.err.println("❌ Không tìm thấy 'candidates' trong phản hồi từ Gemini.");
+            return "Xin lỗi, tôi không thể xử lý câu hỏi này lúc này. Vui lòng thử lại sau hoặc liên hệ support@hikari.edu.vn.";
         }
+    } catch (Exception e) {
+        System.err.println("❌ Lỗi khi phân tích phản hồi Gemini: " + e.getMessage());
+        return "Xin lỗi, tôi không thể xử lý câu hỏi này lúc này. Vui lòng thử lại sau hoặc liên hệ support@hikari.edu.vn.";
     }
+}
+
 }

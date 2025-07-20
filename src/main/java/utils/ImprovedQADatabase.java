@@ -68,7 +68,7 @@ public class ImprovedQADatabase {
     
     private void loadQADatabase() {
         try {
-            InputStream is = getClass().getClassLoader().getResourceAsStream("qa_database.txt");
+            InputStream is = getClass().getClassLoader().getResourceAsStream("resources/qa_database.txt");
             if (is == null) {
                 File file = new File("qa_database.txt");
                 if (file.exists()) {

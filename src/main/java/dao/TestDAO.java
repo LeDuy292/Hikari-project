@@ -94,6 +94,7 @@ public class TestDAO {
 
     public static void main(String[] args) {
         TestDAO dao = new TestDAO();
-        System.out.println(dao.getAllActiveTests());
+//        System.out.println(dao.getAllActiveTests());
+        System.out.println(dao.getTestById(1));
     }
 }

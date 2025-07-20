@@ -1,9 +1,10 @@
 package model;
 
 public class Answer {
+
     private int questionId;
-private String  studentID ; 
-private int testId ;
+    private String studentID;
+    private int testId;
     private String studentAnswer;
     private String correctAnswer;
     private double score;
@@ -11,7 +12,6 @@ private int testId ;
     private boolean answered;
 
     // Constructor
-
     public Answer(int questionId, String studentID, int testId, String studentAnswer, String correctAnswer, double score, boolean correct, boolean answered) {
         this.questionId = questionId;
         this.studentID = studentID;
@@ -23,9 +23,6 @@ private int testId ;
         this.answered = answered;
     }
 
-    
-   
-
     // Getters and Setters
     public int getQuestionId() {
         return questionId;
@@ -34,8 +31,6 @@ private int testId ;
     public void setQuestionId(int questionId) {
         this.questionId = questionId;
     }
-
-  
 
     public String getStudentAnswer() {
         return studentAnswer;
@@ -76,4 +71,21 @@ private int testId ;
     public void setAnswered(boolean answered) {
         this.answered = answered;
     }
+
+    public String getStudentID() {
+        return studentID;
+    }
+
+    public void setStudentID(String studentID) {
+        this.studentID = studentID;
+    }
+
+    public int getTestId() {
+        return testId;
+    }
+
+    public void setTestId(int testId) {
+        this.testId = testId;
+    }
+    
 }
