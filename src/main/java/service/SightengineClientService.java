@@ -9,13 +9,15 @@ import java.net.http.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import constant.ApiConstants;
 
 public class SightengineClientService {
 
-    private static final String API_USER = "1405169130";
-    private static final String API_SECRET = "YCtJEMsNJVgYA9qtzxjcrMwvJ58CvyyV";
+    private static final String API_USER = ApiConstants.SIGHTENGINE_API_USER;
+    private static final String API_SECRET = ApiConstants.SIGHTENGINE_API_SECRET;
 
     public static class ImageSafetyResult {
+
         public boolean isSafe;
         public List<String> violations;
 
@@ -42,10 +44,10 @@ public class SightengineClientService {
         writer.append("--" + boundary + "--").append("\r\n").flush();
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.sightengine.com/1.0/check.json" +
-                        "?models=nudity,wad,offensive" +
-                        "&api_user=" + API_USER +
-                        "&api_secret=" + API_SECRET))
+                .uri(URI.create("https://api.sightengine.com/1.0/check.json"
+                        + "?models=nudity,wad,offensive"
+                        + "&api_user=" + API_USER
+                        + "&api_secret=" + API_SECRET))
                 .header("Content-Type", "multipart/form-data; boundary=" + boundary)
                 .POST(HttpRequest.BodyPublishers.ofByteArray(byteArrays.toByteArray()))
                 .build();
@@ -62,10 +64,18 @@ public class SightengineClientService {
         double drugs = root.path("drugs").asDouble(0.0);
 
         List<String> violations = new ArrayList<>();
-        if (nudity >= 0.5) violations.add("Phát hiện nội dung khỏa thân");
-        if (weapon >= 0.5) violations.add("Phát hiện vũ khí");
-        if (alcohol >= 0.5) violations.add("Phát hiện rượu bia");
-        if (drugs >= 0.5) violations.add("Phát hiện ma túy");
+        if (nudity >= 0.5) {
+            violations.add("Phát hiện nội dung khỏa thân");
+        }
+        if (weapon >= 0.5) {
+            violations.add("Phát hiện vũ khí");
+        }
+        if (alcohol >= 0.5) {
+            violations.add("Phát hiện rượu bia");
+        }
+        if (drugs >= 0.5) {
+            violations.add("Phát hiện ma túy");
+        }
 
         boolean isSafe = violations.isEmpty();
         return new ImageSafetyResult(isSafe, violations);
