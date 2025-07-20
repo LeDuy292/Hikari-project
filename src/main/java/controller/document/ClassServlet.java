@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 @WebServlet(urlPatterns = {"/api/classes", "/documents/class/*"})
 public class ClassServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(ClassServlet.class.getName());
     private final ClassDAO classDAO = new ClassDAO();
     private final Gson gson = new Gson();
 
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
