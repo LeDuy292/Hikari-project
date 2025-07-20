@@ -9,7 +9,7 @@ public class Test {
     private double totalMarks;
     private int totalQuestions;
     private boolean isActive;
-    private int duration ; 
+    private int duration;
 
     public Test() {
     }
@@ -40,8 +40,6 @@ public class Test {
     public void setDuration(int duration) {
         this.duration = duration;
     }
-
-    
 
     // Getters and Setters
     public int getId() {
@@ -92,8 +90,6 @@ public class Test {
         this.totalQuestions = totalQuestions;
     }
 
-
-
     public boolean isActive() {
         return isActive;
     }
@@ -101,4 +97,10 @@ public class Test {
     public void setActive(boolean isActive) {
         this.isActive = isActive;
     }
+
+    @Override
+    public String toString() {
+        return "Test{" + "id=" + id + ", jlptLevel=" + jlptLevel + ", title=" + title + ", description=" + description + ", totalMarks=" + totalMarks + ", totalQuestions=" + totalQuestions + ", isActive=" + isActive + ", duration=" + duration + '}';
+    }
+
 }

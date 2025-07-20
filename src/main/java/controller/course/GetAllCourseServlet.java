@@ -61,7 +61,7 @@ public class GetAllCourseServlet extends HttpServlet {
         UserAccount currentUser = (UserAccount) request.getSession().getAttribute("user");
         System.out.println("ID " + currentUser);
         if (currentUser == null || !"Teacher".equals(currentUser.getRole())) {
-            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/view/authentication/login.jsp");
             return;
         }
         CourseDAO dao = new CourseDAO();
