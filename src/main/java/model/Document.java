@@ -15,6 +15,7 @@ public class Document {
     private String uploadedBy;
     
 
+    
     // Constructor đầy đủ (9 tham số)
     public Document(int id, int lessonID, String classID, String title, String description, String fileUrl, String imgUrl, Timestamp uploadDate, String uploadedBy) {
         this.id = id;

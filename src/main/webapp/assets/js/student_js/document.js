@@ -3,7 +3,6 @@ let currentPage = 1
 let documents = []
 let filteredDocuments = []
 
-
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Document loaded, initializing...")
 
@@ -15,12 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const errorMessage = document.getElementById("errorMessage")
   const documentList = document.getElementById("documentList")
 
-  if (!prevPage || !nextPage || !searchInput || !categorySelect || !errorMessage || !documentList) {
+  if (!prevPage || !nextPage || !searchInput || !errorMessage || !documentList) {
     console.error("One or more required elements not found:", {
       prevPage: !!prevPage,
       nextPage: !!nextPage,
       searchInput: !!searchInput,
-      categorySelect: !!categorySelect,
       errorMessage: !!errorMessage,
       documentList: !!documentList,
     })
@@ -51,17 +49,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   searchInput.addEventListener("input", (e) => {
     const searchTerm = e.target.value.toLowerCase()
-    filterDocuments(searchTerm, categorySelect.value.toLowerCase())
+    const category = categorySelect ? categorySelect.value.toLowerCase() : ""
+    filterDocuments(searchTerm, category)
     currentPage = 1
     paginateDocuments()
   })
 
-  categorySelect.addEventListener("change", (e) => {
-    const category = e.target.value.toLowerCase()
-    filterDocuments(searchInput.value.toLowerCase(), category)
-    currentPage = 1
-    paginateDocuments()
-  })
+  if (categorySelect) {
+    categorySelect.addEventListener("change", (e) => {
+      const category = e.target.value.toLowerCase()
+      filterDocuments(searchInput.value.toLowerCase(), category)
+      currentPage = 1
+      paginateDocuments()
+    })
+  }
 
   // Class select event listener
   if (classSelect) {
@@ -76,20 +77,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function showLoading() {
   const documentList = document.getElementById("documentList")
-  documentList.innerHTML = `
-    <div class="col-span-full text-center py-8">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-      <p class="text-gray-500">Đang tải tài liệu từ hệ thống...</p>
-    </div>
-  `
+  if (documentList) {
+    documentList.innerHTML = `
+      <div class="col-span-full text-center py-8">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+        <p class="text-gray-500">Đang tải tài liệu từ hệ thống...</p>
+      </div>
+    `
+  }
 }
 
 function fetchDocuments(classId = null) {
-  // Xây dựng URL API - sử dụng đúng endpoint
-  let apiUrl = `${window.location.origin}/Hikari/api/documents`
+  // Xây dựng URL API - sử dụng đúng context path
+  const contextPath = window.location.pathname.split("/")[1] || "Hikari"
+  let apiUrl = `${window.location.origin}/${contextPath}/api/documents`
 
   // Thêm classId nếu có
-  if (classId) {
+  if (classId && classId.trim() !== "") {
     apiUrl += `?classId=${encodeURIComponent(classId)}`
   }
 
@@ -108,9 +112,11 @@ function fetchDocuments(classId = null) {
       console.log("Response headers:", Object.fromEntries(response.headers.entries()))
 
       if (!response.ok) {
-        if (response.status === 401) {
-          console.warn("Unauthorized access, but continuing with limited functionality")
-          // Không show error nữa, thay vào đó tạo sample data
+        if (response.status === 404) {
+          console.warn("API endpoint not found, using sample data")
+          return createSampleData()
+        } else if (response.status === 401) {
+          console.warn("Unauthorized access, using sample data")
           return createSampleData()
         }
         throw new Error(`HTTP error! status: ${response.status}`)
@@ -164,9 +170,9 @@ function createSampleData() {
     {
       id: 1,
       title: "Hiragana cơ bản",
-      description: "Tài liệu học bảng chữ cái Hiragana",
-      fileUrl: "/Hikari/assets/documents/sample_documents/hiragana_basic.pdf",
-      imgUrl: "/Hikari/assets/img/documents/Japanese-N5.jpg",
+      description: "Tài liệu học bảng chữ cái Hiragana với các bài tập thực hành",
+      fileUrl: "https://projectswp1.s3.ap-southeast-2.amazonaws.com/documents/sample/hiragana_basic.pdf",
+      imgUrl: "https://projectswp1.s3.ap-southeast-2.amazonaws.com/images/Japanese-N5.jpg",
       uploadedBy: "T001",
       classID: "CL001",
       uploadDate: "2024-01-15",
@@ -174,9 +180,9 @@ function createSampleData() {
     {
       id: 2,
       title: "Katakana nâng cao",
-      description: "Tài liệu học bảng chữ cái Katakana",
-      fileUrl: "/Hikari/assets/documents/sample_documents/katakana_advanced.pdf",
-      imgUrl: "/Hikari/assets/img/documents/Japanese-N5.jpg",
+      description: "Tài liệu học bảng chữ cái Katakana với từ vựng ngoại lai",
+      fileUrl: "https://projectswp1.s3.ap-southeast-2.amazonaws.com/documents/sample/katakana_advanced.pdf",
+      imgUrl: "https://projectswp1.s3.ap-southeast-2.amazonaws.com/images/Japanese-N5.jpg",
       uploadedBy: "T001",
       classID: "CL001",
       uploadDate: "2024-01-20",
@@ -184,9 +190,9 @@ function createSampleData() {
     {
       id: 3,
       title: "Số đếm tiếng Nhật",
-      description: "Học cách đếm số từ 1-100",
-      fileUrl: "/Hikari/assets/documents/sample_documents/numbers_basic.pdf",
-      imgUrl: "/Hikari/assets/img/documents/Japanese-N5.jpg",
+      description: "Học cách đếm số từ 1-100 và ứng dụng thực tế",
+      fileUrl: "https://projectswp1.s3.ap-southeast-2.amazonaws.com/documents/sample/numbers_basic.pdf",
+      imgUrl: "https://projectswp1.s3.ap-southeast-2.amazonaws.com/images/Japanese-N5.jpg",
       uploadedBy: "T001",
       classID: null,
       uploadDate: "2024-01-25",
@@ -194,9 +200,9 @@ function createSampleData() {
     {
       id: 4,
       title: "Ngữ pháp N4",
-      description: "Các cấu trúc ngữ pháp cơ bản N4",
-      fileUrl: "/Hikari/assets/documents/sample_documents/grammar_n4.pdf",
-      imgUrl: "/Hikari/assets/img/documents/Japanese-N4.jpg",
+      description: "Các cấu trúc ngữ pháp cơ bản của trình độ N4",
+      fileUrl: "https://projectswp1.s3.ap-southeast-2.amazonaws.com/documents/sample/grammar_n4.pdf",
+      imgUrl: "https://projectswp1.s3.ap-southeast-2.amazonaws.com/images/Japanese-N4.jpg",
       uploadedBy: "T002",
       classID: "CL003",
       uploadDate: "2024-02-01",
@@ -204,9 +210,9 @@ function createSampleData() {
     {
       id: 5,
       title: "Kanji N5",
-      description: "50 chữ Kanji đầu tiên cho người mới học",
-      fileUrl: "/Hikari/assets/documents/sample_documents/kanji_n5.pdf",
-      imgUrl: "/Hikari/assets/img/documents/Japanese-N5.jpg",
+      description: "50 chữ Kanji đầu tiên dành cho người mới học",
+      fileUrl: "https://projectswp1.s3.ap-southeast-2.amazonaws.com/documents/sample/kanji_n5.pdf",
+      imgUrl: "https://projectswp1.s3.ap-southeast-2.amazonaws.com/images/Japanese-N5.jpg",
       uploadedBy: "T001",
       classID: null,
       uploadDate: "2024-02-05",
@@ -216,28 +222,32 @@ function createSampleData() {
 
 function showNoDocuments() {
   const documentList = document.getElementById("documentList")
-  documentList.innerHTML = `
-    <div class="col-span-full text-center py-12">
-      <i class="fas fa-folder-open text-6xl text-gray-300 mb-4"></i>
-      <h3 class="text-xl font-semibold text-gray-600 mb-2">Chưa có tài liệu</h3>
-      <p class="text-gray-500">Không có tài liệu PDF nào để hiển thị.</p>
-    </div>
-  `
+  if (documentList) {
+    documentList.innerHTML = `
+      <div class="col-span-full text-center py-12">
+        <i class="fas fa-folder-open text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2">Chưa có tài liệu</h3>
+        <p class="text-gray-500">Không có tài liệu PDF nào để hiển thị.</p>
+      </div>
+    `
+  }
   updatePagination()
 }
 
 function showError(message) {
   const documentList = document.getElementById("documentList")
-  documentList.innerHTML = `
-    <div class="col-span-full text-center py-12">
-      <i class="fas fa-exclamation-triangle text-6xl text-red-300 mb-4"></i>
-      <h3 class="text-xl font-semibold text-red-600 mb-2">Có lỗi xảy ra</h3>
-      <p class="text-red-500">${message}</p>
-      <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition">
-        <i class="fas fa-redo mr-2"></i>Thử lại
-      </button>
-    </div>
-  `
+  if (documentList) {
+    documentList.innerHTML = `
+      <div class="col-span-full text-center py-12">
+        <i class="fas fa-exclamation-triangle text-6xl text-red-300 mb-4"></i>
+        <h3 class="text-xl font-semibold text-red-600 mb-2">Có lỗi xảy ra</h3>
+        <p class="text-red-500">${message}</p>
+        <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition">
+          <i class="fas fa-redo mr-2"></i>Thử lại
+        </button>
+      </div>
+    `
+  }
   updatePagination()
 }
 
@@ -265,14 +275,15 @@ function createDocumentCard(doc, index) {
   card.style.animationDelay = `${index * 0.1}s`
 
   const uploadDate = doc.uploadDate ? new Date(doc.uploadDate).toLocaleDateString("vi-VN") : "N/A"
-  const imageUrl = doc.imgUrl || doc.imageUrl || "/Hikari/assets/img/documents/Japanese-N5.jpg"
+  const imageUrl =
+    doc.imgUrl || doc.imageUrl || "https://projectswp1.s3.ap-southeast-2.amazonaws.com/images/Japanese-N5.jpg"
 
   card.innerHTML = `
         <div class="relative overflow-hidden rounded-xl mb-4">
             <img src="${imageUrl}" 
                  alt="Document thumbnail" 
                  class="w-full h-36 object-cover group-hover:scale-105 transition-transform duration-300"
-                 onerror="this.src='/Hikari/assets/img/documents/Japanese-N5.jpg'">
+                 onerror="this.src='https://projectswp1.s3.ap-southeast-2.amazonaws.com/images/Japanese-N5.jpg'">
             <div class="absolute top-2 right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
                 PDF
             </div>
@@ -307,13 +318,15 @@ function createDocumentCard(doc, index) {
 
 function previewDocument(documentId) {
   console.log("Previewing document:", documentId)
-  const previewUrl = `${window.location.origin}/Hikari/documents/preview/${documentId}`
+  const contextPath = window.location.pathname.split("/")[1] || "Hikari"
+  const previewUrl = `${window.location.origin}/${contextPath}/documents/preview/${documentId}`
   window.open(previewUrl, "_blank")
 }
 
 function downloadDocument(documentId, title) {
   console.log("Downloading document:", documentId, title)
-  const downloadUrl = `${window.location.origin}/Hikari/documents/download/${documentId}`
+  const contextPath = window.location.pathname.split("/")[1] || "Hikari"
+  const downloadUrl = `${window.location.origin}/${contextPath}/documents/download/${documentId}`
 
   // Tạo link tạm thời để download
   const link = document.createElement("a")
@@ -349,11 +362,14 @@ function filterDocuments(searchTerm, category) {
 
   const errorMessage = document.getElementById("errorMessage")
   if (filteredDocuments.length === 0) {
-    errorMessage.classList.remove("hidden")
-    document.getElementById("documentList").innerHTML =
-      '<div class="col-span-full text-center py-8"><i class="fa fa-search text-4xl text-gray-300 mb-4"></i><p class="text-gray-500">Không tìm thấy tài liệu phù hợp với từ khóa tìm kiếm.</p></div>'
+    if (errorMessage) errorMessage.classList.remove("hidden")
+    const documentList = document.getElementById("documentList")
+    if (documentList) {
+      documentList.innerHTML =
+        '<div class="col-span-full text-center py-8"><i class="fa fa-search text-4xl text-gray-300 mb-4"></i><p class="text-gray-500">Không tìm thấy tài liệu phù hợp với từ khóa tìm kiếm.</p></div>'
+    }
   } else {
-    errorMessage.classList.add("hidden")
+    if (errorMessage) errorMessage.classList.add("hidden")
     renderDocuments()
   }
 }
@@ -439,7 +455,10 @@ function paginateDocuments() {
   updatePagination()
 
   // Scroll to top of document list
-  document.getElementById("documentList").scrollIntoView({ behavior: "smooth", block: "start" })
+  const documentList = document.getElementById("documentList")
+  if (documentList) {
+    documentList.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
 }
 
 function updateDocumentCount(count) {
