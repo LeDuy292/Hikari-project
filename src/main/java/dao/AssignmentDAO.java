@@ -42,7 +42,7 @@ public class AssignmentDAO {
 
     public List<Assignment> getAllAssignments() {
         List<Assignment> list = new ArrayList<>();
-        String sql = "SELECT * FROM Assignment a JOIN Assignment_Reviews ar  on a.id = ar.assignmentID WHERE  ar.reviewStatus = Approved";
+        String sql = "SELECT * FROM Assignment a JOIN Assignment_Reviews ar  on a.id = ar.assignmentID WHERE  ar.reviewStatus = 'Approved'";
 
         try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
@@ -76,7 +76,7 @@ public class AssignmentDAO {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                a = new Assignment();
+               a = new Assignment();
                 a.setId(rs.getInt("id"));
                 a.setTopicID(rs.getString("topicID"));
                 a.setTitle(rs.getString("title"));
@@ -85,6 +85,15 @@ public class AssignmentDAO {
                 a.setTotalMark(rs.getDouble("totalMarks"));
                 a.setTotalQuestions(rs.getInt("totalQuestions"));
                 a.setIsComplete(rs.getBoolean("isComplete"));
+
+                QuestionDAO questionDAO = new QuestionDAO(); 
+                try {
+                    List<Question> questions = questionDAO.getQuestionsByEntity("assignment", a.getId());
+                    a.setQuestions(questions); 
+                    System.out.println("DEBUG: Loaded " + questions.size() + " questions for Assignment ID: " + a.getId());
+                } catch (SQLException qe) {
+                    System.out.println("Error loading questions for Assignment " + a.getId() + ": " + qe.getMessage());
+                }
             }
             rs.close();
 
@@ -133,7 +142,7 @@ public class AssignmentDAO {
 
     public List<Assignment> getAssignmentsByTopicId(String topicID) {
         List<Assignment> list = new ArrayList<>();
-        String sql = "SELECT * FROM Assignment a JOIN Assignment_Reviews ar  on a.id = ar.assignmentID WHERE a.topicID = ? AND ar.reviewStatus = Approved";
+        String sql = "SELECT * FROM Assignment a JOIN Assignment_Reviews ar  on a.id = ar.assignmentID WHERE a.topicID = ? AND  ar.reviewStatus = 'Approved'";
 
         try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             QuestionDAO questionDAO = new QuestionDAO();
@@ -165,6 +174,7 @@ public class AssignmentDAO {
     }
     public static void main(String[] args) {
         AssignmentDAO edao = new AssignmentDAO();
+        System.out.println(edao.getAssignmentById(1));
         System.out.println(edao.getAssignmentsByTopicId("TP001"));
     }
 }
