@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Date;
+import java.util.List;
 
 
 public class Topic {
@@ -12,7 +13,8 @@ public class Topic {
     private boolean isActive;
     private Date createdDate;
     private String courseId;
-
+     private List<Lesson> lessons;
+    private List<Assignment> assignments;
     public Topic(String topicId, String topicName, String description, int orderIndex,
             boolean isActive, Date createdDate, String courseId) {
         this.topicId = topicId;
@@ -51,6 +53,30 @@ public class Topic {
 
     public String getCourseId() {
         return courseId;
+    }
+
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public List<Lesson> getLessons() {
+        return lessons;
+    }
+
+    public void setLessons(List<Lesson> lessons) {
+        this.lessons = lessons;
+    }
+
+    public List<Assignment> getAssignments() {
+        return assignments;
+    }
+
+    public void setAssignments(List<Assignment> assignments) {
+        this.assignments = assignments;
     }
     
 }

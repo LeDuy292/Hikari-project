@@ -36,13 +36,13 @@ public class ChatUserServlet extends HttpServlet {
             throws ServletException, IOException {
         UserAccount currentUser = (UserAccount) request.getSession().getAttribute("user");
         if (currentUser == null) {
-            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/view/authentication/login.jsp");
             return;
         }
         String userID = currentUser.getUserID();
         if (userID == null || userID.isEmpty()) {
             System.out.println("Invalid userID for currentUser: " + currentUser);
-            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/view/authentication/login.jsp");
             return;
         }
 

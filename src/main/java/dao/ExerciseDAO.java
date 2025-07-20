@@ -79,4 +79,8 @@ public List<Exercise> getExercisesByLessonID(int lessonID) {
 
         return list;
     }
+    public static void main(String[] args) {
+        ExerciseDAO dao = new ExerciseDAO();
+        System.out.println("1"+dao.getExercisesByLessonID(2));
+    }
 }

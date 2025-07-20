@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <servlet>
+        <servlet-name>SubmitAssignmentServlet</servlet-name>
+        <servlet-class>controller.progress.SubmitAssignmentServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UpdateProgressServlet</servlet-name>
+        <url-pattern>/updateProgress</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SubmitAssignmentServlet</servlet-name>
+        <url-pattern>/submitAssignment</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>view/student/home.jsp</welcome-file>
     </welcome-file-list>
-
     <servlet>
         <servlet-name>LoadCourseServlet</servlet-name>
         <servlet-class>controller.coordinator.LoadCourseServlet</servlet-class>
@@ -51,6 +62,14 @@
     <servlet>
         <servlet-name>TeacherProfileServlet</servlet-name>
         <servlet-class>controller.teacher.TeacherProfileServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetTopicList</servlet-name>
+        <servlet-class>controller.course.GetTopicListServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateProgressServlet</servlet-name>
+        <servlet-class>controller.progress.UpdateProgressServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LoadCourseServlet</servlet-name>
@@ -100,12 +119,10 @@
         <servlet-name>UploadFileExcel</servlet-name>
         <url-pattern>/UploadFileExcel</url-pattern>
     </servlet-mapping>
-    <!-- controller.document -->
     <servlet>
-        <servlet-name>DocumentServlet</servlet-name>
-        <servlet-class>controller.document.DocumentServlet</servlet-class>
+        <servlet-name>ManageDocumentServlet</servlet-name>
+        <servlet-class>controller.document.ManageDocumentServlet</servlet-class>
     </servlet>
-    <!-- controller.message -->
     <servlet>
         <servlet-name>ChatUserServlet</servlet-name>
         <servlet-class>controller.message.ChatUserServlet</servlet-class>
@@ -122,7 +139,6 @@
         <servlet-name>UploadImageServlet</servlet-name>
         <url-pattern>/UploadImageServlet</url-pattern>
     </servlet-mapping>
-    <!-- WebSocket Config (không cần servlet-mapping) -->
     <servlet>
         <servlet-name>ChatServerConfigurator</servlet-name>
         <servlet-class>controller.message.ChatServerConfigurator</servlet-class>
@@ -131,7 +147,6 @@
         <servlet-name>ChatServerEndPoint</servlet-name>
         <servlet-class>controller.message.ChatServerEndPoint</servlet-class>
     </servlet>
-    <!-- controller.test -->
     <servlet>
         <servlet-name>AddQuestionServlet</servlet-name>
         <servlet-class>controller.test.AddQuestionServlet</servlet-class>
@@ -227,10 +242,24 @@
     <servlet-mapping>
         <servlet-name>TeacherProfileServlet</servlet-name>
         <url-pattern>/teacherProfile</url-pattern>
+        
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetTopicList</servlet-name>
+        <url-pattern>/learn</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
             30
         </session-timeout>
     </session-config>
+    <servlet>
+        <servlet-name>TestServlet</servlet-name>
+        <servlet-class>controller.test.TestServlet</servlet-class>
+        <init-param>
+            <param-name>responseBufferSize</param-name>
+            <param-value>65536</param-value>
+        </init-param>
+    </servlet>
+
 </web-app>

@@ -2,6 +2,8 @@
 .sidebar {
   width: 280px;
   background: #fff4e5;
+  width: 320px;
+  background: #FFF4E5;
   height: 100vh;
   position: fixed;
   top: 0;

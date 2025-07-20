@@ -16,12 +16,34 @@
 </head>
 <body class="bg-[#f7f7fa] font-sans">
   <div class="flex-container">
+    <!-- Sidebar -->
     <jsp:include page="sidebar.jsp" />
 
-    <main class="flex-1 px-8 py-6 flex flex-col">
+    <!-- Main content -->
+    <main class="flex-1 px-8 py-6 flex flex-col" style="margin-left: 320px !important;">
+      <!-- Header -->
       <jsp:include page="header.jsp" />
 
-      <!-- Banner Section -->
+      <!-- Registration Modal -->
+      <div class="modal" id="signupModal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal()">×</span>
+          <h2>Đăng ký tài khoản</h2>
+          <form action="${pageContext.request.contextPath}/register" method="post">
+            <input type="text" name="fullName" placeholder="Họ và tên" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Mật khẩu" required>
+            <select name="role" required>
+              <option value="" disabled selected>Chọn vai trò</option>
+              <option value="student">Học viên</option>
+              <option value="teacher">Giáo viên</option>
+            </select>
+            <button type="submit">Đăng ký</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Banner -->
       <div class="bg-white rounded-3xl overflow-hidden shadow-xl mb-8 mt-8">
         <div class="mt-2 px-8 pb-8">
           <div class="relative rounded-[2.5rem] overflow-hidden" style="height: 200px;">
@@ -60,18 +82,19 @@
             </c:forEach>
           </select>
         </c:if>
+
+        <div class="text-sm text-gray-500" id="documentCount">
+          Đang tải...
+        </div>
       </div>
 
-      <!-- Search and Filter Controls -->
+      <!-- Search Bar -->
       <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-3">
         <div class="flex items-center space-x-2">
           <button class="px-5 py-2 custom-active-btn font-semibold shadow hover:shadow-lg transition">
             <i class="fa fa-file-pdf mr-2"></i>
             Tài liệu PDF
           </button>
-          <div class="text-sm text-gray-500" id="documentCount">
-            Đang tải...
-          </div>
         </div>
         <div class="relative w-full md:w-1/3">
           <input type="text" 
@@ -83,24 +106,14 @@
       </div>
 
       <!-- Document List Section -->
-      <div class="mb-8">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold">
-            <i class="fa fa-folder-open mr-2 text-orange-500"></i>
-            Danh sách tài liệu
-          </h2>
-        </div>
-        
-        <div id="documentList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7 mb-10 transition-all duration-500 ease-in-out min-h-[400px]">
-          <!-- Documents will be loaded dynamically by JavaScript -->
-          <div class="col-span-full text-center py-8">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-            <p class="text-gray-500">Đang tải tài liệu...</p>
-          </div>
+      <div id="documentList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7 mb-10 transition-all duration-500 ease-in-out min-h-[400px]">
+        <div class="col-span-full text-center py-8">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p class="text-gray-500">Đang tải tài liệu...</p>
         </div>
       </div>
 
-      <!-- Pagination Section -->
+      <!-- Pagination -->
       <div class="flex justify-center items-center space-x-2 mb-10">
         <button id="prevPage" class="pagination-btn disabled:opacity-50 disabled:cursor-not-allowed">
           <i class="fa fa-chevron-left"></i>
@@ -126,18 +139,5 @@
 
   <!-- Load JavaScript -->
   <script src="${pageContext.request.contextPath}/assets/js/student_js/document.js"></script>
-  
-  <!-- Debug information -->
-  <script>
-    console.log("JSP Debug Info:");
-    console.log("Context Path:", "${pageContext.request.contextPath}");
-    console.log("Classes available:", ${not empty classes});
-    <c:if test="${not empty classes}">
-      console.log("Number of classes:", ${classes.size()});
-    </c:if>
-    console.log("User Role:", "${userRole}");
-    console.log("User ID:", "${userID}");
-  </script>
 </body>
-
 </html>
