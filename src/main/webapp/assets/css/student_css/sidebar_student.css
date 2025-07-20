@@ -1,6 +1,7 @@
-
 /* Sidebar styles */
 .sidebar {
+  width: 280px;
+  background: #fff4e5;
   width: 320px;
   background: #FFF4E5;
   height: 100vh;
@@ -34,14 +35,14 @@
 }
 
 .logo-text {
-  font-family: 'Dancing Script', cursive;
+  font-family: "Dancing Script", cursive;
   font-size: 24px;
   font-weight: 700;
   color: #ff9800;
 }
 
 .logo-sub {
-  font-family: 'Dancing Script', cursive;
+  font-family: "Dancing Script", cursive;
   font-size: 12px;
   color: #666;
   font-weight: 500;
@@ -68,6 +69,16 @@
 
 .menu-item:hover i {
   color: #ff9800;
+}
+
+.menu-item.active {
+  background: linear-gradient(90deg, #ff9100 0%, #ffb347 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px 0 rgba(255, 145, 0, 0.12);
+}
+
+.menu-item.active i {
+  color: #fff;
 }
 
 .menu {
