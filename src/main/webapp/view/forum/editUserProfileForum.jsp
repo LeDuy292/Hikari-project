@@ -21,6 +21,12 @@
     <body>
         <%@ include file="forumHeader.jsp" %>
         <div class="edit-profile-container">
+            <% String message = (String) session.getAttribute("message");
+                                if (message != null) {%>
+            <div class="alert"><%= message%></div>
+            <% session.removeAttribute("message");
+                }
+            %>
             <form class="edit-profile-form" action="<%=request.getContextPath()%>/profile/edit" method="post" enctype="multipart/form-data">
                 <h2><i class="fas fa-user-edit"></i> Chỉnh sửa hồ sơ cá nhân</h2>
                 <div class="avatar-preview">
@@ -76,12 +82,6 @@
                     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Lưu thay đổi</button>
                     <a href="<%=request.getContextPath()%>/profile?userId=<%= user.getUserID()%>" class="btn btn-secondary">Hủy</a>
                 </div>
-                <% String message = (String) session.getAttribute("message");
-                    if (message != null) {%>
-                <div class="alert"><%= message%></div>
-                <% session.removeAttribute("message");
-                    }
-                %>
             </form>
         </div>
         <script>

@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -36,6 +37,7 @@ public class EditUserProfileServlet extends HttpServlet {
 
         request.setAttribute("user", user);
         request.getRequestDispatcher("/view/forum/editUserProfileForum.jsp").forward(request, response);
+
     }
 
     @Override
@@ -89,19 +91,46 @@ public class EditUserProfileServlet extends HttpServlet {
             // Cập nhật ảnh đại diện
             Part avatarPart = request.getPart("avatar");
             if (avatarPart != null && avatarPart.getSize() > 0) {
-                ForumImageRepository repo = new ForumImageRepository();
-                String avatarUrl = repo.uploadAvatarImage(avatarPart, userId);
-                if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                    currentUser.setProfilePicture(avatarUrl);
+                try (InputStream inputStream = avatarPart.getInputStream()) {
+                    byte[] imageBytes = inputStream.readAllBytes();
+                    String contentType = avatarPart.getContentType();
+
+                    var result = new service.SightengineClientService().isImageSafe(imageBytes, contentType);
+                    if (!result.isSafe) {
+                        session.setAttribute("message", "Ảnh đại diện vi phạm quy định: " + String.join(", ", result.violations));
+                        request.getRequestDispatcher("/view/forum/editUserProfileForum.jsp").forward(request, response);
+
+                        return;
+                    }
+
+                    ForumImageRepository repo = new ForumImageRepository();
+                    String avatarUrl = repo.uploadAvatarImage(avatarPart, userId);
+                    if (avatarUrl != null && !avatarUrl.isEmpty()) {
+                        currentUser.setProfilePicture(avatarUrl);
+                    }
                 }
             }
+
             // Cập nhật ảnh bìa
             Part coverPart = request.getPart("coverPhoto");
             if (coverPart != null && coverPart.getSize() > 0) {
-                ForumImageRepository repo = new ForumImageRepository();
-                String coverUrl = repo.uploadImage(coverPart, "forum/covers/" + userId + "/", 5 * 1024 * 1024, "cover");
-                if (coverUrl != null && !coverUrl.isEmpty()) {
-                    currentUser.setCoverPhoto(coverUrl);
+                try (InputStream inputStream = coverPart.getInputStream()) {
+                    byte[] imageBytes = inputStream.readAllBytes();
+                    String contentType = coverPart.getContentType();
+
+                    var result = new service.SightengineClientService().isImageSafe(imageBytes, contentType);
+                    if (!result.isSafe) {
+                        session.setAttribute("message", "Ảnh bìa vi phạm quy định: " + String.join(", ", result.violations));
+                        request.getRequestDispatcher("/view/forum/editUserProfileForum.jsp").forward(request, response);
+
+                        return;
+                    }
+
+                    ForumImageRepository repo = new ForumImageRepository();
+                    String coverUrl = repo.uploadImage(coverPart, "forum/covers/" + userId + "/", 5 * 1024 * 1024, "cover");
+                    if (coverUrl != null && !coverUrl.isEmpty()) {
+                        currentUser.setCoverPhoto(coverUrl);
+                    }
                 }
             }
 
@@ -117,7 +146,7 @@ public class EditUserProfileServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("message", "Có lỗi xảy ra: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/view/forum/editUserProfileForum.jsp");
+            request.getRequestDispatcher("/view/forum/editUserProfileForum.jsp").forward(request, response);
         }
     }
 }
