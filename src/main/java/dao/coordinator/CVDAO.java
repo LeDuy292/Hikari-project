@@ -23,7 +23,8 @@ public class CVDAO {
     }
 
     public void addCV(CV cv) {
-        String sql = "INSERT INTO CV (userID, fullName, email, phone, fileUrl, status) VALUES (?, ?, ?, ?, ?, ?)";
+        // Thêm interviewStatus vào câu lệnh SQL để hỗ trợ thuộc tính mới
+        String sql = "INSERT INTO CV (userID, fullName, email, phone, fileUrl, status, interviewStatus) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, cv.getUserID());
             stmt.setString(2, cv.getFullName());
@@ -31,8 +32,9 @@ public class CVDAO {
             stmt.setString(4, cv.getPhone());
             stmt.setString(5, cv.getFileUrl());
             stmt.setString(6, cv.getStatus());
+            stmt.setString(7, cv.getInterviewStatus()); // Gán giá trị cho interviewStatus
             stmt.executeUpdate();
-            logger.info("CVDAO: Added new CV for userID: {}", cv.getUserID());
+            logger.info("CVDAO: Added new CV for userID: {} with interviewStatus: {}", cv.getUserID(), cv.getInterviewStatus());
         } catch (SQLException e) {
             logger.error("CVDAO: Error adding CV for userID {}: {}", cv.getUserID(), e.getMessage(), e);
         }
@@ -40,6 +42,7 @@ public class CVDAO {
 
     public List<CV> getAllCVs() {
         List<CV> cvList = new ArrayList<>();
+        // Cập nhật câu lệnh SQL để lấy thêm interviewStatus
         String sql = "SELECT * FROM CV";
         try (PreparedStatement stmt = connection.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -56,6 +59,7 @@ public class CVDAO {
                 cv.setReviewerID(rs.getString("reviewerID"));
                 cv.setReviewDate(rs.getTimestamp("reviewDate"));
                 cv.setComments(rs.getString("comments"));
+                cv.setInterviewStatus(rs.getString("interviewStatus")); // Lấy giá trị interviewStatus
                 cvList.add(cv);
             }
             logger.debug("CVDAO: Retrieved {} CVs.", cvList.size());
@@ -66,6 +70,7 @@ public class CVDAO {
     }
 
     public CV getCVByID(int cvID) {
+        // Cập nhật câu lệnh SQL để lấy thêm interviewStatus
         String sql = "SELECT * FROM CV WHERE cvID = ?";
         CV cv = null;
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -84,6 +89,7 @@ public class CVDAO {
                     cv.setReviewerID(rs.getString("reviewerID"));
                     cv.setReviewDate(rs.getTimestamp("reviewDate"));
                     cv.setComments(rs.getString("comments"));
+                    cv.setInterviewStatus(rs.getString("interviewStatus")); // Lấy giá trị interviewStatus
                     logger.debug("CVDAO: Retrieved CV with ID {}: {}", cvID, cv);
                 } else {
                     logger.warn("CVDAO: No CV found for ID: {}", cvID);
@@ -96,6 +102,7 @@ public class CVDAO {
     }
 
     public void updateCVStatus(int cvID, String status, String reviewerID, String comments) {
+        // Câu lệnh SQL giữ nguyên vì không liên quan đến interviewStatus
         String sql = "UPDATE CV SET status = ?, reviewerID = ?, reviewDate = CURRENT_TIMESTAMP, comments = ? WHERE cvID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, status);
@@ -113,8 +120,26 @@ public class CVDAO {
         }
     }
 
+    // Thêm phương thức mới để cập nhật interviewStatus
+    public void updateInterviewStatus(int cvID, String interviewStatus) {
+        String sql = "UPDATE CV SET interviewStatus = ? WHERE cvID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, interviewStatus);
+            stmt.setInt(2, cvID);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                logger.info("CVDAO: Updated interview status for cvID {} to {}", cvID, interviewStatus);
+            } else {
+                logger.warn("CVDAO: No CV found to update interview status for cvID: {}", cvID);
+            }
+        } catch (SQLException e) {
+            logger.error("CVDAO: Error updating interview status for cvID {}: {}", cvID, e.getMessage(), e);
+        }
+    }
+
     public List<CV> getCVsByUserID(String userID) {
         List<CV> cvList = new ArrayList<>();
+        // Cập nhật câu lệnh SQL để lấy thêm interviewStatus
         String sql = "SELECT * FROM CV WHERE userID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, userID);
@@ -132,6 +157,7 @@ public class CVDAO {
                     cv.setReviewerID(rs.getString("reviewerID"));
                     cv.setReviewDate(rs.getTimestamp("reviewDate"));
                     cv.setComments(rs.getString("comments"));
+                    cv.setInterviewStatus(rs.getString("interviewStatus")); // Lấy giá trị interviewStatus
                     cvList.add(cv);
                 }
                 logger.debug("CVDAO: Retrieved {} CVs for userID: {}", cvList.size(), userID);
@@ -161,6 +187,9 @@ public class CVDAO {
         System.out.println("CV with ID 1: " + cv);
         List<CV> userCVs = dao.getCVsByUserID("U001");
         System.out.println("CVs for user U001: " + userCVs);
+        // Test cập nhật interviewStatus
+        dao.updateInterviewStatus(1, "Pass");
+        System.out.println("Updated interview status for CV ID 1");
         dao.closeConnection();
     }
 }

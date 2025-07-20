@@ -22,31 +22,6 @@ body {
   /* Giữ nguyên styling gốc */
 }
 
-/* Đảm bảo links trong sidebar không bị ảnh hưởng */
-.sidebar a {
-  text-decoration: none !important;
-}
-
-.sidebar .menu-item {
-  text-decoration: none !important;
-}
-
-.sidebar .menu-item:hover {
-  text-decoration: none !important;
-}
-
-.sidebar .menu-item:focus {
-  text-decoration: none !important;
-}
-
-.sidebar .menu-item:visited {
-  text-decoration: none !important;
-}
-
-.sidebar .menu-item:active {
-  text-decoration: none !important;
-}
-
 /* Đảm bảo tất cả links trong sidebar không có gạch chân */
 .sidebar a,
 .sidebar a:hover,
@@ -56,7 +31,15 @@ body {
   text-decoration: none !important;
 }
 
-/* Main container - Cấu trúc giống courseInfo.jsp */
+.sidebar .menu-item,
+.sidebar .menu-item:hover,
+.sidebar .menu-item:focus,
+.sidebar .menu-item:visited,
+.sidebar .menu-item:active {
+  text-decoration: none !important;
+}
+
+/* Main container - Hỗ trợ sidebar */
 .main-container {
   margin-left: 280px;
   min-height: 100vh;
@@ -67,11 +50,22 @@ body {
   overflow-x: hidden;
 }
 
+/* Main content - Khớp chiều rộng với main-header */
 .main-content {
   flex: 1;
   padding: 24px 32px;
-  max-width: 1200px;
+  max-width: 1660px; /* Khớp với max-width của main-header */
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Content wrapper - Khớp chiều rộng và vị trí với main-header */
+.content-wrapper {
+  width: 100%;
+  max-width: 1700px; /* Khớp với max-width của main-header */
+  margin: 0 auto; /* Căn giữa giống main-header */
+  box-sizing: border-box;
 }
 
 /* Hero Section */
@@ -90,7 +84,7 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 40px;
   align-items: center;
-  max-width: 1100px;
+  max-width: 100%; /* Đảm bảo không vượt quá content-wrapper */
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -119,7 +113,7 @@ body {
   left: 0;
   width: 100%;
   height: 4px;
-  background: linear-gradient(90deg, #ff9800, #ffb347);
+  background: linear-gradient(90deg, #ff9100, #ffb347);
   border-radius: 2px;
 }
 
@@ -309,10 +303,10 @@ body {
   margin: 0 auto;
 }
 
-/* Features Section - Compact and Professional */
+/* Features Section */
 .features-section {
   padding: 50px 0;
-  max-width: 1100px;
+  max-width: 100%; /* Đảm bảo không vượt quá content-wrapper */
   margin: 0 auto;
   background: white;
   border-radius: 20px;
@@ -393,7 +387,7 @@ body {
 .courses-section {
   padding: 60px 0;
   background: #f8f9fa;
-  max-width: 1100px;
+  max-width: 100%; /* Đảm bảo không vượt quá content-wrapper */
   margin: 0 auto;
   border-radius: 24px;
 }
@@ -509,7 +503,7 @@ body {
 /* Testimonials Section */
 .testimonials-section {
   padding: 60px 0;
-  max-width: 1100px;
+  max-width: 100%; /* Đảm bảo không vượt quá content-wrapper */
   margin: 0 auto;
 }
 
@@ -582,7 +576,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* CTA Section - Thiết kế lại nhẹ nhàng */
+/* CTA Section */
 .cta-section {
   padding: 60px 0;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -592,7 +586,7 @@ body {
   overflow: hidden;
   border-radius: 24px;
   margin: 40px auto;
-  max-width: 1100px;
+  max-width: 100%; /* Đảm bảo không vượt quá content-wrapper */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
@@ -673,7 +667,7 @@ body {
   max-width: 100%;
 }
 
-/* Responsive Design - Phù hợp với courseInfo.jsp */
+/* Responsive Design */
 @media (max-width: 1024px) {
   .main-container {
     margin-left: 0;
@@ -683,6 +677,11 @@ body {
 
   .main-content {
     padding: 20px;
+    max-width: 100%; /* Responsive trên thiết bị nhỏ hơn */
+  }
+
+  .content-wrapper {
+    max-width: 100%; /* Responsive trên thiết bị nhỏ hơn */
   }
 
   .hero-content {

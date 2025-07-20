@@ -242,9 +242,23 @@
     <servlet-mapping>
         <servlet-name>TeacherProfileServlet</servlet-name>
         <url-pattern>/teacherProfile</url-pattern>
-    </servlet-mapping>
+    </servlet-map>
     <servlet-mapping>
         <servlet-name>GetTopicList</servlet-name>
         <url-pattern>/learn</url-pattern>
     </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <servlet>
+        <servlet-name>TestServlet</servlet-name>
+        <servlet-class>controller.test.TestServlet</servlet-class>
+        <init-param>
+            <param-name>responseBufferSize</param-name>
+            <param-value>65536</param-value>
+        </init-param>
+    </servlet>
+
 </web-app>
