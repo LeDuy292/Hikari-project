@@ -62,9 +62,24 @@ public class ResultDAO {
     }
 
     // Thêm mới kết quả
+//    public boolean addResult(Result result) {
+//        String sql = "INSERT INTO Result (studentID, studentName, testId, score, timeTaken, status) "
+//                + "VALUES (?, ?, ?, ?, ?, ?)";
+//        try (Connection conn = dbContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+//            ps.setString(1, result.getStudentID());
+//            ps.setInt(2, result.getTestId());
+//            ps.setDouble(3, result.getScore());
+//            ps.setString(4, result.getTimeTaken());
+//            ps.setString(5, result.getStatus());
+//            return ps.executeUpdate() > 0;
+//        } catch (SQLException e) {
+//            System.out.println("Lỗi addResult: " + e.getMessage());
+//            return false;
+//        }
+//    }
+    
     public boolean addResult(Result result) {
-        String sql = "INSERT INTO Result (studentID, studentName, testId, score, timeTaken, status) "
-                + "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Result (studentID, testId, score, timeTaken, status) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = dbContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, result.getStudentID());
             ps.setInt(2, result.getTestId());
