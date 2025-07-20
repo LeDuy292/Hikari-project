@@ -120,8 +120,8 @@
         <url-pattern>/UploadFileExcel</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>DocumentServlet</servlet-name>
-        <servlet-class>controller.document.ManageDocumentByTeacherServlet</servlet-class>
+        <servlet-name>ManageDocumentServlet</servlet-name>
+        <servlet-class>controller.document.ManageDocumentServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ChatUserServlet</servlet-name>
@@ -242,7 +242,8 @@
     <servlet-mapping>
         <servlet-name>TeacherProfileServlet</servlet-name>
         <url-pattern>/teacherProfile</url-pattern>
-    </servlet-map>
+        
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetTopicList</servlet-name>
         <url-pattern>/learn</url-pattern>
