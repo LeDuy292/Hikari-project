@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import model.UserAccount;
+import service.SightengineClientService;
 
 @WebServlet(name = "ForumServlet", urlPatterns = {"/forum", "/forum/createPost", "/forum/post/*", "/forum/deletePost"})
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, maxFileSize = 1024 * 1024 * 10, maxRequestSize = 1024 * 1024 * 50)
@@ -52,15 +54,15 @@ public class ForumServlet extends HttpServlet {
         LOGGER.info("ForumServlet initialized");
     }
 
-    private boolean checkAuthentication(HttpServletRequest request, HttpServletResponse response) 
+    private boolean checkAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         HttpSession session = request.getSession(false);
-        
+
         if (session == null) {
             redirectToLogin(request, response);
             return false;
         }
-        
+
         String userId = (String) session.getAttribute("userId");
         String username = (String) session.getAttribute("username");
         UserAccount user = (UserAccount) session.getAttribute("user");
@@ -70,19 +72,19 @@ public class ForumServlet extends HttpServlet {
             redirectToLogin(request, response);
             return false;
         }
-        
+
         return true;
     }
-    
+
     private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String originalUrl = request.getRequestURI();
         if (request.getQueryString() != null) {
             originalUrl += "?" + request.getQueryString();
         }
-        
+
         HttpSession newSession = request.getSession(true);
         newSession.setAttribute("redirectUrl", originalUrl);
-        
+
         response.sendRedirect(request.getContextPath() + "/view/login.jsp");
     }
 
@@ -90,16 +92,16 @@ public class ForumServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         LOGGER.info("ForumServlet doGet called for URL: " + request.getRequestURI());
-        
+
         // Check authentication first
         if (!checkAuthentication(request, response)) {
             return;
         }
-        
+
         try {
             String pathInfo = request.getPathInfo();
             HttpSession session = request.getSession();
-            
+
             String userId = UserAuthentication.getUserID(session);
             String userRole = UserAuthentication.getUserRole(session);
             UserAccount user = (UserAccount) session.getAttribute("user");
@@ -109,13 +111,13 @@ public class ForumServlet extends HttpServlet {
                 redirectToLogin(request, response);
                 return;
             }
-            
+
             // Check basic read permission
             if (!ForumPermissionService.hasPermission(user, ForumPermissions.PERM_READ_POSTS)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập diễn đàn");
                 return;
             }
-            
+
             request.setAttribute("user", user);
             request.setAttribute("userId", userId);
             request.setAttribute("userRole", userRole);
@@ -225,12 +227,12 @@ public class ForumServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         LOGGER.info("ForumServlet doPost called for URL: " + request.getServletPath());
-        
+
         // Check authentication first
         if (!checkAuthentication(request, response)) {
             return;
         }
-        
+
         String action = request.getServletPath();
 
         if ("/forum/createPost".equals(action)) {
@@ -239,7 +241,7 @@ public class ForumServlet extends HttpServlet {
             handleDeletePost(request, response);
         }
     }
-    
+
     private void handleCreatePost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
@@ -252,54 +254,72 @@ public class ForumServlet extends HttpServlet {
                 redirectToLogin(request, response);
                 return;
             }
-            
+
             // Check create post permission
             if (!ForumPermissionService.hasPermission(user, ForumPermissions.PERM_CREATE_POSTS)) {
-                request.getSession().setAttribute("message", "Bạn không có quyền tạo bài viết!");
+                session.setAttribute("message", "Bạn không có quyền tạo bài viết!");
                 response.sendRedirect(request.getContextPath() + "/forum");
                 return;
             }
-            
+
             LOGGER.info("Creating post for user: " + user.getUsername() + " (ID: " + userId + ")");
 
             String title = request.getParameter("postTitle");
             String content = request.getParameter("postContent");
             String category = request.getParameter("postCategory");
-            
+
             if (title == null || title.trim().isEmpty() || content == null || content.trim().isEmpty()
                     || category == null || category.trim().isEmpty()) {
-                request.getSession().setAttribute("message", "Tiêu đề, nội dung và chủ đề không được để trống");
-                response.sendRedirect(request.getContextPath() + "/forum");
-                return;
-            }
-            
-            // Check if user can post in this category
-            if (!ForumPermissionService.canPostInCategory(user, category)) {
-                request.getSession().setAttribute("message", "Bạn không có quyền đăng bài trong chuyên mục này!");
+                session.setAttribute("message", "Tiêu đề, nội dung và chủ đề không được để trống");
                 response.sendRedirect(request.getContextPath() + "/forum");
                 return;
             }
 
-            // Handle image upload through repository
+            // Check if user can post in this category
+            if (!ForumPermissionService.canPostInCategory(user, category)) {
+                session.setAttribute("message", "Bạn không có quyền đăng bài trong chuyên mục này!");
+                response.sendRedirect(request.getContextPath() + "/forum");
+                return;
+            }
+
+            // Handle image upload with moderation
             String imageUrl = null;
             Part filePart = request.getPart("imageInput");
             if (filePart != null && filePart.getSize() > 0) {
-                try {
-                    imageUrl = imageRepository.uploadPostImage(filePart, userId);
-                    if (imageUrl == null) {
-                        request.getSession().setAttribute("message", "Lỗi khi tải lên hình ảnh!");
+                try (InputStream inputStream = filePart.getInputStream()) {
+                    byte[] imageBytes = inputStream.readAllBytes();
+
+                    // Moderation check
+                    String contentType = filePart.getContentType();
+                    SightengineClientService.ImageSafetyResult result = new SightengineClientService().isImageSafe(imageBytes, contentType);
+                    boolean isSafe = result.isSafe;
+
+                    if (!isSafe) {
+                        String violationMessage = "Hình ảnh vi phạm quy định cộng đồng: " + String.join(", ", result.violations);
+                        session.setAttribute("message", violationMessage);
+                        LOGGER.warning("Kiểm duyệt hình ảnh thất bại. Vi phạm: " + String.join(", ", result.violations));
                         response.sendRedirect(request.getContextPath() + "/forum");
                         return;
                     }
+
+                    // Upload if safe
+                    imageUrl = imageRepository.uploadPostImage(filePart, userId);
+                    if (imageUrl == null) {
+                        session.setAttribute("message", "Lỗi khi tải lên hình ảnh!");
+                        response.sendRedirect(request.getContextPath() + "/forum");
+                        return;
+                    }
+
                     LOGGER.info("Uploaded image to S3: " + imageUrl);
                 } catch (Exception e) {
-                    LOGGER.severe("Error uploading image: " + e.getMessage());
-                    request.getSession().setAttribute("message", "Lỗi khi tải lên hình ảnh!");
+                    LOGGER.severe("Error during image moderation/upload: " + e.getMessage());
+                    session.setAttribute("message", "Lỗi khi kiểm duyệt hoặc tải lên hình ảnh!");
                     response.sendRedirect(request.getContextPath() + "/forum");
                     return;
                 }
             }
 
+            // Create post
             ForumPost post = new ForumPost();
             post.setTitle(title);
             post.setContent(content);
@@ -313,7 +333,7 @@ public class ForumServlet extends HttpServlet {
 
             postDAO.createPost(post);
 
-            request.getSession().setAttribute("message", "Bài viết đã được tạo thành công!");
+            session.setAttribute("message", "Bài viết đã được tạo thành công!");
             LOGGER.info("Post created successfully by user: " + user.getUsername());
             response.sendRedirect(request.getContextPath() + "/forum");
         } catch (SQLException e) {
@@ -326,7 +346,7 @@ public class ForumServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/forum");
         }
     }
-    
+
     private void handleDeletePost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
@@ -341,7 +361,7 @@ public class ForumServlet extends HttpServlet {
             }
 
             int postId = Integer.parseInt(request.getParameter("postId"));
-            
+
             // Get the post to check permissions
             ForumPost post = postDAO.getPostById(postId);
             if (post == null) {
@@ -349,14 +369,14 @@ public class ForumServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/forum");
                 return;
             }
-            
+
             // Check delete permission
             if (!ForumPermissionService.canDeletePost(user, post)) {
                 request.getSession().setAttribute("message", "Bạn không có quyền xóa bài viết này!");
                 response.sendRedirect(request.getContextPath() + "/forum/post/" + postId);
                 return;
             }
-            
+
             // Delete image from S3 if exists
             if (post.getPicture() != null && !post.getPicture().isEmpty()) {
                 try {
@@ -366,7 +386,7 @@ public class ForumServlet extends HttpServlet {
                     LOGGER.warning("Could not delete image from S3: " + e.getMessage());
                 }
             }
-            
+
             boolean deleted = postDAO.deletePost(postId, userId);
             if (deleted) {
                 request.getSession().setAttribute("message", "Xóa bài viết thành công!");
