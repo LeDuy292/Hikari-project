@@ -15,10 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.UserAccount;
 
-/**
- *
- * @author ASUS
- */
+
 @WebServlet(name = "DocumentPageServlet", urlPatterns = {"/documents"})
 public class DocumentPageServlet extends HttpServlet {
     @Override

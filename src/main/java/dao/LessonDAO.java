@@ -17,7 +17,7 @@ public class LessonDAO {
     public List<Lesson> getAllLessonsByTopicID(String topicID) {
         List<Lesson> lessonList = new ArrayList<>();
         String sql = "SELECT l.id, l.topicID, l.title, l.description, l.mediaUrl, l.isCompleted "
-                   + "FROM Lesson l join Lesson_Reviews lr WHERE l.topicID = ? AND lr.reviewStatus = Approved";
+                   + "FROM Lesson l join Lesson_Reviews lr on l.id = lr.lessonID WHERE l.topicID = ? AND lr.reviewStatus = 'Approved'";
         try (Connection conn = new DBContext().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -100,6 +100,31 @@ public class LessonDAO {
             System.out.println("Error at addLesson: " + e.getMessage());
             return false;
         }
+    }
+     public Lesson getLessonById(int lessonId) {
+        Lesson lesson = null;
+        String sql = "SELECT id, topicID, title, description, mediaUrl, isCompleted "
+                   + "FROM Lesson WHERE id = ?";
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, lessonId); // Thiết lập tham số ID
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) { // Chỉ cần đọc một dòng vì ID là duy nhất
+                    lesson = new Lesson(
+                                    rs.getInt("id"),
+                                    rs.getString("topicID"),
+                                    rs.getString("title"),
+                                    rs.getString("description"),
+                                    rs.getString("mediaUrl"),
+                                    rs.getBoolean("isCompleted")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error at getLessonById: " + e.getMessage());
+        }
+        return lesson;
     }
     // Demo
     public static void main(String[] args) {

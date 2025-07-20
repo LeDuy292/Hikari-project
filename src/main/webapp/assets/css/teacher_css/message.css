@@ -21,12 +21,10 @@
 }
 
 .content-wrapper {
-    background: white;
-    border-radius: 12px;
+
     padding: 32px;
     min-height: calc(100vh - 64px);
     overflow-y: auto;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .chat-container {
