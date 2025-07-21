@@ -2,14 +2,18 @@ package controller.shopping;
 
 import dao.CourseDAO;
 import dao.student.CourseInfoDAO;
+import dao.student.CourseEnrollmentDAO;
 import model.Course;
+import model.UserAccount;
 import model.student.CourseInfo;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/courses")
@@ -64,7 +68,26 @@ public class CourseServlet extends HttpServlet {
             }
         }
 
+        // Lấy danh sách khóa học đã mua của user để ẩn khỏi danh sách trả phí
+        HttpSession session = request.getSession();
+        UserAccount user = (UserAccount) session.getAttribute("user");
+        List<String> enrolledCourseIds = new ArrayList<>();
+        
+        if (user != null) {
+            try {
+                CourseEnrollmentDAO courseEnrollmentDAO = new CourseEnrollmentDAO();
+                List<Course> enrolledCourses = courseEnrollmentDAO.getEnrolledCoursesByUserID(user.getUserID());
+                for (Course enrolledCourse : enrolledCourses) {
+                    enrolledCourseIds.add(enrolledCourse.getCourseID());
+                }
+                courseEnrollmentDAO.closeConnection();
+            } catch (Exception e) {
+                System.err.println("Error getting enrolled courses: " + e.getMessage());
+            }
+        }
+        
         request.setAttribute("courses", courses);
+        request.setAttribute("enrolledCourses", enrolledCourseIds);
         request.setAttribute("category", category != null ? category : "paid");
         request.setAttribute("search", search);
         request.getRequestDispatcher("/view/student/online.jsp").forward(request, response);

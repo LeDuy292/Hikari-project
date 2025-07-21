@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import model.admin.PaymentDTO;
 
 @WebServlet("/admin/payments")
 public class ManagePaymentsServlet extends HttpServlet {
@@ -68,7 +69,7 @@ public class ManagePaymentsServlet extends HttpServlet {
                 return;
             }
 
-            List<Payment> payments = paymentService.getPaymentsWithFilters(status, search, date, minAmountStr, maxAmountStr, sortBy, page, pageSize);
+            List<PaymentDTO> payments = paymentService.getPaymentsWithFilters(status, search, date, minAmountStr, maxAmountStr, sortBy, page, pageSize);
             int totalPayments = paymentService.countPaymentsWithFilters(status, search, date, minAmountStr, maxAmountStr);
             int totalPages = (int) Math.ceil((double) totalPayments / pageSize);
             page = Math.max(1, Math.min(page, totalPages));

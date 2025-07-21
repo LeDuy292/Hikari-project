@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.UserAccount;
-import model.admin.Payment;
+import model.admin.PaymentDTO; // **CHANGED**: Use PaymentDTO instead of Payment
 import dao.admin.PaymentDAO;
 import java.io.IOException;
 import java.sql.Connection;
@@ -33,7 +33,7 @@ public class ProfileMyPaymentServlet extends HttpServlet {
         }
 
         PaymentDAO paymentDAO = new PaymentDAO();
-        List<Payment> payments = new ArrayList<>();
+        List<PaymentDTO> payments = new ArrayList<>(); // **CHANGED**: Use PaymentDTO
         int pageSize = 10;
         int currentPage = 1;
         int totalPayments = 0;
@@ -109,7 +109,7 @@ public class ProfileMyPaymentServlet extends HttpServlet {
             // Tính tổng số tiền đã chi từ dữ liệu lấy được
             double totalSpent = payments.stream()
                     .filter(p -> "Complete".equalsIgnoreCase(p.getPaymentStatus()))
-                    .mapToDouble(Payment::getAmount)
+                    .mapToDouble(PaymentDTO::getAmount) // **CHANGED**: Use PaymentDTO method
                     .sum();
 
             // Đưa dữ liệu vào request
