@@ -20,7 +20,7 @@ public class ForumAuthenticationFilter implements Filter {
 
     // URLs that don't require authentication (relative to context path)
     private static final List<String> EXCLUDED_PATHS = Arrays.asList(
-        "/login", "/register", "/view/login.jsp", "/assets/", "/auth/google", "/view/student/home.jsp"
+        "/login", "/register", "/loginPage", "/assets/", "/auth/google", "/view/student/home.jsp"
     );
 
     @Override
@@ -85,7 +85,7 @@ public class ForumAuthenticationFilter implements Filter {
             HttpSession newSession = httpRequest.getSession(true);
             newSession.setAttribute("redirectUrl", originalUrl);
             
-            httpResponse.sendRedirect(contextPath + "/view/login.jsp");
+            httpResponse.sendRedirect(contextPath + "/loginPage");
         }
     }
 

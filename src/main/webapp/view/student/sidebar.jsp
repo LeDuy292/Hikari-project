@@ -207,7 +207,14 @@
                     <span>Diễn đàn</span>
                 </a>
                 <a href="${pageContext.request.contextPath}/dictionary" class="menu-item <%= currentPage.equals("dictionary.jsp") ? "active" : ""%>"><i class="fa fa-book-open"></i>Từ điển</a>
-                <a href="${pageContext.request.contextPath}/view/student/test.jsp" class="sidebar-nav-item <%= currentPage.equals("test.jsp") ? "active" : ""%>" aria-label="Bài kiểm tra">
+                
+                
+                 <a href="${pageContext.request.contextPath}/checkGrammar" class="sidebar-nav-item <%= currentPage.equals("grammarCheck.jsp") ? "active" : ""%>" aria-label="Tài liệu">
+                    <i class="fa fa-book"></i>
+                    <span>Kiểm tra ngữ pháp</span>
+                </a>               
+                
+                <a href="${pageContext.request.contextPath}/view/student/tests.jsp" class="sidebar-nav-item <%= currentPage.equals("test.jsp") ? "active" : ""%>" aria-label="Bài kiểm tra">
                     <i class="fa fa-file-alt"></i>
                     <span>Bài kiểm tra</span>
                 </a>

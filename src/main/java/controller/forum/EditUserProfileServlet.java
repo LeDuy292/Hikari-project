@@ -31,7 +31,7 @@ public class EditUserProfileServlet extends HttpServlet {
         UserAccount user = (UserAccount) session.getAttribute("user");
 
         if (user == null) {
-            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/loginPage");
             return;
         }
 
@@ -52,7 +52,7 @@ public class EditUserProfileServlet extends HttpServlet {
 
         // Trường hợp chưa đăng nhập hoặc user không đúng kiểu
         if (currentUserId == null || currentUser == null) {
-            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/loginPage");
             return;
         }
 
