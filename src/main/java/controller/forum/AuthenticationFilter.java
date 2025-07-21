@@ -17,7 +17,7 @@ public class AuthenticationFilter implements Filter {
 
     // URLs that don't require authentication
     private static final List<String> EXCLUDED_PATHS = Arrays.asList(
-        "/login", "/register", "/view/login.jsp", "/assets/", "/auth/google"
+        "/login", "/register", "/loginPage", "/assets/", "/auth/google"
     );
 
     @Override
@@ -70,7 +70,7 @@ public class AuthenticationFilter implements Filter {
             HttpSession newSession = httpRequest.getSession(true);
             newSession.setAttribute("redirectUrl", originalUrl);
             
-            httpResponse.sendRedirect(contextPath + "/view/login.jsp");
+            httpResponse.sendRedirect(contextPath + "/loginPage");
         }
     }
 

@@ -85,7 +85,7 @@ public class ForumServlet extends HttpServlet {
         HttpSession newSession = request.getSession(true);
         newSession.setAttribute("redirectUrl", originalUrl);
 
-        response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+        response.sendRedirect(request.getContextPath() + "/loginPage");
     }
 
     @Override
