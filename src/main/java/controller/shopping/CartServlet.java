@@ -10,6 +10,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import vn.payos.PayOS;
+import vn.payos.type.CheckoutResponseData;
+import vn.payos.type.ItemData;
+import vn.payos.type.PaymentData;
+import model.Course;
+import model.UserAccount;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,21 +25,44 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
-import model.Course;
-import model.UserAccount;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @WebServlet("/cart")
 public class CartServlet extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(CartServlet.class);
+    private static final String WEBHOOK_URL = "http://localhost:8080/Hikari/payment/webhook";
+    private static final String CLIENT_ID = "d8046a78-6eb4-4b20-b174-47a68bdff64d";
+    private static final String API_KEY = "e54d74e1-c43e-491c-afef-bb1bab8686af";
+    private static final String CHECKSUM_KEY = "47c986022ec21429d1b9791b0f53b19412e69107d52a0f8d631331af6b805093";
+    private static final PayOS payOS;
+
+    static {
+        if (CLIENT_ID == null || CLIENT_ID.isEmpty()) {
+            logger.error("PayOS CLIENT_ID is missing or empty");
+            throw new ExceptionInInitializerError("Missing PayOS configuration: CLIENT_ID is null or empty");
+        }
+        if (API_KEY == null || API_KEY.isEmpty()) {
+            logger.error("PayOS API_KEY is missing or empty");
+            throw new ExceptionInInitializerError("Missing PayOS configuration: API_KEY is null or empty");
+        }
+        if (CHECKSUM_KEY == null || CHECKSUM_KEY.isEmpty()) {
+            logger.error("PayOS CHECKSUM_KEY is missing or empty");
+            throw new ExceptionInInitializerError("Missing PayOS configuration: CHECKSUM_KEY is null or empty");
+        }
+
+        try {
+            logger.info("PayOS Configuration loaded: CLIENT_ID={}, API_KEY=****, CHECKSUM_KEY=****", CLIENT_ID);
+            payOS = new PayOS(CLIENT_ID, API_KEY, CHECKSUM_KEY);
+        } catch (Exception e) {
+            logger.error("Failed to initialize PayOS: {}", e.getMessage(), e);
+            throw new ExceptionInInitializerError("Failed to initialize PayOS: " + e.getMessage());
+        }
+    }
 
     private CartDAO cartDAO;
     private CartItemDAO cartItemDAO;
     private CourseDAO courseDAO;
     private DiscountDAO discountDAO;
-    private CourseEnrollmentDAO courseEnrollmentDAO;
     private Gson gson;
 
     @Override
@@ -40,7 +71,6 @@ public class CartServlet extends HttpServlet {
         cartItemDAO = new CartItemDAO();
         courseDAO = new CourseDAO();
         discountDAO = new DiscountDAO();
-        courseEnrollmentDAO = new CourseEnrollmentDAO();
         gson = new Gson();
         logger.info("CartServlet initialized.");
     }
@@ -56,7 +86,7 @@ public class CartServlet extends HttpServlet {
         UserAccount user = (UserAccount) session.getAttribute("user");
 
         if (user == null) {
-            logger.warn("CartServlet: User not logged in. Redirecting to login.");
+            logger.warn("CartServlet: User not logged in.");
             jsonResponse.put("success", false);
             jsonResponse.put("message", "Bạn cần đăng nhập để thực hiện chức năng này.");
             out.print(gson.toJson(jsonResponse));
@@ -65,9 +95,9 @@ public class CartServlet extends HttpServlet {
 
         String userID = user.getUserID();
         if (userID == null || userID.trim().isEmpty()) {
-            logger.error("CartServlet: User ID is null or empty for logged-in user.");
+            logger.error("CartServlet: User ID is null or empty.");
             jsonResponse.put("success", false);
-            jsonResponse.put("message", "Thông tin người dùng không hợp lệ. Vui lòng đăng nhập lại.");
+            jsonResponse.put("message", "Thông tin người dùng không hợp lệ.");
             out.print(gson.toJson(jsonResponse));
             return;
         }
@@ -93,8 +123,8 @@ public class CartServlet extends HttpServlet {
                     applyDiscount(request, jsonResponse, userID);
                     break;
                 case "checkout":
-                    checkout(request, jsonResponse, userID);
-                    break;
+                    checkout(request, response, jsonResponse, userID);
+                    return;
                 default:
                     jsonResponse.put("success", false);
                     jsonResponse.put("message", "Hành động không hợp lệ.");
@@ -103,7 +133,7 @@ public class CartServlet extends HttpServlet {
         } catch (Exception e) {
             logger.error("Error in CartServlet for user {}: {}", userID, e.getMessage(), e);
             jsonResponse.put("success", false);
-            jsonResponse.put("message", "Đã xảy ra lỗi hệ thống: " + e.getMessage());
+            jsonResponse.put("message", "Đã xảy ra lỗi: " + e.getMessage());
         } finally {
             out.print(gson.toJson(jsonResponse));
             out.close();
@@ -112,7 +142,7 @@ public class CartServlet extends HttpServlet {
 
     private void addToCart(HttpServletRequest request, Map<String, Object> jsonResponse, String userID) {
         String courseID = request.getParameter("courseID");
-        logger.info("addToCart: Received courseID: {} for user: {}", courseID, userID);
+        logger.info("addToCart: Adding courseID {} for user {}", courseID, userID);
 
         if (courseID == null || courseID.trim().isEmpty()) {
             jsonResponse.put("success", false);
@@ -130,7 +160,7 @@ public class CartServlet extends HttpServlet {
 
         Course course = courseDAO.getCourseByID(courseID);
         if (course == null) {
-            logger.warn("addToCart: Course not found for courseID: {}", courseID);
+            logger.warn("addToCart: Course not found: {}", courseID);
             jsonResponse.put("success", false);
             jsonResponse.put("message", "Khóa học không tồn tại.");
             return;
@@ -150,63 +180,24 @@ public class CartServlet extends HttpServlet {
             return;
         }
 
-        if (courseEnrollmentDAO.isCourseEnrolled(userID, course.getCourseID())) {
-            jsonResponse.put("success", false);
-            jsonResponse.put("message", "Bạn đã đăng ký khóa học này rồi.");
-            return;
-        }
-
         Cart userCart = cartDAO.getCartByUserID(userID);
-        logger.info("addToCart: Existing cart for user {}: {}", userID, userCart != null ? userCart.getCartID() : "None");
-
         if (userCart == null) {
-            logger.info("addToCart: Creating new cart for user: {}", userID);
-            int cartID = -1;
-            int maxRetries = 3;
-            for (int attempt = 1; attempt <= maxRetries; attempt++) {
-                cartID = cartDAO.createCart(userID);
-                if (cartID != -1) {
-                    break;
-                }
-                logger.warn("addToCart: Attempt {} failed to create cart for user: {}", attempt, userID);
-                if (attempt < maxRetries) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                        break;
-                    }
-                }
-            }
-
+            logger.info("addToCart: Creating new cart for user {}", userID);
+            int cartID = cartDAO.createCart(userID);
             if (cartID == -1) {
-                userCart = cartDAO.getCartByUserID(userID);
-                if (userCart == null) {
-                    jsonResponse.put("success", false);
-                    jsonResponse.put("message", "Không thể tạo hoặc truy xuất giỏ hàng. Vui lòng thử lại.");
-                    jsonResponse.put("errorCode", "CART_CREATION_FAILED");
-                    logger.error("addToCart: Failed to create or retrieve cart for user: {}", userID);
-                    return;
-                } else {
-                    logger.info("addToCart: Found existing cart {} for user {} on retry", userCart.getCartID(), userID);
-                }
-            } else {
-                userCart = cartDAO.getCartByUserID(userID);
-                if (userCart == null) {
-                    jsonResponse.put("success", false);
-                    jsonResponse.put("message", "Không thể truy xuất giỏ hàng sau khi tạo. Vui lòng thử lại.");
-                    logger.error("addToCart: Failed to retrieve cart after creation for user: {}", userID);
-                    return;
-                }
-                logger.info("addToCart: Cart created successfully with ID: {}", userCart.getCartID());
+                jsonResponse.put("success", false);
+                jsonResponse.put("message", "Không thể tạo giỏ hàng.");
+                logger.error("addToCart: Failed to create cart for user {}", userID);
+                return;
             }
+            userCart = cartDAO.getCartByUserID(userID);
         }
 
         CartItem existingItem = cartItemDAO.getCartItemByCartIdAndCourseId(userCart.getCartID(), course.getCourseID());
         if (existingItem != null) {
-            logger.warn("addToCart: Course {} already in cart {} for user {}", courseID, userCart.getCartID(), userID);
+            logger.warn("addToCart: Course {} already in cart {}", courseID, userCart.getCartID());
             jsonResponse.put("success", false);
-            jsonResponse.put("message", "Khóa học đã có trong giỏ hàng của bạn.");
+            jsonResponse.put("message", "Khóa học đã có trong giỏ hàng.");
             return;
         }
 
@@ -218,27 +209,24 @@ public class CartServlet extends HttpServlet {
         newItem.setDiscountApplied(BigDecimal.ZERO);
 
         if (cartItemDAO.addCartItem(newItem)) {
-            logger.info("addToCart: Added course {} to cart {}", courseID, userCart.getCartID());
             recalculateCartTotals(userID);
             jsonResponse.put("success", true);
             jsonResponse.put("message", "Đã thêm khóa học vào giỏ hàng.");
-            jsonResponse.put("cart", cartDAO.getCartByUserID(userID));
         } else {
             jsonResponse.put("success", false);
             jsonResponse.put("message", "Không thể thêm khóa học vào giỏ hàng.");
-            logger.error("addToCart: Failed to add cart item for course {} to cart {}", courseID, userCart.getCartID());
+            logger.error("addToCart: Failed to add course {} to cart {}", courseID, userCart.getCartID());
         }
     }
 
     private void getCartData(Map<String, Object> jsonResponse, String userID) {
-        logger.info("getCartData: Fetching cart data for user: {}", userID);
+        logger.info("getCartData: Fetching cart for user {}", userID);
         Cart userCart = cartDAO.getCartByUserID(userID);
         if (userCart == null) {
             jsonResponse.put("success", true);
             jsonResponse.put("cart", null);
             jsonResponse.put("items", new ArrayList<>());
             jsonResponse.put("message", "Giỏ hàng trống.");
-            logger.info("getCartData: Cart is empty for user: {}", userID);
             return;
         }
 
@@ -249,10 +237,8 @@ public class CartServlet extends HttpServlet {
         while (iterator.hasNext()) {
             CartItem item = iterator.next();
             Course course = courseDAO.getCourseByID(item.getCourseID());
-            boolean invalid = (course == null || !course.isIsActive() || course.getEndDate().before(Date.valueOf(LocalDate.now())) || courseEnrollmentDAO.isCourseEnrolled(userID, item.getCourseID()));
-            if (invalid) {
-                logger.warn("getCartData: Removing invalid item from cart: courseID={}, reason={}", item.getCourseID(), 
-                            (course == null ? "Course not found" : (!course.isIsActive() ? "Not active" : (course.getEndDate().before(Date.valueOf(LocalDate.now())) ? "Expired" : "Already enrolled"))));
+            if (course == null || !course.isIsActive() || course.getEndDate().before(Date.valueOf(LocalDate.now()))) {
+                logger.warn("getCartData: Removing invalid item: courseID {}", item.getCourseID());
                 cartItemDAO.removeCartItem(item.getCartItemID());
                 iterator.remove();
             }
@@ -282,7 +268,6 @@ public class CartServlet extends HttpServlet {
         jsonResponse.put("success", true);
         jsonResponse.put("cart", userCart);
         jsonResponse.put("items", enrichedItems);
-        logger.info("getCartData: Successfully fetched cart data for user: {}", userID);
     }
 
     private void updateQuantity(HttpServletRequest request, Map<String, Object> jsonResponse, String userID) {
@@ -300,16 +285,15 @@ public class CartServlet extends HttpServlet {
                 recalculateCartTotals(userID);
                 jsonResponse.put("success", true);
                 jsonResponse.put("message", "Đã cập nhật số lượng.");
-                logger.info("updateQuantity: Quantity updated successfully for cartItemID {}", cartItemID);
             } else {
                 jsonResponse.put("success", false);
                 jsonResponse.put("message", "Không thể cập nhật số lượng.");
-                logger.warn("updateQuantity: Failed to update quantity for cartItemID {}", cartItemID);
+                logger.warn("updateQuantity: Failed for cartItemID {}", cartItemID);
             }
         } catch (NumberFormatException e) {
             jsonResponse.put("success", false);
             jsonResponse.put("message", "Dữ liệu không hợp lệ.");
-            logger.error("updateQuantity: Invalid number format: {}", e.getMessage());
+            logger.error("updateQuantity: Invalid input: {}", e.getMessage());
         }
     }
 
@@ -319,28 +303,24 @@ public class CartServlet extends HttpServlet {
             logger.info("removeItem: User {} removing cartItemID {}", userID, cartItemID);
 
             if (cartItemDAO.removeCartItem(cartItemID)) {
-                Cart userCart = cartDAO.getCartByUserID(userID);
-                if (userCart != null) {
-                    recalculateCartTotals(userID);
-                }
+                recalculateCartTotals(userID);
                 jsonResponse.put("success", true);
                 jsonResponse.put("message", "Đã xóa khóa học khỏi giỏ hàng.");
-                logger.info("removeItem: Cart item {} removed successfully.", cartItemID);
             } else {
                 jsonResponse.put("success", false);
                 jsonResponse.put("message", "Không thể xóa khóa học.");
-                logger.warn("removeItem: Failed to remove cart item {}.", cartItemID);
+                logger.warn("removeItem: Failed for cartItemID {}", cartItemID);
             }
         } catch (NumberFormatException e) {
             jsonResponse.put("success", false);
             jsonResponse.put("message", "Dữ liệu không hợp lệ.");
-            logger.error("removeItem: Invalid number format: {}", e.getMessage());
+            logger.error("removeItem: Invalid input: {}", e.getMessage());
         }
     }
 
     private void applyDiscount(HttpServletRequest request, Map<String, Object> jsonResponse, String userID) {
         String discountCode = request.getParameter("discountCode");
-        logger.info("applyDiscount: User {} applying discount code: {}", userID, discountCode);
+        logger.info("applyDiscount: User {} applying code {}", userID, discountCode);
 
         if (discountCode == null || discountCode.trim().isEmpty()) {
             jsonResponse.put("success", false);
@@ -348,19 +328,26 @@ public class CartServlet extends HttpServlet {
             return;
         }
 
+        Cart userCart = cartDAO.getCartByUserID(userID);
+        if (userCart == null || userCart.getItemCount() == 0) {
+            jsonResponse.put("success", false);
+            jsonResponse.put("message", "Giỏ hàng trống.");
+            logger.warn("applyDiscount: Cart empty for user {}", userID);
+            return;
+        }
+
+        if (discountCode.equals(userCart.getDiscountCodeApplied())) {
+            jsonResponse.put("success", false);
+            jsonResponse.put("message", "Mã giảm giá này đã được áp dụng.");
+            logger.warn("applyDiscount: Code {} already applied for user {}", discountCode, userID);
+            return;
+        }
+
         Discount discount = discountDAO.getDiscountByCode(discountCode);
         if (discount == null || discount.getEndDate().before(Date.valueOf(LocalDate.now()))) {
             jsonResponse.put("success", false);
             jsonResponse.put("message", "Mã giảm giá không hợp lệ hoặc đã hết hạn.");
-            logger.warn("applyDiscount: Invalid or expired discount code: {}", discountCode);
-            return;
-        }
-
-        Cart userCart = cartDAO.getCartByUserID(userID);
-        if (userCart == null || userCart.getItemCount() == 0) {
-            jsonResponse.put("success", false);
-            jsonResponse.put("message", "Giỏ hàng của bạn đang trống.");
-            logger.warn("applyDiscount: Cart is empty for user {}.", userID);
+            logger.warn("applyDiscount: Invalid code: {}", discountCode);
             return;
         }
 
@@ -377,7 +364,7 @@ public class CartServlet extends HttpServlet {
                 if (cartItemDAO.updateCartItemDiscount(item.getCartItemID(), itemDiscount)) {
                     totalDiscount = totalDiscount.add(itemDiscount);
                     discountApplied = true;
-                    logger.info("applyDiscount: Applied discount to cart item {}. Discount amount: {}", item.getCartItemID(), itemDiscount);
+                    logger.info("applyDiscount: Applied discount to cartItemID {}, amount: {}", item.getCartItemID(), itemDiscount);
                 }
             }
         }
@@ -386,65 +373,110 @@ public class CartServlet extends HttpServlet {
             BigDecimal newTotal = calculateCurrentTotal(userCart.getCartID()).subtract(totalDiscount);
             if (cartDAO.updateCartTotals(userCart.getCartID(), newTotal, totalDiscount, discountCode)) {
                 jsonResponse.put("success", true);
-                jsonResponse.put("message", "Đã áp dụng mã giảm giá '" + discountCode + "' thành công!");
-                jsonResponse.put("discountPercent", discount.getDiscountPercent());
-                logger.info("applyDiscount: Discount code {} applied successfully for user {}. New total: {}", discountCode, userID, newTotal);
+                jsonResponse.put("message", "Áp dụng mã giảm giá thành công!");
             } else {
                 jsonResponse.put("success", false);
-                jsonResponse.put("message", "Không thể cập nhật tổng giỏ hàng sau khi áp dụng giảm giá.");
-                logger.error("applyDiscount: Failed to update cart totals after discount for user {}.", userID);
+                jsonResponse.put("message", "Không thể cập nhật giỏ hàng.");
+                logger.error("applyDiscount: Failed to update cart totals for user {}", userID);
             }
         } else {
             jsonResponse.put("success", false);
-            jsonResponse.put("message", "Mã giảm giá không áp dụng cho bất kỳ khóa học nào trong giỏ hàng.");
-            logger.warn("applyDiscount: Discount code {} did not apply to any items in cart for user {}.", discountCode, userID);
+            jsonResponse.put("message", "Mã giảm giá không áp dụng được.");
+            logger.warn("applyDiscount: Code {} not applicable for user {}", discountCode, userID);
         }
     }
 
-    private void checkout(HttpServletRequest request, Map<String, Object> jsonResponse, String userID) {
-        logger.info("checkout: User {} initiating checkout process.", userID);
+    private void checkout(HttpServletRequest request, HttpServletResponse response, Map<String, Object> jsonResponse, String userID) throws IOException {
+        logger.info("checkout: Initiating for user {}", userID);
         Cart userCart = cartDAO.getCartByUserID(userID);
 
         if (userCart == null || userCart.getItemCount() == 0) {
             jsonResponse.put("success", false);
-            jsonResponse.put("message", "Giỏ hàng của bạn đang trống. Không thể thanh toán.");
-            logger.warn("checkout: Cart is empty for user {}. Cannot proceed with checkout.", userID);
+            jsonResponse.put("message", "Giỏ hàng trống. Không thể thanh toán.");
+            logger.warn("checkout: Cart empty for user {}", userID);
             return;
         }
 
-        List<CartItem> items = cartItemDAO.getCartItemsByCartID(userCart.getCartID());
-        boolean allEnrolled = true;
-        for (CartItem item : items) {
-            if (!courseEnrollmentDAO.enrollCourse(userID, item.getCourseID())) {
-                allEnrolled = false;
-                logger.error("checkout: Failed to enroll user {} in course {}.", userID, item.getCourseID());
-            } else {
-                logger.info("checkout: User {} successfully enrolled in course {}.", userID, item.getCourseID());
-            }
-        }
-
-        if (allEnrolled) {
-            if (cartDAO.clearCart(userCart.getCartID())) {
-                jsonResponse.put("success", true);
-                jsonResponse.put("message", "Thanh toán thành công! Các khóa học đã được thêm vào tài khoản của bạn.");
-                logger.info("checkout: Checkout successful for user {}. Cart cleared.", userID);
-            } else {
+        try {
+            List<CartItem> cartItems = cartItemDAO.getCartItemsByCartID(userCart.getCartID());
+            if (cartItems.isEmpty()) {
                 jsonResponse.put("success", false);
-                jsonResponse.put("message", "Thanh toán thành công nhưng không thể xóa giỏ hàng. Vui lòng liên hệ hỗ trợ.");
-                logger.error("checkout: Checkout successful for user {} but failed to clear cart {}.", userID, userCart.getCartID());
+                jsonResponse.put("message", "Giỏ hàng trống.");
+                logger.warn("checkout: No items in cart for user {}", userID);
+                return;
             }
-        } else {
+
+            List<ItemData> items = new ArrayList<>();
+            for (CartItem item : cartItems) {
+                Course course = courseDAO.getCourseByID(item.getCourseID());
+                if (course == null) {
+                    logger.warn("checkout: Course {} not found for cartItemID {}", item.getCourseID(), item.getCartItemID());
+                    continue;
+                }
+                String courseTitle = course.getTitle();
+                if (courseTitle.length() > 200) {
+                    courseTitle = courseTitle.substring(0, 197) + "...";
+                }
+                BigDecimal itemPrice = item.getPriceAtTime().subtract(item.getDiscountApplied());
+                ItemData itemData = ItemData.builder()
+                        .name(courseTitle)
+                        .quantity(item.getQuantity())
+                        .price(itemPrice.intValue())
+                        .build();
+                items.add(itemData);
+            }
+
+            if (items.isEmpty()) {
+                jsonResponse.put("success", false);
+                jsonResponse.put("message", "Không có khóa học hợp lệ để thanh toán.");
+                logger.warn("checkout: No valid items for user {}", userID);
+                return;
+            }
+
+            int totalAmount = userCart.getTotalAmount().intValue();
+            if (totalAmount <= 0) {
+                jsonResponse.put("success", false);
+                jsonResponse.put("message", "Tổng số tiền không hợp lệ.");
+                logger.warn("checkout: Invalid total amount {} for user {}", totalAmount, userID);
+                return;
+            }
+
+            Long orderCode = System.currentTimeMillis() / 1000; // Used for PayOS, not stored in Cart
+            String description = "Thanh toán khóa học";
+            if (description.length() > 255) {
+                description = description.substring(0, 252) + "...";
+            }
+
+            PaymentData paymentData = PaymentData.builder()
+                    .orderCode(orderCode)
+                    .amount(totalAmount)
+                    .description(description)
+                    .items(items)
+                    .returnUrl(WEBHOOK_URL)
+                    .cancelUrl(WEBHOOK_URL + "?cancel=true")
+                    .build();
+
+            logger.info("checkout: Creating PayOS payment link for user {}, cartID {}, amount {}, items: {}", 
+                        userID, userCart.getCartID(), totalAmount, items);
+            CheckoutResponseData result = payOS.createPaymentLink(paymentData);
+
+            HttpSession session = request.getSession();
+            session.setAttribute("cartID", userCart.getCartID()); // Ensure cartID is stored
+
+            jsonResponse.put("success", true);
+            jsonResponse.put("redirectUrl", result.getCheckoutUrl());
+            logger.info("checkout: Payment link created: {}", result.getCheckoutUrl());
+        } catch (Exception ex) {
+            logger.error("checkout: Failed for user {}: {}", userID, ex.getMessage(), ex);
             jsonResponse.put("success", false);
-            jsonResponse.put("message", "Có lỗi xảy ra khi đăng ký một số khóa học. Vui lòng thử lại hoặc liên hệ hỗ trợ.");
-            logger.error("checkout: Partial enrollment failure for user {}.", userID);
+            jsonResponse.put("message", "Không thể tạo liên kết thanh toán: " + ex.getMessage());
         }
     }
 
     private void recalculateCartTotals(String userID) {
-        logger.info("recalculateCartTotals: Recalculating totals for user: {}", userID);
         Cart userCart = cartDAO.getCartByUserID(userID);
         if (userCart == null) {
-            logger.warn("recalculateCartTotals: No cart found for user {}. Cannot recalculate.", userID);
+            logger.warn("recalculateCartTotals: No cart for user {}", userID);
             return;
         }
 
@@ -459,7 +491,7 @@ public class CartServlet extends HttpServlet {
 
         BigDecimal finalTotal = total.subtract(discount);
         cartDAO.updateCartTotals(userCart.getCartID(), finalTotal, discount, userCart.getDiscountCodeApplied());
-        logger.info("recalculateCartTotals: Recalculated totals for cart {}. Total: {}, Discount: {}, Final: {}", userCart.getCartID(), total, discount, finalTotal);
+        logger.info("recalculateCartTotals: Cart {} updated. Total: {}, Discount: {}", userCart.getCartID(), total, discount);
     }
 
     private BigDecimal calculateCurrentTotal(int cartID) {
@@ -477,7 +509,6 @@ public class CartServlet extends HttpServlet {
         if (cartItemDAO != null) cartItemDAO.closeConnection();
         if (courseDAO != null) courseDAO.closeConnection();
         if (discountDAO != null) discountDAO.closeConnection();
-        if (courseEnrollmentDAO != null) courseEnrollmentDAO.closeConnection();
-        logger.info("CartServlet destroyed. All DAO connections closed.");
+        logger.info("CartServlet destroyed.");
     }
 }

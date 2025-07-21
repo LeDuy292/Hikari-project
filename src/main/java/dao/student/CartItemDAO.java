@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CartItemDAO {
+
     private static final Logger logger = LoggerFactory.getLogger(CartItemDAO.class);
 
     public CartItemDAO() {
@@ -32,12 +33,11 @@ public class CartItemDAO {
     }
 
     public CartItem getCartItemByCartIdAndCourseId(int cartID, String courseID) {
-        String sql = "SELECT ci.*, c.title AS courseTitle, c.description AS courseDescription, c.imageUrl AS courseImageUrl " +
-                     "FROM CartItem ci JOIN Courses c ON ci.courseID = c.courseID " +
-                     "WHERE ci.cartID = ? AND ci.courseID = ?";
+        String sql = "SELECT ci.*, c.title AS courseTitle, c.description AS courseDescription, c.imageUrl AS courseImageUrl "
+                + "FROM CartItem ci JOIN Courses c ON ci.courseID = c.courseID "
+                + "WHERE ci.cartID = ? AND ci.courseID = ?";
         CartItem cartItem = null;
-        try (Connection conn = getConnection();
-             PreparedStatement pre = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
             pre.setInt(1, cartID);
             pre.setString(2, courseID);
             try (ResultSet rs = pre.executeQuery()) {
@@ -56,11 +56,10 @@ public class CartItemDAO {
 
     public List<CartItem> getCartItemsByCartID(int cartID) {
         List<CartItem> cartItems = new ArrayList<>();
-        String sql = "SELECT ci.*, c.title AS courseTitle, c.description AS courseDescription, c.imageUrl AS courseImageUrl " +
-                     "FROM CartItem ci JOIN Courses c ON ci.courseID = c.courseID " +
-                     "WHERE ci.cartID = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement pre = conn.prepareStatement(sql)) {
+        String sql = "SELECT ci.*, c.title AS courseTitle, c.description AS courseDescription, c.imageUrl AS courseImageUrl "
+                + "FROM CartItem ci JOIN Courses c ON ci.courseID = c.courseID "
+                + "WHERE ci.cartID = ?";
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
             pre.setInt(1, cartID);
             try (ResultSet rs = pre.executeQuery()) {
                 while (rs.next()) {
@@ -76,8 +75,7 @@ public class CartItemDAO {
 
     public boolean addCartItem(CartItem cartItem) {
         String sql = "INSERT INTO CartItem (cartID, courseID, quantity, priceAtTime, discountApplied) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = getConnection();
-             PreparedStatement pre = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
             pre.setInt(1, cartItem.getCartID());
             pre.setString(2, cartItem.getCourseID());
             pre.setInt(3, cartItem.getQuantity());
@@ -101,8 +99,7 @@ public class CartItemDAO {
 
     public boolean updateCartItemQuantity(int cartItemID, int quantity) {
         String sql = "UPDATE CartItem SET quantity = ? WHERE cartItemID = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement pre = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
             pre.setInt(1, quantity);
             pre.setInt(2, cartItemID);
             boolean updated = pre.executeUpdate() > 0;
@@ -120,8 +117,7 @@ public class CartItemDAO {
 
     public boolean updateCartItemDiscount(int cartItemID, BigDecimal discountApplied) {
         String sql = "UPDATE CartItem SET discountApplied = ? WHERE cartItemID = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement pre = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
             pre.setBigDecimal(1, discountApplied);
             pre.setInt(2, cartItemID);
             boolean updated = pre.executeUpdate() > 0;
@@ -139,8 +135,7 @@ public class CartItemDAO {
 
     public boolean removeCartItem(int cartItemID) {
         String sql = "DELETE FROM CartItem WHERE cartItemID = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement pre = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
             pre.setInt(1, cartItemID);
             boolean removed = pre.executeUpdate() > 0;
             if (removed) {
@@ -151,6 +146,46 @@ public class CartItemDAO {
             return removed;
         } catch (SQLException e) {
             logger.error("CartItemDAO: Error in removeCartItem (cartItemID={}): {}", cartItemID, e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public List<String> getCourseIdsByCartId(Integer cartID) {
+        List<String> courseIds = new ArrayList<>();
+        String sql = "SELECT courseID FROM CartItem WHERE cartID = ?";
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
+            pre.setInt(1, cartID);
+            try (ResultSet rs = pre.executeQuery()) {
+                while (rs.next()) {
+                    courseIds.add(rs.getString("courseID"));
+                }
+                logger.debug("CartItemDAO: Retrieved {} course IDs for cartID {}.", courseIds.size(), cartID);
+            }
+        } catch (SQLException e) {
+            logger.error("CartItemDAO: Error in getCourseIdsByCartId for cartID {}: {}", cartID, e.getMessage(), e);
+        }
+        return courseIds;
+    }
+
+    public boolean clearCartItems(Integer cartID, Connection conn) throws SQLException {
+        String sql = "DELETE FROM CartItem WHERE cartID = ?";
+        try (PreparedStatement pre = conn.prepareStatement(sql)) {
+            pre.setInt(1, cartID);
+            int rowsAffected = pre.executeUpdate();
+            logger.info("CartItemDAO: Cleared {} items from cartID {}.", rowsAffected, cartID);
+            return rowsAffected >= 0;
+        }
+    }
+
+    public boolean clearCartItems(Integer cartID) {
+        String sql = "DELETE FROM CartItem WHERE cartID = ?";
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
+            pre.setInt(1, cartID);
+            int rowsAffected = pre.executeUpdate();
+            logger.info("CartItemDAO: Cleared {} items from cartID {}.", rowsAffected, cartID);
+            return rowsAffected >= 0;
+        } catch (SQLException e) {
+            logger.error("CartItemDAO: Error in clearCartItems for cartID {}: {}", cartID, e.getMessage(), e);
             return false;
         }
     }
