@@ -72,14 +72,7 @@ public class ProfileMyCoursesServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        if (courseEnrollmentDAO != null) {
-            try {
-                courseEnrollmentDAO.closeConnection();
-                logger.info("ProfileMyCoursesServlet connection closed.");
-            } catch (Exception e) {
-                logger.error("Failed to close connection: {}", e.getMessage(), e);
-            }
-        }
+
         logger.info("ProfileMyCoursesServlet destroyed.");
     }
 }
