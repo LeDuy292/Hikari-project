@@ -1,4 +1,4 @@
-package controller.API;
+package controller.forum;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet(urlPatterns = {"/checkGrammar", "/"})
+@WebServlet(urlPatterns = {"/checkGrammar"})
 public class GrammarCheckServlet extends HttpServlet {
 
     private static final String GEMINI_API_KEY = "AIzaSyBKqnIdy5Fp8SqBTlbkxSKZXigAa6Yo2TY";

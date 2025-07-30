@@ -12,9 +12,11 @@
         <servlet-name>SubmitAssignmentServlet</servlet-name>
         <url-pattern>/submitAssignment</url-pattern>
     </servlet-mapping>
+    
     <welcome-file-list>
         <welcome-file>view/student/home.jsp</welcome-file>
     </welcome-file-list>
+    
     <servlet>
         <servlet-name>LoadCourseServlet</servlet-name>
         <servlet-class>controller.coordinator.LoadCourseServlet</servlet-class>
@@ -23,6 +25,22 @@
         <servlet-name>NextEditCourseServlet</servlet-name>
         <servlet-class>controller.coordinator.NextEditCourseServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>EditCourseServlet</servlet-name>
+        <servlet-class>controller.coordinator.EditCourseServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddCourseServlet</servlet-name>
+        <servlet-class>controller.coordinator.AddCourseServlet</servlet-class>
+    </servlet>  
+    <servlet-mapping>
+        <servlet-name>EditCourseServlet</servlet-name>
+        <url-pattern>/EditCourse</url-pattern>
+    </servlet-mapping>
+        <servlet-mapping>
+        <servlet-name>AddCourseServlet</servlet-name>
+        <url-pattern>/AddCourse</url-pattern>
+    </servlet-mapping>
     <servlet>
         <servlet-name>ClassManagementServlet</servlet-name>
         <servlet-class>controller.classes.ClassManagementServlet</servlet-class>
@@ -248,6 +266,7 @@
         <servlet-name>GetTopicList</servlet-name>
         <url-pattern>/learn</url-pattern>
     </servlet-mapping>
+    
     <session-config>
         <session-timeout>
             30

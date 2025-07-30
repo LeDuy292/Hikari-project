@@ -194,7 +194,7 @@
                                 <c:forEach var="course" items="${courses}">
                                     <div class="course-card bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
                                         <div class="relative">
-                                            <img src="${pageContext.request.contextPath}${course.imageUrl != null && course.imageUrl != '' ? course.imageUrl : '/assets/img/course-placeholder.jpg'}" 
+                                            <img src="${pageContext.request.contextPath}${course.imageUrl != null && course.imageUrl != '' ? course.imageUrl : '/assets/img/JLPT-N1.png'}" 
                                                  alt="${course.title}" 
                                                  class="w-full h-48 object-cover">
                                             <div class="absolute top-4 right-4">
@@ -271,7 +271,7 @@
                                     <c:if test="${sessionScope.user == null || !enrolledCourses.contains(course.courseID)}">
                                         <div class="course-card bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                                             <a href="${pageContext.request.contextPath}/courseInfo?id=${course.courseID}">
-                                                <img src="${pageContext.request.contextPath}${course.imageUrl != null && course.imageUrl != '' ? course.imageUrl : '/assets/img/course-placeholder.jpg'}" alt="${course.title}" class="w-full h-48 object-cover">
+                                                <img src="${pageContext.request.contextPath}${course.imageUrl != null && course.imageUrl != '' ? course.imageUrl : '/assets/img/img_student/JLPT-N1.png'}" alt="${course.title}" class="w-full h-48 object-cover">
                                             </a>
                                             <div class="p-5">
                                                 <h3 class="text-xl font-bold text-gray-800 mb-2">

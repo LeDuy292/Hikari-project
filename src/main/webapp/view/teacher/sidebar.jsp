@@ -22,8 +22,6 @@
                 <span class="sidebar-subtitle">Japanese</span>
             </div>
         </div>
-        <a href="${pageContext.request.contextPath}/view/teacher/profileTeacher.jsp" class="sidebar-nav-item <%= currentPage.equals("profileTeacher.jsp") ? "active" : ""%>">
-            <i class="fa fa-user"></i><span>Hồ Sơ Của Tôi</span></a>
         <a href="${pageContext.request.contextPath}/manageCourse" class="sidebar-nav-item <%= currentPage.equals("manageCourse.jsp") ? "active" : ""%>">
             <i class="fa fa-book-open"></i>
             <span>Quản lý khóa học </span>
