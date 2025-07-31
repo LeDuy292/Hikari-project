@@ -286,50 +286,95 @@ body {
 /* Section Styles */
 .section-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 50px;
+  padding: 0 20px;
 }
 
 .section-title {
-  font-size: 2.2rem;
+  font-size: 2.5rem;
   font-weight: 700;
   color: #1a1a1a;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  line-height: 1.2;
 }
 
 .section-subtitle {
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: #666;
   max-width: 600px;
   margin: 0 auto;
+  line-height: 1.6;
 }
 
 /* Features Section */
 .features-section {
-  padding: 50px 0;
-  max-width: 100%; /* Đảm bảo không vượt quá content-wrapper */
+  padding: 80px 0;
+  background: linear-gradient(135deg, #fff9f0 0%, #fff4e5 100%);
+  max-width: 100%;
   margin: 0 auto;
-  background: white;
-  border-radius: 20px;
+  border-radius: 24px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   margin-top: 40px;
+  min-height: 600px; /* Ensure minimum height for better visual */
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
   padding: 0 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Special layout for 5 cards: 3 on top, 2 on bottom */
+.features-grid .feature-card:nth-child(4) {
+  grid-column: 2;
+}
+
+.features-grid .feature-card:nth-child(5) {
+  grid-column: 3;
+}
+
+/* Responsive adjustments for features grid - optimized for 75% zoom */
+@media (max-width: 1400px) {
+  .features-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 0 25px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 15px;
+  }
 }
 
 .feature-card {
-  background: #fafbfc;
-  padding: 24px 20px;
-  border-radius: 12px;
+  background: white;
+  padding: 28px 20px;
+  border-radius: 16px;
   text-align: center;
   transition: all 0.3s ease;
   border: 1px solid #f0f2f5;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  min-height: 200px; /* Ensure consistent card height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .feature-card::before {
@@ -355,22 +400,28 @@ body {
 }
 
 .feature-icon {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(90deg, #ff9100 0%, #ffb347 100%);
+  width: 65px;
+  height: 65px;
+  background: linear-gradient(135deg, #ff9100 0%, #ffb347 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 16px;
-  font-size: 1.5rem;
+  margin: 0 auto 18px;
+  font-size: 1.6rem;
   color: white;
-  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2);
+  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.25);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px rgba(255, 152, 0, 0.35);
 }
 
 .feature-title {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 700;
   color: #1a1a1a;
   margin-bottom: 10px;
   line-height: 1.3;
@@ -381,6 +432,7 @@ body {
   line-height: 1.5;
   font-size: 0.9rem;
   margin: 0;
+  font-weight: 400;
 }
 
 /* Courses Section */
@@ -667,27 +719,24 @@ body {
   max-width: 100%;
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
+/* Responsive Design - optimized for 75% zoom */
+@media (max-width: 1400px) {
   .main-container {
     margin-left: 0;
     width: 100%;
-    max-width: 100%;
   }
 
   .main-content {
-    padding: 20px;
-    max-width: 100%; /* Responsive trên thiết bị nhỏ hơn */
+    padding: 20px 16px;
   }
 
   .content-wrapper {
-    max-width: 100%; /* Responsive trên thiết bị nhỏ hơn */
+    max-width: 100%;
   }
 
   .hero-content {
     grid-template-columns: 1fr;
-    gap: 40px;
-    text-align: center;
+    gap: 30px;
   }
 
   .hero-title {
@@ -695,11 +744,24 @@ body {
   }
 
   .hero-buttons {
-    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
   }
 
   .hero-stats {
     justify-content: center;
+  }
+
+  .section-title {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 0 20px;
   }
 }
 
@@ -714,24 +776,43 @@ body {
 
   .hero-buttons {
     flex-direction: column;
-    align-items: center;
+    gap: 10px;
   }
 
   .btn-primary,
   .btn-secondary,
   .btn-outline {
     width: 100%;
-    max-width: 300px;
-    justify-content: center;
+    text-align: center;
   }
 
   .cta-buttons {
     flex-direction: column;
-    align-items: center;
+    gap: 12px;
   }
 
   .cta-title {
     font-size: 1.8rem;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 15px;
+  }
+
+  .features-section {
+    padding: 60px 0;
+  }
+
+  .feature-card {
+    padding: 24px 20px;
+  }
+
+  .feature-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
   }
 }
 

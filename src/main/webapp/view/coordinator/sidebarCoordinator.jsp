@@ -50,6 +50,10 @@
             <i class="fas fa-users"></i>
             <span>Phê Duyệt Hồ Sơ Giảng Viên</span>
         </a>
+        <a href="${pageContext.request.contextPath}/coordinator/contact-management" class="sidebar-nav-item <%= currentPage.equals("contact-management.jsp") ? "active" : ""%>">
+            <i class="fas fa-headset"></i>
+            <span>Trung tâm hỗ trợ</span>
+        </a>
         <a href="${pageContext.request.contextPath}/forum" class="sidebar-nav-item <%= currentPage.equals("forum.jsp") ? "active" : ""%>">
             <i class="fa fa-comments"></i><span>Diễn Đàn</span>
         </a>
