@@ -1039,6 +1039,7 @@ updateAnswerContent(question, answer, index) {
                       <option value="N3">N3</option>
                       <option value="N2">N2</option>
                       <option value="N1">N1</option>
+                      <option value="level">Test Level</option>
                     </select>
                   </div>
                 </div>
