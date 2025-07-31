@@ -67,7 +67,12 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
         }
-       
+        /* Notification container styling */
+        .notification-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
     </style>
     <script>
         window.contextPath = '${pageContext.request.contextPath}';
@@ -82,6 +87,9 @@
         <!-- Header -->
         <%@ include file="header.jsp" %>
         
+        <!-- Notification Container -->
+        <div id="notification-container" class="fixed top-4 right-4 space-y-2 z-50"></div>
+
         <!-- Registration Modal -->
         <div class="modal" id="signupModal">
             <div class="modal-content">
@@ -101,7 +109,6 @@
             </div>
         </div>
         
-       
         <!-- Banner -->
         <div class="bg-white rounded-3xl overflow-hidden shadow-xl mb-8 mt-8">
             <div class="mt-2 px-8 pb-8">
@@ -129,7 +136,6 @@
                        class="px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 ${param.category == null || param.category == 'paid' ? 'bg-orange-500 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">
                         <i class="fas fa-book mr-2"></i>Khóa học trả phí
                     </a>
-                   
                     <c:if test="${sessionScope.user != null}">
                         <a href="${pageContext.request.contextPath}/myCourses" 
                            class="px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 ${category == 'my-courses' ? 'bg-green-500 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">
@@ -188,7 +194,7 @@
                                 <c:forEach var="course" items="${courses}">
                                     <div class="course-card bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
                                         <div class="relative">
-                                            <img src="${pageContext.request.contextPath}${course.imageUrl != null && course.imageUrl != '' ? course.imageUrl : '/assets/img/course-placeholder.jpg'}" 
+                                            <img src="${pageContext.request.contextPath}${course.imageUrl != null && course.imageUrl != '' ? course.imageUrl : '/assets/img/JLPT-N1.png'}" 
                                                  alt="${course.title}" 
                                                  class="w-full h-48 object-cover">
                                             <div class="absolute top-4 right-4">
@@ -197,11 +203,10 @@
                                                 </span>
                                             </div>
                                             <!-- Progress bar (placeholder) -->
-                                            <div class="absolute bottom-0 left-0 right-0">
-                                                <div class="progress-bar" style="width: 65%;"></div>
-                                            </div>
+                                            
                                         </div>
                                         <div class="p-6">
+                                            
                                             <h3 class="text-xl font-bold text-gray-800 mb-3 line-clamp-2">${course.title}</h3>
                                             <p class="text-gray-600 mb-4 line-clamp-3">${course.description}</p>
                                             
@@ -210,19 +215,17 @@
                                                     <i class="fas fa-clock mr-2"></i>
                                                     <span>${course.duration} giờ</span>
                                                 </div>
-                                                <div class="text-green-600 font-bold">
-                                                    <i class="fas fa-chart-line mr-1"></i>65% hoàn thành
-                                                </div>
+                                             
                                             </div>
                                             
                                             <!-- Progress Bar -->
                                             <div class="mb-4">
                                                 <div class="flex justify-between text-sm text-gray-600 mb-1">
                                                     <span>Tiến độ học tập</span>
-                                                    <span>65%</span>
+                                                    <span>0%</span>
                                                 </div>
                                                 <div class="w-full bg-gray-200 rounded-full h-2">
-                                                    <div class="progress-fill bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full" style="width: 65%"></div>
+                                                    <div class="progress-fill bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full" style="width: 0%"></div>
                                                 </div>
                                             </div>
                                             
@@ -236,10 +239,7 @@
                                                        class="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-xl font-medium hover:bg-gray-200 transition-colors text-center">
                                                         <i class="fas fa-info-circle mr-1"></i>Chi tiết
                                                     </a>
-                                                    <button onclick="downloadCertificate('${course.courseID}')" 
-                                                            class="flex-1 bg-blue-100 text-blue-700 py-2 px-4 rounded-xl font-medium hover:bg-blue-200 transition-colors">
-                                                        <i class="fas fa-certificate mr-1"></i>Chứng chỉ
-                                                    </button>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -267,34 +267,50 @@
                                 <c:set var="endIndex" value="${startIndex + pageSize - 1 < totalCourses ? startIndex + pageSize - 1 : totalCourses - 1}"/>
 
                                 <c:forEach var="course" items="${courses}" begin="${startIndex}" end="${endIndex}">
-                                    <div class="course-card bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                                        <a href="${pageContext.request.contextPath}/courseInfo?id=${course.courseID}">
-                                            <img src="${pageContext.request.contextPath}${course.imageUrl != null && course.imageUrl != '' ? course.imageUrl : '/assets/img/course-placeholder.jpg'}" alt="${course.title}" class="w-full h-48 object-cover">
-                                        </a>
-                                        <div class="p-5">
-                                            <h3 class="text-xl font-bold text-gray-800 mb-2">
-                                                <a href="${pageContext.request.contextPath}/courseInfo?id=${course.courseID}" class="hover:text-orange-600">${course.title}</a>
-                                            </h3>
-                                            <p class="text-gray-600 text-sm mb-4 line-clamp-2">${course.description}</p>
-                                            <div class="flex items-center justify-between mb-4">
-                                                <span class="text-lg font-bold text-orange-600">
-                                                    <c:if test="${course.fee == 0}">Miễn phí</c:if>
-                                                    <c:if test="${course.fee > 0}">
-                                                        <fmt:formatNumber value="${course.fee}" type="currency" currencySymbol="" pattern="#,##0"/> VNĐ
-                                                    </c:if>
-                                                </span>
-                                                <span class="text-gray-500 text-sm">
-                                                    <i class="fa fa-clock mr-1"></i>${course.duration} giờ
-                                                </span>
-                                            </div>
-                                            <div class="flex justify-between items-center">
-                                                <a href="${pageContext.request.contextPath}/courseInfo?id=${course.courseID}" class="text-orange-500 hover:underline font-semibold">Xem chi tiết</a>
-                                                <button class="bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-orange-600 transition add-to-cart-btn" data-course-id="${course.courseID}" onclick="cart.addToCart('${course.courseID}')">
-                                                    <i class="fa fa-cart-plus mr-2"></i>Thêm vào giỏ
-                                                </button>
+                                    <!-- Chỉ hiển thị khóa học nếu user chưa đăng nhập HOẶC chưa mua khóa học này -->
+                                    <c:if test="${sessionScope.user == null || !enrolledCourses.contains(course.courseID)}">
+                                        <div class="course-card bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                                            <a href="${pageContext.request.contextPath}/courseInfo?id=${course.courseID}">
+                                                <img src="${pageContext.request.contextPath}${course.imageUrl != null && course.imageUrl != '' ? course.imageUrl : '/assets/img/img_student/JLPT-N1.png'}" alt="${course.title}" class="w-full h-48 object-cover">
+                                            </a>
+                                            <div class="p-5">
+                                                <h3 class="text-xl font-bold text-gray-800 mb-2">
+                                                    <a href="${pageContext.request.contextPath}/courseInfo?id=${course.courseID}" class="hover:text-orange-600">${course.title}</a>
+                                                </h3>
+                                                <p class="text-gray-600 text-sm mb-4 line-clamp-2">${course.description}</p>
+                                                <div class="flex items-center justify-between mb-4">
+                                                    <span class="text-lg font-bold text-orange-600">
+                                                        <c:if test="${course.fee == 0}">Miễn phí</c:if>
+                                                        <c:if test="${course.fee > 0}">
+                                                            <fmt:formatNumber value="${course.fee}" type="currency" currencySymbol="" pattern="#,##0"/> VNĐ
+                                                         </c:if>
+                                                    </span>
+                                                    <span class="text-gray-500 text-sm">
+                                                        <i class="fa fa-clock mr-1"></i>${course.duration} giờ
+                                                    </span>
+                                                </div>
+                                                <div class="flex justify-between items-center">
+                                                    <a href="${pageContext.request.contextPath}/courseInfo?id=${course.courseID}" class="text-orange-500 hover:underline font-semibold">Xem chi tiết</a>
+                                                    
+                                                    <!-- Hiển thị button khác nhau tùy theo trạng thái đăng nhập -->
+                                                    <c:choose>
+                                                        <c:when test="${sessionScope.user == null}">
+                                                            <!-- User chưa đăng nhập -->
+                                                            <button class="bg-gray-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-600 transition" onclick="showLoginRequired()">
+                                                                <i class="fa fa-sign-in-alt mr-2"></i>Đăng nhập để mua
+                                                            </button>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <!-- User đã đăng nhập và chưa mua khóa học này -->
+                                                            <button class="bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-orange-600 transition add-to-cart-btn" data-course-id="${course.courseID}" onclick="cart.addToCart('${course.courseID}')">
+                                                                <i class="fa fa-cart-plus mr-2"></i>Thêm vào giỏ
+                                                            </button>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </c:if>
                                 </c:forEach>
 
                                 <!-- Pagination Controls -->
@@ -333,88 +349,80 @@
 </div>
 
 <script>
-    // Time and session management
-  
+    // Notification system
+    function showMessage(message, type, duration = 5000) {
+        const colors = {
+            success: 'bg-green-500',
+            error: 'bg-red-500',
+            info: 'bg-blue-500',
+            warning: 'bg-yellow-500'
+        };
+        const icons = {
+            success: 'fas fa-check-circle',
+            error: 'fas fa-exclamation-circle',
+            info: 'fas fa-info-circle',
+            warning: 'fas fa-exclamation-triangle'
+        };
 
-    // Initialize and update time every second
+        const container = document.getElementById('notification-container');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `notification ${colors[type] || 'bg-gray-500'} text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300`;
+        messageDiv.innerHTML = `<div class="flex items-center"><i class="${icons[type] || 'fas fa-info-circle'} mr-2"></i><span>${message}</span></div>`;
+        container.appendChild(messageDiv);
+
+        // Slide in
+        setTimeout(() => {
+            messageDiv.classList.remove('translate-x-full');
+            messageDiv.classList.add('translate-x-0');
+        }, 100);
+
+        // Slide out and remove
+        setTimeout(() => {
+            messageDiv.classList.remove('translate-x-0');
+            messageDiv.classList.add('translate-x-full');
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 300);
+        }, duration);
+    }
+
+    function showSuccessMessage(message, duration = 5000) {
+        showMessage(message, 'success', duration);
+    }
+
+    function showErrorMessage(message, duration = 5000) {
+        showMessage(message, 'error', duration);
+    }
+
+    function showInfoMessage(message, duration = 5000) {
+        showMessage(message, 'info', duration);
+    }
+
+    function showWarningMessage(message, duration = 5000) {
+        showMessage(message, 'warning', duration);
+    }
+
+    // Time display function (fixed missing implementation)
+    function updateTime() {
+        const timeElement = document.getElementById('current-time');
+        if (timeElement) {
+            const now = new Date();
+            timeElement.textContent = now.toLocaleTimeString('vi-VN', { hour12: false });
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         updateTime();
         setInterval(updateTime, 1000);
-    });
 
-    // Add to cart function (assuming cart is defined in shopping.js)
-    window.cart = window.cart || {};
-    cart.addToCart = function(courseID) {
-        const button = document.querySelector(`[data-course-id="${courseID}"]`);
-        const originalText = button.innerHTML;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang thêm...';
-        button.disabled = true;
-        
-        fetch(window.contextPath + '/cart', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `action=addToCart&courseID=${courseID}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showSuccessMessage(data.message);
-                button.innerHTML = '<i class="fas fa-check mr-2"></i>Đã thêm';
-                button.classList.remove('bg-orange-500', 'hover:bg-orange-600');
-                button.classList.add('bg-green-500');
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.classList.remove('bg-green-500');
-                    button.classList.add('bg-orange-500', 'hover:bg-orange-600');
-                    button.disabled = false;
-                }, 2000);
-            } else {
-                showErrorMessage(data.message);
-                button.innerHTML = originalText;
-                button.disabled = false;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showErrorMessage('Có lỗi xảy ra. Vui lòng thử lại.');
-            button.innerHTML = originalText;
-            button.disabled = false;
-        });
-    };
-
-    // Continue learning function for enrolled courses
-    function continueLearning(courseID) {
-        const button = event.target;
-        const originalText = button.innerHTML;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang tải...';
-        button.disabled = true;
-        
-        setTimeout(() => {
-            window.location.href = window.contextPath + '/learn?courseID=' + courseID;
-        }, 1000);
-    }
-
-    // Download certificate function
-    function downloadCertificate(courseID) {
-        const button = event.target;
-        const originalText = button.innerHTML;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Đang tải...';
-        button.disabled = true;
-        
-        setTimeout(() => {
-            showInfoMessage('Chức năng tải chứng chỉ đang được phát triển!');
-            button.innerHTML = originalText;
-            button.disabled = false;
-        }, 2000);
-    }
-
-    // Show success message when coming from payment
-    document.addEventListener('DOMContentLoaded', function() {
+        // Show success message for payment
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('payment') === 'success') {
-            showSuccessMessage('Thanh toán thành công! Khóa học đã được thêm vào danh sách của bạn.');
+            showSuccessMessage('Thanh toán thành công! Khóa học đã được thêm vào danh sách của bạn.', 5000);
         }
-        
+
         // Animate progress bars
         setTimeout(() => {
             document.querySelectorAll('.progress-fill').forEach(bar => {
@@ -427,52 +435,76 @@
         }, 500);
     });
 
-    function showSuccessMessage(message) {
-        showMessage(message, 'success');
-    }
+    // Add to cart function
+    window.cart = window.cart || {};
+    cart.addToCart = function(courseID) {
+        const button = document.querySelector(`[data-course-id="${courseID}"]`);
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang thêm...';
+        button.disabled = true;
 
-    function showErrorMessage(message) {
-        showMessage(message, 'error');
-    }
+        fetch(window.contextPath + '/cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=addToCart&courseID=${courseID}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccessMessage(data.message, 5000);
+                button.innerHTML = '<i class="fas fa-check mr-2"></i>Đã thêm';
+                button.classList.remove('bg-orange-500', 'hover:bg-orange-600');
+                button.classList.add('bg-green-500');
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('bg-green-500');
+                    button.classList.add('bg-orange-500', 'hover:bg-orange-600');
+                    button.disabled = false;
+                }, 2000);
+            } else {
+                showErrorMessage(data.message, 5000);
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorMessage('Có lỗi xảy ra. Vui lòng thử lại.', 5000);
+            button.innerHTML = originalText;
+            button.disabled = false;
+        });
+    };
 
-    function showInfoMessage(message) {
-        showMessage(message, 'info');
-    }
-
-    function showMessage(message, type) {
-        const colors = {
-            success: 'bg-green-500',
-            error: 'bg-red-500',
-            info: 'bg-blue-500'
-        };
-        
-        const icons = {
-            success: 'fas fa-check-circle',
-            error: 'fas fa-exclamation-circle',
-            info: 'fas fa-info-circle'
-        };
-
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
-        messageDiv.innerHTML = `<div class="flex items-center"><i class="${icons[type]} mr-2"></i><span>${message}</span></div>`;
-        document.body.appendChild(messageDiv);
-        
-        // Slide in
+    // Continue learning function
+    function continueLearning(courseID) {
+        const button = event.target;
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang tải...';
+        button.disabled = true;
         setTimeout(() => {
-            messageDiv.classList.remove('translate-x-full');
-            messageDiv.classList.add('translate-x-0');
-        }, 100);
-        
-        // Slide out and remove
+            window.location.href = window.contextPath + '/learn?courseID=' + courseID;
+        }, 1000);
+    }
+
+    // Download certificate function
+    function downloadCertificate(courseID) {
+        const button = event.target;
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Đang tải...';
+        button.disabled = true;
         setTimeout(() => {
-            messageDiv.classList.remove('translate-x-0');
-            messageDiv.classList.add('translate-x-full');
-            setTimeout(() => {
-                if (messageDiv.parentNode) {
-                    messageDiv.parentNode.removeChild(messageDiv);
-                }
-            }, 300);
-        }, 5000);
+            showInfoMessage('Chức năng tải chứng chỉ đang được phát triển!', 5000);
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }, 2000);
+    }
+
+    // Show login required message and redirect to login page
+    function showLoginRequired() {
+        showMessage('Bạn cần đăng nhập để mua khóa học!', 'info', 3000);
+        setTimeout(() => {
+            window.location.href = '${pageContext.request.contextPath}/view/login.jsp';
+        }, 1500);
     }
 
     // Modal functions

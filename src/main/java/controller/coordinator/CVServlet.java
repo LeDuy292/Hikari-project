@@ -59,7 +59,7 @@ public class CVServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             logger.warn("CVServlet: Unauthorized access attempt, redirecting to login.");
-            response.sendRedirect("view/login.jsp?error=please_login");
+            response.sendRedirect(request.getContextPath()+"/loginPage");
             return;
         }
 
@@ -91,7 +91,7 @@ public class CVServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             logger.warn("CVServlet: Unauthorized access attempt, redirecting to login.");
-            response.sendRedirect("view/login.jsp?error=please_login");
+            response.sendRedirect(request.getContextPath()+"/loginPage");
             return;
         }
 

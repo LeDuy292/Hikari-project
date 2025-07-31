@@ -35,13 +35,13 @@
             <i class="fas fa-book"></i>
             <span>Phê duyệt bài học</span>
         </a>
--->        
+     
 <!--        <a href="${pageContext.request.contextPath}/view/coordinator/document-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("document-approval.jsp") ? "active" : ""%>">
         -->        
-<!--        <a href="${pageContext.request.contextPath}/view/coordinator/test-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("test-approval.jsp") ? "active" : ""%>">
+       <a href="${pageContext.request.contextPath}/CoordinatorTask" class="sidebar-nav-item <%= currentPage.equals("test-approval.jsp") ? "active" : ""%>">
             <i class="fas fa-star"></i>
-            <span>Phê duyệt bài kiểm tra</span>
-        </a>-->
+            <span>Nhiệm vụ</span>
+
         <a href="${pageContext.request.contextPath}/LoadTeacher" class="sidebar-nav-item <%= currentPage.equals("instructor-assignment.jsp") ? "active" : ""%>">
             <i class="fas fa-bell"></i>
             <span>Phân công giảng viên</span>

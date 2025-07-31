@@ -46,7 +46,7 @@
             <span>Trang Chủ</span>
         </a>
 
-        <a href="<%= request.getContextPath()%>/contact">
+        <a href="<%= request.getContextPath()%>/view/student/contact.jsp">
             <i class="fas fa-phone"></i>
             <span>Liên Hệ</span>
         </a>

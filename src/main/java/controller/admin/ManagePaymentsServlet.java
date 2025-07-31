@@ -1,7 +1,6 @@
 package controller.admin;
 
 import model.UserAccount;
-import model.admin.Payment;
 import service.PaymentService;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
@@ -10,13 +9,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import model.admin.PaymentDTO;
 
 @WebServlet("/admin/payments")
 public class ManagePaymentsServlet extends HttpServlet {
@@ -41,7 +42,7 @@ public class ManagePaymentsServlet extends HttpServlet {
                     resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid payment ID");
                     return;
                 }
-                Payment payment = paymentService.getPaymentById(id);
+                PaymentDTO payment = paymentService.getPaymentById(id);
                 if (payment == null) {
                     resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Payment not found");
                     return;
@@ -49,6 +50,19 @@ public class ManagePaymentsServlet extends HttpServlet {
                 resp.setContentType("application/json");
                 resp.setCharacterEncoding("UTF-8");
                 resp.getWriter().write(gson.toJson(payment));
+                return;
+            } else if ("export".equals(action)) {
+                int id = parseIntOrDefault(req.getParameter("id"), -1);
+                if (id == -1) {
+                    resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid payment ID");
+                    return;
+                }
+                PaymentDTO payment = paymentService.getPaymentById(id);
+                if (payment == null) {
+                    resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Payment not found");
+                    return;
+                }
+                exportSinglePayment(resp, payment);
                 return;
             }
 
@@ -68,7 +82,7 @@ public class ManagePaymentsServlet extends HttpServlet {
                 return;
             }
 
-            List<Payment> payments = paymentService.getPaymentsWithFilters(status, search, date, minAmountStr, maxAmountStr, sortBy, page, pageSize);
+            List<PaymentDTO> payments = paymentService.getPaymentsWithFilters(status, search, date, minAmountStr, maxAmountStr, sortBy, page, pageSize);
             int totalPayments = paymentService.countPaymentsWithFilters(status, search, date, minAmountStr, maxAmountStr);
             int totalPages = (int) Math.ceil((double) totalPayments / pageSize);
             page = Math.max(1, Math.min(page, totalPages));
@@ -126,6 +140,25 @@ public class ManagePaymentsServlet extends HttpServlet {
                     }
                 }
                 resp.sendRedirect(req.getContextPath() + "/admin/payments?message=Cập nhật hàng loạt thành công");
+            } else if ("bulkExport".equals(action)) {
+                String[] paymentIdStrs = req.getParameterValues("paymentIds");
+                if (paymentIdStrs == null || paymentIdStrs.length == 0) {
+                    resp.sendRedirect(req.getContextPath() + "/admin/payments?error=No payments selected for export");
+                    return;
+                }
+                
+                List<PaymentDTO> paymentsToExport = new java.util.ArrayList<>();
+                for (String idStr : paymentIdStrs) {
+                    int paymentId = parseIntOrDefault(idStr, -1);
+                    if (paymentId != -1) {
+                        PaymentDTO payment = paymentService.getPaymentById(paymentId);
+                        if (payment != null) {
+                            paymentsToExport.add(payment);
+                        }
+                    }
+                }
+                exportMultiplePayments(resp, paymentsToExport);
+                return;
             } else {
                 resp.sendRedirect(req.getContextPath() + "/admin/payments?error=Invalid action");
             }
@@ -133,6 +166,61 @@ public class ManagePaymentsServlet extends HttpServlet {
             LOGGER.log(Level.SEVERE, "Error in POST request: " + e.getMessage(), e);
             resp.sendRedirect(req.getContextPath() + "/admin/payments?error=An error occurred");
         }
+    }
+
+    private void exportSinglePayment(HttpServletResponse resp, PaymentDTO payment) throws IOException {
+        resp.setContentType("text/csv");
+        resp.setCharacterEncoding("UTF-8");
+        resp.setHeader("Content-Disposition", "attachment; filename=\"payment_" + payment.getId() + ".csv\"");
+        
+        PrintWriter writer = resp.getWriter();
+        
+        // CSV Header
+        writer.println("ID,Student Name,Course Names,Amount,Status,Payment Method,Payment Date,Transaction ID");
+        
+        // CSV Data
+        writer.printf("%d,\"%s\",\"%s\",%.2f,\"%s\",\"%s\",\"%s\",\"%s\"%n",
+            payment.getId(),
+            payment.getStudentName() != null ? payment.getStudentName() : "",
+            payment.getCourseNames() != null ? payment.getCourseNames() : "",
+            payment.getAmount(),
+            payment.getPaymentStatus() != null ? payment.getPaymentStatus() : "",
+            payment.getPaymentMethod() != null ? payment.getPaymentMethod() : "",
+            payment.getPaymentDate() != null ? payment.getPaymentDate().toString() : "",
+            payment.getTransactionID() != null ? payment.getTransactionID() : ""
+        );
+        
+        writer.flush();
+    }
+
+    private void exportMultiplePayments(HttpServletResponse resp, List<PaymentDTO> payments) throws IOException {
+        resp.setContentType("text/csv");
+        resp.setCharacterEncoding("UTF-8");
+        resp.setHeader("Content-Disposition", "attachment; filename=\"payments_export_" + 
+            new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv\"");
+        
+        PrintWriter writer = resp.getWriter();
+        
+        // CSV Header
+        writer.println("ID,Student Name,Student ID,Course Names,Course IDs,Amount,Status,Payment Method,Payment Date,Transaction ID");
+        
+        // CSV Data
+        for (PaymentDTO payment : payments) {
+            writer.printf("%d,\"%s\",\"%s\",\"%s\",\"%s\",%.2f,\"%s\",\"%s\",\"%s\",\"%s\"%n",
+                payment.getId(),
+                payment.getStudentName() != null ? payment.getStudentName() : "",
+                payment.getStudentID() != null ? payment.getStudentID() : "",
+                payment.getCourseNames() != null ? payment.getCourseNames() : "",
+                payment.getCourseIDs() != null ? payment.getCourseIDs() : "",
+                payment.getAmount(),
+                payment.getPaymentStatus() != null ? payment.getPaymentStatus() : "",
+                payment.getPaymentMethod() != null ? payment.getPaymentMethod() : "",
+                payment.getPaymentDate() != null ? payment.getPaymentDate().toString() : "",
+                payment.getTransactionID() != null ? payment.getTransactionID() : ""
+            );
+        }
+        
+        writer.flush();
     }
 
     private int parseIntOrDefault(String value, int defaultValue) {

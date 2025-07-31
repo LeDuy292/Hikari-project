@@ -1,7 +1,7 @@
 package service;
 
 import dao.admin.PaymentDAO;
-import model.admin.Payment;
+import model.admin.PaymentDTO; // **CHANGED**: Use PaymentDTO
 import java.sql.SQLException;
 import java.util.List;
 import org.slf4j.Logger;
@@ -11,9 +11,9 @@ public class PaymentService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentService.class);
     private final PaymentDAO paymentDAO = new PaymentDAO();
 
-    public List<Payment> getAllPayments() throws SQLException {
+    public List<PaymentDTO> getAllPayments() throws SQLException { // **CHANGED**: Return PaymentDTO
         try {
-            List<Payment> payments = paymentDAO.getAllPayments();
+            List<PaymentDTO> payments = paymentDAO.getAllPayments(); // **CHANGED**: Use PaymentDTO
             LOGGER.info("Retrieved {} payments", payments.size());
             return payments;
         } catch (SQLException e) {
@@ -22,12 +22,12 @@ public class PaymentService {
         }
     }
 
-    public Payment getPaymentById(int id) throws SQLException {
+    public PaymentDTO getPaymentById(int id) throws SQLException { // **CHANGED**: Return PaymentDTO
         if (id <= 0) {
             throw new IllegalArgumentException("ID thanh toán không hợp lệ");
         }
         try {
-            Payment payment = paymentDAO.getPaymentById(id);
+            PaymentDTO payment = paymentDAO.getPaymentById(id); // **CHANGED**: Use PaymentDTO
             if (payment == null) {
                 LOGGER.warn("No payment found for id: {}", id);
             }
@@ -38,12 +38,12 @@ public class PaymentService {
         }
     }
 
-    public List<Payment> getPaymentsByStatus(String status) throws SQLException {
+    public List<PaymentDTO> getPaymentsByStatus(String status) throws SQLException { // **CHANGED**: Return PaymentDTO
         if (status == null || status.trim().isEmpty()) {
             throw new IllegalArgumentException("Trạng thái thanh toán không hợp lệ");
         }
         try {
-            List<Payment> payments = paymentDAO.getPaymentsByStatus(status);
+            List<PaymentDTO> payments = paymentDAO.getPaymentsByStatus(status); // **CHANGED**: Use PaymentDTO
             LOGGER.info("Retrieved {} payments with status: {}", payments.size(), status);
             return payments;
         } catch (SQLException e) {
@@ -71,14 +71,13 @@ public class PaymentService {
         }
     }
 
-    public List<Payment> getPaymentsByStudentId(String studentID) throws SQLException {
+    public List<PaymentDTO> getPaymentsByStudentId(String studentID) throws SQLException { // **CHANGED**: Return PaymentDTO
         if (studentID == null || studentID.trim().isEmpty()) {
             LOGGER.error("Invalid studentID: {}", studentID);
             throw new IllegalArgumentException("StudentID không hợp lệ");
         }
         try {
-            List<Payment> payments = paymentDAO.getPaymentsByStudentId(studentID);
-            // Lọc các giao dịch có trạng thái "Complete" tại đây
+            List<PaymentDTO> payments = paymentDAO.getPaymentsByStudentId(studentID); // **CHANGED**: Use PaymentDTO
             payments.removeIf(p -> !"Complete".equalsIgnoreCase(p.getPaymentStatus()));
             LOGGER.info("Retrieved {} 'Complete' payments for studentID: {} (total fetched: {})", 
                        payments.size(), studentID, paymentDAO.getPaymentsByStudentId(studentID).size());
@@ -89,15 +88,15 @@ public class PaymentService {
         }
     }
 
-    public List<Payment> getPaymentsWithFilters(String status, String search, String date, String minAmountStr, 
-                                              String maxAmountStr, String sortBy, int page, int pageSize) throws SQLException {
+    public List<PaymentDTO> getPaymentsWithFilters(String status, String search, String date, String minAmountStr, 
+                                                  String maxAmountStr, String sortBy, int page, int pageSize) throws SQLException { // **CHANGED**: Return PaymentDTO
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 9;
         int offset = (page - 1) * pageSize;
         double minAmount = parseDoubleOrDefault(minAmountStr, 0.0);
         double maxAmount = parseDoubleOrDefault(maxAmountStr, Double.MAX_VALUE);
         try {
-            List<Payment> payments = paymentDAO.getPaymentsWithFilters(status, search, date, minAmount, maxAmount, sortBy, offset, pageSize);
+            List<PaymentDTO> payments = paymentDAO.getPaymentsWithFilters(status, search, date, minAmount, maxAmount, sortBy, offset, pageSize); // **CHANGED**: Use PaymentDTO
             LOGGER.info("Retrieved {} payments with filters, page: {}, pageSize: {}", payments.size(), page, pageSize);
             return payments;
         } catch (SQLException e) {

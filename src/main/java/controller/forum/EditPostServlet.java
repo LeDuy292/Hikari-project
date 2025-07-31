@@ -51,7 +51,7 @@ public class EditPostServlet extends HttpServlet {
         UserAccount user = (UserAccount) session.getAttribute("user");
 
         if (userId == null || user == null) {
-            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/loginPage");
             return;
         }
 
@@ -106,7 +106,7 @@ public class EditPostServlet extends HttpServlet {
         UserAccount user = (UserAccount) session.getAttribute("user");
 
         if (userId == null || user == null) {
-            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/loginPage");
             return;
         }
 

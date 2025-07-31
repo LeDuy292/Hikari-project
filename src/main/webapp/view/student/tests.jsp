@@ -29,26 +29,24 @@
                                 <img src="${pageContext.request.contextPath}/assets/img/img_student/JLPT.png" alt="JLPT Test" />
                                 <h3>Kỳ Thi JLPT</h3>
                                 <p>Luyện tập và đánh giá kỹ năng tiếng Nhật theo chuẩn kỳ thi JLPT từ N5 đến N1.</p>
-                                <!--<a href="${pageContext.request.contextPath}/jlpt-test">Bắt đầu thi JLPT</a>-->
-                                <a href="${pageContext.request.contextPath}/view/student/jlpt-test.jsp">Bắt đầu thi JLPT</a>
+                                <a href="${pageContext.request.contextPath}/test-list">Bắt đầu thi JLPT</a>
                             </div>
                             <div class="test-card">
                                 <img src="${pageContext.request.contextPath}/assets/img/img_student/KiemTraTrinhDo.png" alt="Level Assessment" />
                                 <h3>Kiểm Tra Trình Độ</h3>
                                 <p>Đánh giá trình độ tiếng Nhật hiện tại của bạn để chọn khóa học phù hợp.</p>
-                                <a href="${pageContext.request.contextPath}/assessment-test">Kiểm tra ngay</a>
+                                <a href="${pageContext.request.contextPath}/TestLevel">Kiểm tra ngay</a>
                             </div>
                         </div>
                     </div>
 
                     <div class="cta-section">
                         <h2>Sẵn sàng đánh giá trình độ tiếng Nhật của bạn?</h2>
-                        <a href="${pageContext.request.contextPath}/assessment-test">Kiểm tra trình độ</a>
+                        <a href="${pageContext.request.contextPath}/TestLevel">Kiểm tra trình độ</a>
                         <a href="${pageContext.request.contextPath}/courses">Xem khóa học</a>
                     </div>
                 </div>
             </div>
-            <%@ include file="footer.jsp" %>
         </div>
     </body>
 </html>

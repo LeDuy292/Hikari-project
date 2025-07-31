@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import model.admin.PaymentDTO;
 
 @WebServlet("/myCourses")
 public class MyCourseServlet extends HttpServlet {
@@ -69,12 +70,12 @@ public class MyCourseServlet extends HttpServlet {
                 int page = parseIntOrDefault(request.getParameter("page"), 1);
                 int pageSize = 9;
 
-                List<Payment> payments = paymentService.getPaymentsWithFilters(
+                List<PaymentDTO> payments = paymentService.getPaymentsWithFilters(
                     status, search, date, minAmountStr, maxAmountStr, sortBy, page, pageSize
                 );
                 // Filter payments by userID
-                List<Payment> userPayments = new ArrayList<>();
-                for (Payment payment : payments) {
+                List<PaymentDTO> userPayments = new ArrayList<>();
+                for (PaymentDTO payment : payments) {
                     if (payment.getStudentID().equals(userID)) {
                         userPayments.add(payment);
                     }
