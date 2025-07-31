@@ -16,7 +16,7 @@
         <style>
             :root {
                 --primary-color: #ff9800; /* Orange from JSP */
-                --secondary-color: #666; /* Gray from JSP */
+                --secondary-color: #ffb347; /* Gray from JSP */
                 --accent-color: #ffb347; /* Gradient end color from JSP */
                 --background-color: #FFF4E5; /* Sidebar background from JSP */
                 --text-color: #444; /* Default text color */
@@ -207,7 +207,7 @@
 
                 <a href="${pageContext.request.contextPath}/checkGrammar" class="menu-item <%= currentPage.equals("grammarCheck.jsp") ? "active" : ""%>"><i class="fa fa-book-open"></i>Kiểm tra ngữ pháp</a>
 
-                <a href="${pageContext.request.contextPath}/view/student/tests.jsp" class="sidebar-nav-item <%= currentPage.equals("test.jsp") ? "active" : ""%>" aria-label="Bài kiểm tra">
+                <a href="${pageContext.request.contextPath}/LoadTest" class="sidebar-nav-item <%= currentPage.equals("test.jsp") ? "active" : ""%>" aria-label="Bài kiểm tra">
                     <i class="fa fa-file-alt"></i>
                     <span>Bài kiểm tra</span>
                 </a>

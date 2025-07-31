@@ -52,15 +52,48 @@ body {
     display: flex;
     align-items: center;
     padding: 15px 20px;
-    color: #ecf0f1;
+    color: #444444;
     text-decoration: none;
     font-size: 16px;
     transition: background 0.3s ease;
 }
-.sidebar .menu-item:hover {
-    background-color: #34495e;
-}
+/*.sidebar .menu-item:hover {
+    background-color: #34495e;*/
+/*}*/
 .sidebar .menu-item i {
+    margin-right: 10px;
+}
+
+/* Active menu item */
+.sidebar .menu-item.active {
+    background-color: #1a252f;
+    border-left: 4px solid #ff9800;
+}
+
+/* Submenu items */
+.sidebar .submenu {
+    padding-left: 20px;
+    display: none;
+}
+
+.sidebar .menu-item.has-submenu.active + .submenu {
+    display: block;
+}
+
+.sidebar .submenu .menu-item {
+    padding: 12px 15px 12px 35px;
+    font-size: 14px;
+    color: #bdc3c7;
+}
+
+.sidebar .submenu .menu-item:hover {
+    color: #fff;
+}
+
+/* Menu item with icon */
+.sidebar .menu-item .menu-icon {
+    width: 20px;
+    text-align: center;
     margin-right: 10px;
 }
 .sidebar .bottom-section {
@@ -229,30 +262,119 @@ body {
     font-size: 14px;
     color: #bdc3c7;
 }
+@media (max-width: 1024px) {
+    .content {
+        padding: 30px;
+    }
+    
+    .test-types {
+        gap: 20px;
+    }
+    
+    .test-card {
+        width: calc(50% - 30px);
+    }
+    
+    .tips-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
     .main-content {
         flex-direction: column;
     }
+    
     .sidebar {
         width: 100%;
         height: auto;
         position: relative;
+        padding: 0;
+        z-index: 1000;
     }
+    
+    .sidebar .logo {
+        padding: 15px 20px;
+        justify-content: space-between;
+    }
+    
+    .menu-toggle {
+        display: block;
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+    }
+    
+    .sidebar .menu {
+        display: none;
+        padding: 0;
+    }
+    
+    .sidebar.active .menu {
+        display: block;
+    }
+    
     .content {
         margin-left: 0;
         width: 100%;
-        padding: 20px;
+        padding: 20px 15px;
     }
+    
+    .test-card {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
     .test-types {
         flex-direction: column;
-        align-items: center;
     }
-    .test-card {
-        width: 90%;
+    
+    .tips-grid {
+        grid-template-columns: 1fr;
     }
-    .footer-main {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+    
+    .hero-section h1 {
+        font-size: 2em;
     }
+    
+    .section h2 {
+        font-size: 1.8em;
+    }
+    
+    .cta-section {
+        padding: 30px 15px;
+    }
+    
+    .cta-section h2 {
+        font-size: 1.5em;
+    }
+    
+    .cta-section a {
+        display: block;
+        margin: 10px auto;
+        max-width: 200px;
+    }
+}
+
+/* Sidebar toggle button for mobile */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+/* Smooth transitions */
+.sidebar, .content {
+    transition: all 0.3s ease;
+}
+
+/* Adjust main content when sidebar is toggled */
+.sidebar-toggled .content {
+    margin-left: 0;
 }
