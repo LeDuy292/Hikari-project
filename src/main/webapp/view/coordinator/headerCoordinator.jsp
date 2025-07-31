@@ -32,10 +32,9 @@
         <div class="user-profile">
             <img src="${pageContext.request.contextPath}/assets/img/avatar.png" alt="Ảnh Đại Diện Quản Trị" class="avatar" />
             <div class="user-info">
-                <span class="user-name">Xin Chào, Điều phối viên</span>
+                <span class="user-name">${sessionScope.user != null ? sessionScope.user.fullName : 'coordinator'}</span>
                 <a href="${pageContext.request.contextPath}/logout" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Đăng Xuất
+                    <i class="fas fa-sign-out-alt"></i> Đăng Xuất
                 </a>
             </div>
         </div>
@@ -43,7 +42,7 @@
 </div>
 
 <!-- Add JavaScript for notifications -->
-<script>
+<!--<script>
     window.contextPath = '${pageContext.request.contextPath}';
     
     // Ensure only one notification system
@@ -67,8 +66,8 @@
             }
         }, 200)
     })
-</script>
-<script src="${pageContext.request.contextPath}/assets/js/admin/admin-notifications.js"></script>
+</script>-->
+<!--<script src="${pageContext.request.contextPath}/assets/js/admin/admin-notifications.js"></script>-->
 
 <script>
     function confirmLogout(logoutUrl) {
