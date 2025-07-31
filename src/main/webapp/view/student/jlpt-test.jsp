@@ -1,4 +1,6 @@
-<!-- <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%> -->
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="model.Test" %>
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -7,6 +9,47 @@
         <title>Kỳ Thi JLPT - HIKARI JAPAN</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/student/jlpt-test.css"/>
+        <style>
+            .test-list {
+                margin-top: 20px;
+            }
+            .test-item {
+                background: #fff;
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 15px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .test-info h4 {
+                margin: 0 0 5px 0;
+                color: #2c3e50;
+            }
+            .test-meta {
+                color: #7f8c8d;
+                font-size: 0.9em;
+                margin-bottom: 5px;
+            }
+            .test-actions a {
+                background-color: #e74c3c;
+                color: white;
+                padding: 8px 15px;
+                border-radius: 4px;
+                text-decoration: none;
+                transition: background-color 0.3s;
+            }
+            .test-actions a:hover {
+                background-color: #c0392b;
+            }
+            .no-tests {
+                text-align: center;
+                padding: 20px;
+                color: #7f8c8d;
+                font-style: italic;
+            }
+        </style>
     </head>
     <body>
         <div class="container">
@@ -21,58 +64,145 @@
 
                     <div class="section">
                         <h2>Các Cấp Độ JLPT</h2>
-                        <div class="test-levels">
-                            <div class="level-card">
-                                <img src="${pageContext.request.contextPath}/assets/img/img_student/JLPT-N5.png" alt="JLPT N5" class="logo" />
-                                <h3>JLPT N5</h3>
-                                <p>Cấp độ cơ bản dành cho người mới bắt đầu học tiếng Nhật.</p>
-                                <div class="button-container">
-                                    <a href="${pageContext.request.contextPath}/Test?testId=1&action=start">Bắt đầu thi</a>
+                        
+                        <!-- N5 Tests -->
+                        <h3>JLPT N5</h3>
+                        <div class="test-list">
+                            <% List<Test> n5Tests = (List<Test>) request.getAttribute("n5Tests"); 
+                               if (n5Tests != null && !n5Tests.isEmpty()) { 
+                                   for (Test test : n5Tests) { %>
+                                <div class="test-item">
+                                    <div class="test-info">
+                                        <h4><%= test.getTitle() %></h4>
+                                        <div class="test-meta">
+                                            Số câu: <%= test.getTotalQuestions() %> | 
+                                            Tổng điểm: <%= test.getTotalMarks() %> | 
+                                            Thời gian: <%= test.getDuration() %> phút
+                                        </div>
+                                        <p><%= test.getDescription() %></p>
+                                    </div>
+                                    <div class="test-actions">
+                                        <a href="${pageContext.request.contextPath}/Test?testId=<%= test.getId() %>&action=start">Bắt đầu thi</a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="level-card">
-                                <img src="${pageContext.request.contextPath}/assets/img/img_student/JLPT-N4.png" alt="JLPT N4" class="logo" />
-                                <h3>JLPT N4</h3>
-                                <p>Cấp độ trung cấp cơ bản, tập trung vào kỹ năng nghe và đọc.</p>
-                                <div class="button-container">
-                                    <a href="${pageContext.request.contextPath}/Test?testId=2&action=start">Bắt đầu thi</a>
+                            <%   } 
+                               } else { %>
+                                <div class="no-tests">Chưa có bài kiểm tra nào cho cấp độ N5.</div>
+                            <% } %>
+                        </div>
+                        
+                        <!-- N4 Tests -->
+                        <h3>JLPT N4</h3>
+                        <div class="test-list">
+                            <% List<Test> n4Tests = (List<Test>) request.getAttribute("n4Tests"); 
+                               if (n4Tests != null && !n4Tests.isEmpty()) { 
+                                   for (Test test : n4Tests) { %>
+                                <div class="test-item">
+                                    <div class="test-info">
+                                        <h4><%= test.getTitle() %></h4>
+                                        <div class="test-meta">
+                                            Số câu: <%= test.getTotalQuestions() %> | 
+                                            Tổng điểm: <%= test.getTotalMarks() %> | 
+                                            Thời gian: <%= test.getDuration() %> phút
+                                        </div>
+                                        <p><%= test.getDescription() %></p>
+                                    </div>
+                                    <div class="test-actions">
+                                        <a href="${pageContext.request.contextPath}/Test?testId=<%= test.getId() %>&action=start">Bắt đầu thi</a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="level-card">
-                                <img src="${pageContext.request.contextPath}/assets/img/img_student/JLPT-N3.png" alt="JLPT N3" class="logo" />
-                                <h3>JLPT N3</h3>
-                                <p>Cấp độ trung cấp nâng cao, chuẩn bị cho giao tiếp thực tế.</p>
-                                <div class="button-container">
-                                    <a href="${pageContext.request.contextPath}/Test?testId=3&action=start">Bắt đầu thi</a>
+                            <%   } 
+                               } else { %>
+                                <div class="no-tests">Chưa có bài kiểm tra nào cho cấp độ N4.</div>
+                            <% } %>
+                        </div>
+                        
+                        <!-- N3 Tests -->
+                        <h3>JLPT N3</h3>
+                        <div class="test-list">
+                            <% List<Test> n3Tests = (List<Test>) request.getAttribute("n3Tests"); 
+                               if (n3Tests != null && !n3Tests.isEmpty()) { 
+                                   for (Test test : n3Tests) { %>
+                                <div class="test-item">
+                                    <div class="test-info">
+                                        <h4><%= test.getTitle() %></h4>
+                                        <div class="test-meta">
+                                            Số câu: <%= test.getTotalQuestions() %> | 
+                                            Tổng điểm: <%= test.getTotalMarks() %> | 
+                                            Thời gian: <%= test.getDuration() %> phút
+                                        </div>
+                                        <p><%= test.getDescription() %></p>
+                                    </div>
+                                    <div class="test-actions">
+                                        <a href="${pageContext.request.contextPath}/Test?testId=<%= test.getId() %>&action=start">Bắt đầu thi</a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="level-card">
-                                <img src="${pageContext.request.contextPath}/assets/img/img_student/JLPT-N2.png" alt="JLPT N2" class="logo" />
-                                <h3>JLPT N2</h3>
-                                <p>Cấp độ nâng cao, yêu cầu kỹ năng ngôn ngữ toàn diện.</p>
-                                <div class="button-container">
-                                    <a href="${pageContext.request.contextPath}/Test?testId=4&action=start">Bắt đầu thi</a>
+                            <%   } 
+                               } else { %>
+                                <div class="no-tests">Chưa có bài kiểm tra nào cho cấp độ N3.</div>
+                            <% } %>
+                        </div>
+                        
+                        <!-- N2 Tests -->
+                        <h3>JLPT N2</h3>
+                        <div class="test-list">
+                            <% List<Test> n2Tests = (List<Test>) request.getAttribute("n2Tests"); 
+                               if (n2Tests != null && !n2Tests.isEmpty()) { 
+                                   for (Test test : n2Tests) { %>
+                                <div class="test-item">
+                                    <div class="test-info">
+                                        <h4><%= test.getTitle() %></h4>
+                                        <div class="test-meta">
+                                            Số câu: <%= test.getTotalQuestions() %> | 
+                                            Tổng điểm: <%= test.getTotalMarks() %> | 
+                                            Thời gian: <%= test.getDuration() %> phút
+                                        </div>
+                                        <p><%= test.getDescription() %></p>
+                                    </div>
+                                    <div class="test-actions">
+                                        <a href="${pageContext.request.contextPath}/Test?testId=<%= test.getId() %>&action=start">Bắt đầu thi</a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="level-card">
-                                <img src="${pageContext.request.contextPath}/assets/img/img_student/JLPT-N1.png" alt="JLPT N1" class="logo" />
-                                <h3>JLPT N1</h3>
-                                <p>Cấp độ cao nhất, dành cho người muốn thành thạo tiếng Nhật.</p>
-                                <div class="button-container">
-                                    <a href="${pageContext.request.contextPath}/Test?testId=5&action=start">Bắt đầu thi</a>
+                            <%   } 
+                               } else { %>
+                                <div class="no-tests">Chưa có bài kiểm tra nào cho cấp độ N2.</div>
+                            <% } %>
+                        </div>
+                        
+                        <!-- N1 Tests -->
+                        <h3>JLPT N1</h3>
+                        <div class="test-list">
+                            <% List<Test> n1Tests = (List<Test>) request.getAttribute("n1Tests"); 
+                               if (n1Tests != null && !n1Tests.isEmpty()) { 
+                                   for (Test test : n1Tests) { %>
+                                <div class="test-item">
+                                    <div class="test-info">
+                                        <h4><%= test.getTitle() %></h4>
+                                        <div class="test-meta">
+                                            Số câu: <%= test.getTotalQuestions() %> | 
+                                            Tổng điểm: <%= test.getTotalMarks() %> | 
+                                            Thời gian: <%= test.getDuration() %> phút
+                                        </div>
+                                        <p><%= test.getDescription() %></p>
+                                    </div>
+                                    <div class="test-actions">
+                                        <a href="${pageContext.request.contextPath}/Test?testId=<%= test.getId() %>&action=start">Bắt đầu thi</a>
+                                    </div>
                                 </div>
-                            </div>
+                            <%   } 
+                               } else { %>
+                                <div class="no-tests">Chưa có bài kiểm tra nào cho cấp độ N1.</div>
+                            <% } %>
                         </div>
                     </div>
 
                     <div class="cta-section">
                         <h2>Sẵn sàng chinh phục kỳ thi JLPT?</h2>
-                        <a href="${pageContext.request.contextPath}/jlpt-test/start">Bắt đầu ngay</a>
+                        <a href="${pageContext.request.contextPath}/LoadTest">Xem tất cả bài kiểm tra</a>
                         <a href="${pageContext.request.contextPath}/courses">Xem khóa học JLPT</a>
                     </div>
                 </div>
             </div>
-            <%@ include file="footer.jsp" %>
         </div>
     </body>
 </html>
