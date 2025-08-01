@@ -3,7 +3,7 @@ let postIdToDelete = null;
 function toggleLike(postId, button) {
     if (!forumUserId) {
         alert("Vui lòng đăng nhập để thích bài viết!");
-        window.location.href = forumContextPath + "/view/login.jsp";
+        window.location.href = forumContextPath + "/loginPage";
         return;
     }
 
@@ -37,7 +37,7 @@ function toggleLike(postId, button) {
 function toggleCommentLike(commentId, button) {
     if (!forumUserId) {
         alert("Vui lòng đăng nhập để thích bình luận!");
-        window.location.href = forumContextPath + "/view/login.jsp";
+        window.location.href = forumContextPath + "/loginPage";
         return;
     }
 

@@ -28,7 +28,7 @@ public class ProfileMyPaymentServlet extends HttpServlet {
         UserAccount user = (UserAccount) request.getSession().getAttribute("user");
         if (user == null) {
             LOGGER.warn("Phiên làm việc hết hạn, chuyển hướng đến trang đăng nhập");
-            response.sendRedirect(request.getContextPath() + "/view/login.jsp?error=Phiên+làm+việc+hết+hạn");
+            response.sendRedirect(request.getContextPath() + "/loginPage?error=Phiên+làm+việc+hết+hạn");
             return;
         }
 

@@ -8,7 +8,7 @@ function checkSession() {
         if (data.valid === false) {
             // Đăng xuất ngay lập tức khi nhận false
             alert('Phiên làm việc đã hết hạn do đăng nhập từ thiết bị khác. Vui lòng đăng nhập lại.');
-            window.location.href = '/Hikari_Plus/view/login.jsp';
+            window.location.href = '/Hikari_Plus/loginPage';
         }
     })
     .catch(error => console.error('Error checking session:', error));

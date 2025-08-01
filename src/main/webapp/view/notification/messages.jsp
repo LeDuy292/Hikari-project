@@ -98,7 +98,7 @@
         if (!userID) {
             console.error("userID is not defined or empty in JSP");
             alert("Không thể tải trang nhắn tin: Vui lòng đăng nhập lại.");
-            window.location.href = "${pageContext.request.contextPath}/view/login.jsp";
+            window.location.href = "${pageContext.request.contextPath}/loginPage";
         }
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

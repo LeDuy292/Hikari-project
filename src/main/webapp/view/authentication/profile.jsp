@@ -82,7 +82,7 @@
         <% 
             UserAccount user = (UserAccount) session.getAttribute("user");
             if (user == null) {
-                response.sendRedirect(request.getContextPath() + "/view/login.jsp?error=Phiên+làm+việc+hết+hạn");
+                response.sendRedirect(request.getContextPath() + "/loginPage?error=Phiên+làm+việc+hết+hạn");
                 return;
             }
             
@@ -129,7 +129,7 @@
                 <i class="fas fa-user"></i>
                 Thông tin cá nhân
             </button>
-            <button class="tab-btn" onclick="window.location.href='http://localhost:8080/Hikari/profile/myCourses'">
+            <button class="tab-btn" onclick="window.location.href='${pageContext.request.contextPath}/profile/myCourses'">
                 <i class="fas fa-book"></i>
                 Khóa học của tôi 
             </button>
