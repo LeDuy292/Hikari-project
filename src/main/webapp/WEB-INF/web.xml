@@ -5,10 +5,6 @@
         <servlet-class>controller.progress.SubmitAssignmentServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>UpdateProgressServlet</servlet-name>
-        <url-pattern>/updateProgress</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>SubmitAssignmentServlet</servlet-name>
         <url-pattern>/submitAssignment</url-pattern>
     </servlet-mapping>
@@ -63,6 +59,12 @@
         <servlet-name>TeacherProfileServlet</servlet-name>
         <servlet-class>controller.teacher.TeacherProfileServlet</servlet-class>
     </servlet>
+
+
+    <servlet>
+        <servlet-name>TeacherCourseManagementServlet</servlet-name>
+        <servlet-class>controller.teacher.TeacherCourseManagementServlet</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>GetTopicList</servlet-name>
         <servlet-class>controller.course.GetTopicListServlet</servlet-class>
@@ -71,6 +73,10 @@
         <servlet-name>UpdateProgressServlet</servlet-name>
         <servlet-class>controller.progress.UpdateProgressServlet</servlet-class>
     </servlet>
+    <servlet-mapping>
+        <servlet-name>UpdateProgressServlet</servlet-name>
+        <url-pattern>/updateProgress</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoadCourseServlet</servlet-name>
         <url-pattern>/LoadCourse</url-pattern>
@@ -86,6 +92,21 @@
     <servlet-mapping>
         <servlet-name>GetAllCourseServlet</servlet-name>
         <url-pattern>/manageCourse</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet-mapping>
+        <servlet-name>TeacherCourseManagementServlet</servlet-name>
+        <url-pattern>/taskCourse/*</url-pattern>
+    </servlet-mapping>
+ 
+    <servlet>
+        <servlet-name>TaskTestServlet</servlet-name>
+        <servlet-class>controller.teacher.TaskTestServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TaskTestServlet</servlet-name>
+        <url-pattern>/taskTest</url-pattern>
     </servlet-mapping>
     <servlet>
         <servlet-name>GetExercisesServlet</servlet-name>

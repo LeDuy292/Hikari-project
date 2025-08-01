@@ -9,20 +9,30 @@ public class Lesson {
     private String description;
     private String mediaUrl;
     private boolean isCompleted;
- private List<Document> documents; // Thêm thuộc tính này
+    private String teacherID;
+    private List<Document> documents; // Thêm thuộc tính này
     private List<Exercise> exercises;
     // Constructors
     public Lesson() {}
 
-    public Lesson(int id, String topicID, String title, String description, String mediaUrl, boolean isCompleted) {
+    public Lesson(int id, String topicID, String title, String description, String mediaUrl, boolean isCompleted, String teacherID) {
         this.id = id;
         this.topicID = topicID;
         this.title = title;
         this.description = description;
         this.mediaUrl = mediaUrl;
         this.isCompleted = isCompleted;
+        this.teacherID = teacherID;
     }
 
+    
+public String getTeacherID() {
+        return teacherID;
+    }
+
+    public void setTeacherID(String teacherID) {
+        this.teacherID = teacherID;
+    }
     public boolean isIsCompleted() {
         return isCompleted;
     }
@@ -89,6 +99,8 @@ public class Lesson {
     public void setExercises(List<Exercise> exercises) {
         this.exercises = exercises;
     }
+
+
 
     @Override
     public String toString() {

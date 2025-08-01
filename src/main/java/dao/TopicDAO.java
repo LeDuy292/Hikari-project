@@ -98,4 +98,47 @@ public class TopicDAO {
         TopicDAO dao = new TopicDAO();
         System.out.println(dao.getTopicsByCourseId("CO001"));
     }
+    
+    // Thêm topic mới
+    public boolean addTopic(Topic topic) {
+        String sql = "INSERT INTO Topic (topicID, topicName, description, orderIndex, isActive, createdDate, courseID) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, topic.getTopicId());
+            pstmt.setString(2, topic.getTopicName());
+            pstmt.setString(3, topic.getDescription());
+            pstmt.setInt(4, topic.getOrderIndex());
+            pstmt.setBoolean(5, topic.isActive());
+            pstmt.setDate(6, new java.sql.Date(topic.getCreatedDate().getTime()));
+            pstmt.setString(7, topic.getCourseId());
+            
+            int result = pstmt.executeUpdate();
+            return result > 0;
+            
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi SQL khi thêm chủ đề: " + topic.getTopicId(), e);
+        }
+    }
+    
+    // Lấy orderIndex lớn nhất cho một course
+    public int getMaxOrderIndex(String courseId) {
+        String sql = "SELECT MAX(orderIndex) as maxOrder FROM Topic WHERE courseID = ?";
+        
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, courseId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("maxOrder");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi SQL khi lấy orderIndex lớn nhất cho courseId: " + courseId, e);
+        }
+        return 0;
+    }
 }
