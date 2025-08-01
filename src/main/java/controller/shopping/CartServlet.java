@@ -284,12 +284,8 @@ public class CartServlet extends HttpServlet {
             if (cartItemDAO.updateCartItemQuantity(cartItemID, quantity)) {
                 recalculateCartTotals(userID);
                 jsonResponse.put("success", true);
-                jsonResponse.put("message", "Đã cập nhật số lượng.");
-            } else {
-                jsonResponse.put("success", false);
-                jsonResponse.put("message", "Không thể cập nhật số lượng.");
-                logger.warn("updateQuantity: Failed for cartItemID {}", cartItemID);
-            }
+                
+            } 
         } catch (NumberFormatException e) {
             jsonResponse.put("success", false);
             jsonResponse.put("message", "Dữ liệu không hợp lệ.");
@@ -441,7 +437,7 @@ public class CartServlet extends HttpServlet {
                 return;
             }
 
-            Long orderCode = System.currentTimeMillis() / 1000; // Used for PayOS, not stored in Cart
+            Long orderCode = System.currentTimeMillis() / 1000;
             String description = "Thanh toán khóa học";
             if (description.length() > 255) {
                 description = description.substring(0, 252) + "...";
@@ -461,7 +457,7 @@ public class CartServlet extends HttpServlet {
             CheckoutResponseData result = payOS.createPaymentLink(paymentData);
 
             HttpSession session = request.getSession();
-            session.setAttribute("cartID", userCart.getCartID()); // Ensure cartID is stored
+            session.setAttribute("cartID", userCart.getCartID());
 
             jsonResponse.put("success", true);
             jsonResponse.put("redirectUrl", result.getCheckoutUrl());
