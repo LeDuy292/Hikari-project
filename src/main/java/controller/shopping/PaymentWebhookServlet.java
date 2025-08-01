@@ -2,7 +2,7 @@ package controller.shopping;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import dao.admin.PaymentDAO;
+import dao.PaymentDAO;
 import dao.student.CartDAO;
 import dao.student.CartItemDAO;
 import dao.student.CourseEnrollmentDAO;

@@ -1,6 +1,7 @@
 package controller.shopping;
 
 import dao.student.CourseEnrollmentDAO;
+import dao.student.StudentProgressDAO;
 import model.UserAccount;
 import model.Course;
 import jakarta.servlet.ServletException;
@@ -14,18 +15,20 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
-import model.student.CourseEnrollment;
+import java.util.Map;
 
 @WebServlet("/profile/myCourses")
 public class ProfileMyCoursesServlet extends HttpServlet {
     
     private static final Logger logger = LoggerFactory.getLogger(ProfileMyCoursesServlet.class);
     private CourseEnrollmentDAO courseEnrollmentDAO;
+    private StudentProgressDAO studentProgressDAO;
 
     @Override
     public void init() throws ServletException {
         try {
             courseEnrollmentDAO = new CourseEnrollmentDAO();
+            studentProgressDAO = new StudentProgressDAO();
             logger.info("ProfileMyCoursesServlet initialized successfully.");
         } catch (Exception e) {
             logger.error("Failed to initialize ProfileMyCoursesServlet: {}", e.getMessage(), e);
@@ -55,7 +58,11 @@ public class ProfileMyCoursesServlet extends HttpServlet {
                 enrolledCourses = List.of(); // Default to empty list to avoid null
             }
             
+            // Lấy thống kê tiến độ từ StudentProgressDAO
+            Map<String, Object> stats = studentProgressDAO.getStudentStats(userID);
+            
             request.setAttribute("enrolledCourses", enrolledCourses);
+            request.setAttribute("stats", stats);
             request.setAttribute("category", "my-courses");
             request.setAttribute("pageTitle", "Khóa học của tôi");
             request.setAttribute("totalCourses", enrolledCourses.size());
@@ -72,7 +79,12 @@ public class ProfileMyCoursesServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-
+        if (courseEnrollmentDAO != null) {
+            courseEnrollmentDAO.closeConnection();
+        }
+        if (studentProgressDAO != null) {
+            studentProgressDAO.closeConnection();
+        }
         logger.info("ProfileMyCoursesServlet destroyed.");
     }
 }

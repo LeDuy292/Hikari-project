@@ -235,7 +235,7 @@
                                         <c:forEach var="course" items="${courses}">
                                             <div class="course-card bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
                                                 <div class="relative">
-                                                    <img src="${pageContext.request.contextPath}${course.imageUrl != null && course.imageUrl != '' ? course.imageUrl : '/assets/img/JLPT-N1.png'}" 
+                                                    <img src="${pageContext.request.contextPath}${course.imageUrl != null && course.imageUrl != '' ? course.imageUrl : '/assets/img/img_student/course.jpg'}" 
                                                          alt="${course.title}" 
                                                          class="w-full h-48 object-cover">
                                                     <div class="absolute top-4 right-4">
@@ -248,19 +248,8 @@
                                                     <h3 class="text-xl font-bold text-gray-800 mb-3 line-clamp-2">${course.title}</h3>
                                                     <p class="text-gray-600 mb-4 line-clamp-3">${course.description}</p>
                                                     <div class="flex items-center justify-between mb-4">
-                                                        <div class="flex items-center text-gray-500">
-                                                            <i class="fas fa-clock mr-2"></i>
-                                                            <span>${course.duration} giờ</span>
-                                                        </div>
                                                     </div>
                                                     <div class="mb-4">
-                                                        <div class="flex justify-between text-sm text-gray-600 mb-1">
-                                                            <span>Tiến độ học tập</span>
-                                                            <span>0%</span>
-                                                        </div>
-                                                        <div class="w-full bg-gray-200 rounded-full h-2">
-                                                            <div class="progress-fill bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full" style="width: 0%"></div>
-                                                        </div>
                                                     </div>
                                                     <div class="space-y-3">
                                                         <button onclick="continueLearning('${course.courseID}')" 
@@ -300,7 +289,7 @@
                                             <c:if test="${sessionScope.user == null || !enrolledCourses.contains(course.courseID)}">
                                                 <div class="course-card bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                                                     <a href="${pageContext.request.contextPath}/courseInfo?id=${course.courseID}">
-                                                        <img src="${pageContext.request.contextPath}${course.imageUrl != null && course.imageUrl != '' ? course.imageUrl : '/assets/img/img_student/JLPT-N1.png'}" 
+                                                        <img src="${pageContext.request.contextPath}${course.imageUrl != null && course.imageUrl != '' ? course.imageUrl : '/assets/img/img_student/course.jpg'}" 
                                                              alt="${course.title}" class="w-full h-48 object-cover">
                                                     </a>
                                                     <div class="p-5">
@@ -479,10 +468,10 @@
 
             // Show login required message and redirect to login page
             function showLoginRequired() {
-                window.showMessage('Bạn cần đăng nhập để mua khóa học!', 'info', 3000);
-                setTimeout(() => {
+                window.showMessage('Bạn cần đăng nhập để mua khóa học!', 'info');
+                (() => {
                     window.location.href = '${pageContext.request.contextPath}/loginPage';
-                }, 3000);
+                });
             }
 
             // Modal functions

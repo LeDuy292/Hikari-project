@@ -88,6 +88,8 @@
             
             CourseEnrollmentDAO courseEnrollmentDAO = new CourseEnrollmentDAO();
             ProgressDAO progressDAO = new ProgressDAO();
+            dao.student.StudentProgressDAO studentProgressDAO = new dao.student.StudentProgressDAO();
+            
             List<Course> enrolledCourses = null;
             try {
                 enrolledCourses = courseEnrollmentDAO.getEnrolledCoursesByUserID(user.getUserID());
@@ -99,42 +101,22 @@
             
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-            // Tính toán thống kê
-            int totalCourses = enrolledCourses.size();
-            int completedCourses = 0;
-            double totalHours = 0;
-            double averageProgress = 0;
+            // Sử dụng StudentProgressDAO để tính toán thống kê chính xác
+            java.util.Map<String, Object> statsMap = studentProgressDAO.getStudentStats(user.getUserID());
+            
+            int totalCourses = (Integer) statsMap.getOrDefault("totalCourses", 0);
+            int completedCourses = (Integer) statsMap.getOrDefault("completedCourses", 0);
+            double averageProgress = (Double) statsMap.getOrDefault("averageProgress", 0.0);
+            double totalHours = (Double) statsMap.getOrDefault("totalHours", 0.0);
 
-            if (!enrolledCourses.isEmpty()) {
-                CourseDAO courseDAO = new CourseDAO();
-                try {
-                    for (Course course : enrolledCourses) {
-                        if (course != null && course.getCourseID() != null) {
-                            int totalLessons = progressDAO.getTotalLessonsByCourseId(course.getCourseID());
-                            int completedLessons = progressDAO.getCompletedLessonsByEnrollmentId(/* Cần enrollmentID */ null); // Cần điều chỉnh
-                            double courseProgress = (totalLessons > 0) ? ((double) completedLessons / totalLessons) * 100 : 0;
-
-                            if (courseProgress >= 100) completedCourses++;
-                            averageProgress += courseProgress;
-
-                            Integer duration = course.getDuration();
-                            if (duration != null) {
-                                totalHours += duration;
-                            } else {
-                                System.err.println("Warning: Duration is null for courseID: " + course.getCourseID());
-                                totalHours += 0;
-                            }
-                        }
-                    }
-                    averageProgress = (enrolledCourses.size() > 0) ? (averageProgress / enrolledCourses.size()) : 0;
-                } catch (Exception e) {
-                    System.err.println("Error calculating stats: " + e.getMessage());
-                } finally {
-                    courseDAO.closeConnection();
-                }
+            // Cleanup connections
+            try {
+                courseEnrollmentDAO.closeConnection();
+                progressDAO.closeConnection();
+                studentProgressDAO.closeConnection();
+            } catch (Exception e) {
+                System.err.println("Error closing connections: " + e.getMessage());
             }
-            courseEnrollmentDAO.closeConnection();
-            progressDAO.closeConnection();
         %>
         
         <a href="${pageContext.request.contextPath}/view/student/home.jsp" class="back-btn">
