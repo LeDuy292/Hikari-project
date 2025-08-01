@@ -211,6 +211,10 @@
                     <i class="fa fa-file-alt"></i>
                     <span>Bài kiểm tra</span>
                 </a>
+                <a href="${pageContext.request.contextPath}/ranking" class="sidebar-nav-item <%= currentPage.equals("ranking.jsp") ? "active" : ""%>" aria-label="Bảng xếp hạng">
+                    <i class="fa fa-file-alt"></i>
+                    <span>Bảng xếp hạng</span>
+                </a>
                 <a href="${pageContext.request.contextPath}/forum" class="sidebar-nav-item <%= currentPage.equals("forum.jsp") ? "active" : ""%>" aria-label="Diễn đàn">
                     <i class="fa fa-chalkboard"></i>
                     <span>Diễn đàn</span>
