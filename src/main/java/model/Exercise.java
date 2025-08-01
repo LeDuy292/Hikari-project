@@ -10,7 +10,8 @@ public class Exercise {
     private String title;
     private String description;
     private boolean isActive;
-private List<Question> questions;
+    private List<Question> questions;
+    
     public Exercise() {
     }
 
@@ -47,8 +48,6 @@ private List<Question> questions;
         this.questions = questions;
     }
 
-   
-
     // Getters and Setters
     public int getId() {
         return id;
@@ -81,7 +80,6 @@ private List<Question> questions;
     public void setDescription(String description) {
         this.description = description;
     }
-
 
     public boolean isActive() {
         return isActive;

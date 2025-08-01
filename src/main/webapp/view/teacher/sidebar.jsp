@@ -22,6 +22,10 @@
                 <span class="sidebar-subtitle">Japanese</span>
             </div>
         </div>
+<!-- Add Tasks Management Link -->
+        <a href="${pageContext.request.contextPath}/teacher/tasks" class="sidebar-nav-item <%= currentPage.contains("tasks") ? "active" : ""%>">
+            <i class="fa fa-tasks"></i><span>Quản lý Nhiệm vụ</span>
+        </a>
         <a href="${pageContext.request.contextPath}/manageCourse" class="sidebar-nav-item <%= currentPage.equals("manageCourse.jsp") ? "active" : ""%>">
             <i class="fa fa-book-open"></i>
             <span>Quản lý khóa học </span>

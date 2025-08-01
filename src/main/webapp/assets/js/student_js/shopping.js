@@ -73,14 +73,12 @@ class ShoppingCart {
                 this.updateCartIcon();
             } else {
                 if (data.message === "Bạn cần đăng nhập để thực hiện chức năng này.") {
-                    this.showMessage("Vui lòng đăng nhập để xem giỏ hàng.", "error");
-                    setTimeout(() => {
-                        window.location.href = `${this.contextPath}/login.jsp`;
-                    }, 2000);
+                    this.showMessage("Vui lòng đăng nhập để xem giỏ hàng.", "error", 3000);
+                    setTimeout(() => window.location.href = `${this.contextPath}/loginPage`, 2000);
                 } else {
                     this.showMessage(data.message || "Không thể tải giỏ hàng.", "error");
-                    this.displayCartItems(null, []);
                 }
+                this.displayCartItems(null, []);
             }
         } catch (error) {
             console.error("Error loading cart:", error);
@@ -203,6 +201,7 @@ class ShoppingCart {
     }
 
     async addToCart(courseID) {
+        console.log('addToCart called with courseID:', courseID);
         if (!courseID || !courseID.match(/^CO\d{3}$/)) {
             this.showMessage("Mã khóa học không hợp lệ.", "error");
             return;
@@ -223,13 +222,13 @@ class ShoppingCart {
             console.log("addToCart response:", data);
 
             if (data.success) {
-                this.showMessage(data.message, "success");
+                this.showMessage(data.message || "Đã thêm khóa học vào giỏ hàng!", "success");
                 await this.loadCartData(false);
             } else {
                 if (data.message === "Bạn cần đăng nhập để thực hiện chức năng này.") {
-                    this.showMessage("Vui lòng đăng nhập để thêm khóa học.", "error");
+                    this.showMessage("Vui lòng đăng nhập để thêm khóa học.", "error", 3000);
                     setTimeout(() => {
-                        window.location.href = `${this.contextPath}/login.jsp`;
+                        window.location.href = `${this.contextPath}/loginPage`;
                     }, 2000);
                 } else {
                     this.showMessage(data.message || "Không thể thêm vào giỏ hàng.", "error");
@@ -317,16 +316,29 @@ class ShoppingCart {
     async applyDiscount() {
         const discountInput = document.getElementById("discountCode");
         const discountMessage = document.getElementById("discountMessage");
+        const applyBtn = document.getElementById("applyDiscount");
+        const btnText = applyBtn.querySelector(".btn-text");
+        const btnSpinner = applyBtn.querySelector(".btn-spinner");
         const discountCode = discountInput.value.trim();
+
+        if (discountMessage) {
+            discountMessage.textContent = "";
+            discountMessage.className = "discount-message";
+        }
 
         if (!discountCode) {
             this.showMessage("Vui lòng nhập mã giảm giá.", "error");
             if (discountMessage) {
                 discountMessage.textContent = "Vui lòng nhập mã giảm giá.";
-                discountMessage.className = "text-sm text-red-500 mt-2";
+                discountMessage.className = "discount-message error";
             }
+            discountInput.focus();
             return;
         }
+
+        applyBtn.disabled = true;
+        if (btnText) btnText.style.display = "none";
+        if (btnSpinner) btnSpinner.style.display = "inline-block";
 
         try {
             const response = await fetch(`${this.contextPath}/cart`, {
@@ -347,23 +359,28 @@ class ShoppingCart {
                 this.showMessage(data.message, "success");
                 if (discountMessage) {
                     discountMessage.textContent = data.message;
-                    discountMessage.className = "text-sm text-green-500 mt-2";
+                    discountMessage.className = "discount-message success";
                 }
                 discountInput.value = "";
             } else {
                 this.showMessage(data.message || "Mã giảm giá không hợp lệ.", "error");
                 if (discountMessage) {
                     discountMessage.textContent = data.message || "Mã giảm giá không hợp lệ.";
-                    discountMessage.className = "text-sm text-red-500 mt-2";
+                    discountMessage.className = "discount-message error";
                 }
+                discountInput.focus();
             }
         } catch (error) {
             console.error("Error applying discount:", error);
             this.showMessage("Lỗi kết nối. Vui lòng thử lại.", "error");
             if (discountMessage) {
                 discountMessage.textContent = "Lỗi kết nối. Vui lòng thử lại.";
-                discountMessage.className = "text-sm text-red-500 mt-2";
+                discountMessage.className = "discount-message error";
             }
+        } finally {
+            applyBtn.disabled = false;
+            if (btnText) btnText.style.display = "inline";
+            if (btnSpinner) btnSpinner.style.display = "none";
         }
     }
 
@@ -396,15 +413,15 @@ class ShoppingCart {
                 window.location.href = data.redirectUrl;
             } else {
                 if (data.message === "Bạn cần đăng nhập để thực hiện chức năng này.") {
-                    this.showMessage("Vui lòng đăng nhập để thanh toán.", "error");
+                    this.showMessage("Vui lòng đăng nhập để thanh toán.", "error", 3000);
                     setTimeout(() => {
-                        window.location.href = `${this.contextPath}/login.jsp`;
+                        window.location.href = `${this.contextPath}/loginPage`;
                     }, 2000);
                 } else {
                     this.showMessage(data.message || "Không thể tạo liên kết thanh toán. Vui lòng thử lại.", "error");
-                    checkoutBtn.disabled = false;
-                    checkoutBtn.innerHTML = "Thanh toán ngay";
                 }
+                checkoutBtn.disabled = false;
+                checkoutBtn.innerHTML = "Thanh toán ngay";
             }
         } catch (error) {
             console.error("Error during checkout:", error);
@@ -436,7 +453,7 @@ class ShoppingCart {
                     break;
                 case "invalid_session":
                     message += "Vui lòng đăng nhập lại.";
-                    setTimeout(() => (window.location.href = `${this.contextPath}/login.jsp`), 2000);
+                    setTimeout(() => window.location.href = `${this.contextPath}/login.jsp`, 2000);
                     break;
                 case "payment_error":
                     message += `Lỗi xử lý thanh toán. Mã giao dịch: ${transactionID || "N/A"}.`;
@@ -469,26 +486,18 @@ class ShoppingCart {
         }).format(amount);
     }
 
-    showMessage(message, type = "info") {
-        const messagesContainer = document.getElementById("messages") || document.getElementById("cartContent") || document.body;
-        const existingMessages = messagesContainer.querySelectorAll(".cart-message");
-        existingMessages.forEach((msg) => msg.remove());
-
-        const messageDiv = document.createElement("div");
-        messageDiv.className = `cart-message message ${type === "success" ? "success" : type === "error" ? "error" : "bg-blue-500 text-white"}`;
-        messageDiv.innerHTML = `
-            ${message}
-            <span class="close-btn" onclick="this.parentElement.remove()" aria-label="Đóng thông báo">×</span>
-        `;
-        messageDiv.setAttribute("role", "alert");
-
-        messagesContainer.prepend(messageDiv);
-        messageDiv.focus();
-        setTimeout(() => {
-            messageDiv.classList.add("opacity-0");
-            setTimeout(() => messageDiv.remove(), 300);
-        }, 5000);
+    // CHANGE START: Modified showMessage to use window.showMessage exclusively
+    showMessage(message, type, duration = 5000) {
+        console.log('ShoppingCart.showMessage called:', { message, type, duration });
+        if (typeof window.showMessage === 'function') {
+            window.showMessage(message, type, duration);
+        } else {
+            console.error('window.showMessage is not defined');
+            // Log to console as a fallback, but do not use alert
+            console.log(`${type.toUpperCase()}: ${message}`);
+        }
     }
+    // CHANGE END
 
     updateCartIcon() {
         const cartBadge = document.querySelector(".cart-badge");
@@ -498,23 +507,6 @@ class ShoppingCart {
         }
     }
 }
-
-function openModal() {
-    const modal = document.getElementById("signupModal");
-    if (modal) modal.style.display = "flex";
-}
-
-function closeModal() {
-    const modal = document.getElementById("signupModal");
-    if (modal) modal.style.display = "none";
-}
-
-window.onclick = (event) => {
-    const modal = document.getElementById("signupModal");
-    if (event.target === modal) {
-        closeModal();
-    }
-};
 
 let cart;
 document.addEventListener("DOMContentLoaded", () => {

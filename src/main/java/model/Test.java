@@ -24,6 +24,8 @@ public class Test {
         this.isActive = isActive;
         this.duration = duration;
     }
+    
+
 
     public boolean isIsActive() {
         return isActive;
@@ -97,7 +99,7 @@ public class Test {
     public void setActive(boolean isActive) {
         this.isActive = isActive;
     }
-
+    
     @Override
     public String toString() {
         return "Test{" + "id=" + id + ", jlptLevel=" + jlptLevel + ", title=" + title + ", description=" + description + ", totalMarks=" + totalMarks + ", totalQuestions=" + totalQuestions + ", isActive=" + isActive + ", duration=" + duration + '}';

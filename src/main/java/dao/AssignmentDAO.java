@@ -42,7 +42,7 @@ public class AssignmentDAO {
 
     public List<Assignment> getAllAssignments() {
         List<Assignment> list = new ArrayList<>();
-        String sql = "SELECT * FROM Assignment a JOIN Assignment_Reviews ar  on a.id = ar.assignmentID WHERE  ar.reviewStatus = 'Approved'";
+        String sql = "SELECT * FROM Assignment";
 
         try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
@@ -142,7 +142,7 @@ public class AssignmentDAO {
 
     public List<Assignment> getAssignmentsByTopicId(String topicID) {
         List<Assignment> list = new ArrayList<>();
-        String sql = "SELECT * FROM Assignment a JOIN Assignment_Reviews ar  on a.id = ar.assignmentID WHERE a.topicID = ? AND  ar.reviewStatus = 'Approved'";
+        String sql = "SELECT * FROM Assignment  WHERE topicID = ?";
 
         try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             QuestionDAO questionDAO = new QuestionDAO();
@@ -177,4 +177,6 @@ public class AssignmentDAO {
         System.out.println(edao.getAssignmentById(1));
         System.out.println(edao.getAssignmentsByTopicId("TP001"));
     }
+    
+
 }

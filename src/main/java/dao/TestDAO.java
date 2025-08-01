@@ -9,8 +9,8 @@ import java.util.List;
 
 public class TestDAO {
     public int insertAndReturnId(Test test) {
-        String sql = "INSERT INTO Test (jlptLevel, title, description,duration, totalMarks, totalQuestions,  isActive) "
-                + "VALUES (?, ?, ?, ?, ?, ? , ?)";
+        String sql = "INSERT INTO Test (jlptLevel, title, description, duration, totalMarks, totalQuestions, isActive) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = new DBContext().getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -103,4 +103,5 @@ public class TestDAO {
                 .toList();
         System.out.println(levelTests);
     }
+    
 }

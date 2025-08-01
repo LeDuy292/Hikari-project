@@ -15,24 +15,189 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/footer.css?v=1"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/student_css/shopping.css?v=1"/>
     <style>
+        /* Notification styles - Fixed positioning and z-index */
+        #messages {
+            position: relative;
+            z-index: 9999;
+        }
+        
         .message { 
             margin: 12px auto; 
-            padding: 12px; 
-            border-radius: 6px; 
+            padding: 16px 20px; 
+            border-radius: 12px; 
             text-align: center; 
             font-size: 14px; 
             font-weight: 500; 
-            max-width: 500px;
+            max-width: 600px;
             position: relative;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideInDown 0.3s ease-out;
         }
-        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message.success { 
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); 
+            color: #155724; 
+            border: 1px solid #c3e6cb;
+            border-left: 4px solid #28a745;
+        }
+        
+        .message.error { 
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); 
+            color: #721c24; 
+            border: 1px solid #f5c6cb;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .message.info {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            border-left: 4px solid #17a2b8;
+        }
+        
         .message .close-btn { 
             position: absolute; 
-            right: 10px; 
-            top: 10px; 
+            right: 12px; 
+            top: 12px; 
             cursor: pointer; 
-            color: inherit; 
+            color: inherit;
+            font-size: 18px;
+            font-weight: bold;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        .message .close-btn:hover {
+            opacity: 1;
+        }
+        
+        /* Cart notification styles */
+        .cart-message {
+            position: fixed !important;
+            top: 20px !important;
+            right: 20px !important;
+            z-index: 10001 !important;
+            min-width: 300px;
+            max-width: 500px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            animation: slideInRight 0.3s ease-out;
+            pointer-events: auto;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Discount section styles */
+        .discount-section {
+            background: linear-gradient(135deg, #fff5f5 0%, #fef5e7 100%);
+            border: 1px solid #fed7aa;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .discount-input-group {
+            position: relative;
+            display: flex;
+            border-radius: 50px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .discount-input-group:focus-within {
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+        }
+        
+        .discount-input {
+            flex: 1;
+            border: none;
+            padding: 14px 16px 14px 45px;
+            font-size: 14px;
+            outline: none;
+            background: white;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #f97316;
+            z-index: 1;
+        }
+        
+        .discount-btn {
+            border: none;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            padding: 14px 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .discount-btn:hover {
+            background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+            transform: translateY(-1px);
+        }
+        
+        .discount-btn:active {
+            transform: translateY(0);
+        }
+        
+        .discount-btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .discount-message {
+            margin-top: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .discount-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .discount-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
         .cart-item { transition: all 0.3s ease; }
         .cart-item:hover { background: #f8f9fa; }
@@ -120,17 +285,22 @@
                             <span class="text-gray-700 font-medium">Tổng cộng:</span>
                             <span id="cartTotal" class="text-xl font-bold text-orange-600">0 VNĐ</span>
                         </div>
-                        <div class="mb-6">
-                            <label for="discountCode" class="block text-sm font-medium text-gray-700 mb-2">Mã giảm giá</label>
-                            <div class="relative flex">
-                                <input type="text" id="discountCode" placeholder="Nhập mã giảm giá" 
-                                       class="flex-1 border border-orange-200 px-4 py-2 rounded-l-full w-full pl-10 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
+                        <div class="mb-6 discount-section">
+                            <label for="discountCode" class="block text-sm font-medium text-gray-700 mb-3">
+                                <i class="fa fa-tag text-orange-500 mr-2"></i>Mã giảm giá
+                            </label>
+                            <div class="discount-input-group">
+                                <i class="fa fa-ticket-alt input-icon"></i>
+                                <input type="text" id="discountCode" placeholder="Nhập mã giảm giá của bạn" 
+                                       class="discount-input"
                                        aria-label="Nhập mã giảm giá" maxlength="20">
-                                <i class="fa fa-ticket-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-400"></i>
-                                <button id="applyDiscount" class="bg-orange-500 text-white font-bold py-2 px-6 rounded-r-full hover:bg-orange-600 transition-colors"
-                                        aria-label="Áp dụng mã giảm giá">Áp dụng</button>
+                                <button id="applyDiscount" class="discount-btn"
+                                        aria-label="Áp dụng mã giảm giá">
+                                    <span class="btn-text">Áp dụng</span>
+                                    <i class="fa fa-spinner fa-spin btn-spinner" style="display: none;"></i>
+                                </button>
                             </div>
-                            <div id="discountMessage" class="text-sm mt-2"></div>
+                            <div id="discountMessage" class="discount-message"></div>
                         </div>
                         <button id="checkoutBtn" class="w-full bg-orange-500 text-white font-bold py-3 px-6 rounded-xl hover:bg-orange-600 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-1"
                                 aria-label="Thanh toán ngay">
