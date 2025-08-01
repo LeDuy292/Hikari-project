@@ -42,10 +42,11 @@
             <i class="fas fa-star"></i>
             <span>Nhiệm vụ</span>
 
-        <a href="${pageContext.request.contextPath}/LoadTeacher" class="sidebar-nav-item <%= currentPage.equals("instructor-assignment.jsp") ? "active" : ""%>">
+<!--        <a href="${pageContext.request.contextPath}/LoadTeacher" class="sidebar-nav-item <%= currentPage.equals("instructor-assignment.jsp") ? "active" : ""%>">
             <i class="fas fa-bell"></i>
             <span>Phân công giảng viên</span>
-        </a>
+        </a>-->
+            
         <a href="${pageContext.request.contextPath}/cv" class="sidebar-nav-item <%= currentPage.equals("teacher-cv-review.jsp") ? "active" : ""%>">
             <i class="fas fa-users"></i>
             <span>Phê Duyệt Hồ Sơ Giảng Viên</span>

@@ -129,9 +129,9 @@
                                                         <a href="NextEditCourse?id=${course.courseID}" class="btn btn-sm btn-outline-primary" title="Chỉnh sửa khóa học">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <a href="LessonApprovalServlet?courseID=${course.courseID}" class="btn btn-sm btn-outline-success" title="Phê duyệt bài học">
+<!--                                                        <a href="LessonApprovalServlet?courseID=${course.courseID}" class="btn btn-sm btn-outline-success" title="Phê duyệt bài học">
                                                             <i class="fas fa-check-circle"></i>
-                                                        </a>
+                                                        </a>-->
                                                     </div>
                                                 </div>
                                             </div>
