@@ -75,7 +75,7 @@ class ShoppingCart {
                 if (data.message === "Bạn cần đăng nhập để thực hiện chức năng này.") {
                     this.showMessage("Vui lòng đăng nhập để xem giỏ hàng.", "error");
                     setTimeout(() => {
-                        window.location.href = `${this.contextPath}/login.jsp`;
+                        window.location.href = `${this.contextPath}/loginPage`;
                     }, 2000);
                 } else {
                     this.showMessage(data.message || "Không thể tải giỏ hàng.", "error");
@@ -229,7 +229,7 @@ class ShoppingCart {
                 if (data.message === "Bạn cần đăng nhập để thực hiện chức năng này.") {
                     this.showMessage("Vui lòng đăng nhập để thêm khóa học.", "error");
                     setTimeout(() => {
-                        window.location.href = `${this.contextPath}/login.jsp`;
+                        window.location.href = `${this.contextPath}/loginPage`;
                     }, 2000);
                 } else {
                     this.showMessage(data.message || "Không thể thêm vào giỏ hàng.", "error");
@@ -398,7 +398,7 @@ class ShoppingCart {
                 if (data.message === "Bạn cần đăng nhập để thực hiện chức năng này.") {
                     this.showMessage("Vui lòng đăng nhập để thanh toán.", "error");
                     setTimeout(() => {
-                        window.location.href = `${this.contextPath}/login.jsp`;
+                        window.location.href = `${this.contextPath}/loginPage`;
                     }, 2000);
                 } else {
                     this.showMessage(data.message || "Không thể tạo liên kết thanh toán. Vui lòng thử lại.", "error");
@@ -436,7 +436,7 @@ class ShoppingCart {
                     break;
                 case "invalid_session":
                     message += "Vui lòng đăng nhập lại.";
-                    setTimeout(() => (window.location.href = `${this.contextPath}/login.jsp`), 2000);
+                    setTimeout(() => (window.location.href = `${this.contextPath}/loginPage`), 2000);
                     break;
                 case "payment_error":
                     message += `Lỗi xử lý thanh toán. Mã giao dịch: ${transactionID || "N/A"}.`;

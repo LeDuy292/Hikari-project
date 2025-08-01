@@ -129,7 +129,7 @@
         <%
             UserAccount user = (UserAccount) session.getAttribute("user");
             if (user == null) {
-                response.sendRedirect(request.getContextPath() + "/view/login.jsp?error=Phiên+làm+việc+hết+hạn");
+                response.sendRedirect(request.getContextPath() + "/loginPage?error=Phiên+làm+việc+hết+hạn");
                 return;
             }
             @SuppressWarnings("unchecked")
@@ -155,11 +155,11 @@
         </a>
 
        <div class="tab-navigation">
-            <button class="tab-btn active" onclick="window.location.href='${pageContext.request.contextPath}/view/student/profile.jsp'">
+            <button class="tab-btn active" onclick="window.location.href='${pageContext.request.contextPath}/view/authentication/profile.jsp'">
                 <i class="fas fa-user"></i>
                 Thông tin cá nhân
             </button>
-            <button class="tab-btn" onclick="window.location.href='http://localhost:8080/Hikari/profile/myCourses'">
+            <button class="tab-btn" onclick="window.location.href='${pageContext.request.contextPath}/profile/myCourses'">
                 <i class="fas fa-book"></i>
                 Khóa học của tôi 
             </button>
@@ -226,7 +226,7 @@
                                             <span class="progress-value">${progress}%</span>
                                         </div>
                                         <div class="progress-bar">
-                                            <div class="progress-fill" style="width: ${progress}%;"></div>
+                                            <div class="progress-fill" style="width: <c:out value='${progress}'/>%;"></div>
                                         </div>
                                     </div>
                                     <div class="course-actions">

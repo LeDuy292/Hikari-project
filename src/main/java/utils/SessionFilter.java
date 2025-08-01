@@ -28,13 +28,13 @@ public class SessionFilter implements Filter {
         HttpSession session = httpRequest.getSession(false);
         String requestURI = httpRequest.getRequestURI();
 
-        if (requestURI.endsWith("/view/login.jsp")) {
+        if (requestURI.endsWith("/loginPage")) {
             chain.doFilter(request, response);
             return;
         }
 
         if (session == null || session.getAttribute("user") == null) {
-            httpResponse.sendRedirect(httpRequest.getContextPath() + "/view/login.jsp?error=Phiên+làm+việc+hết+hạn");
+            httpResponse.sendRedirect(httpRequest.getContextPath() + "/loginPage?error=Phiên+làm+việc+hết+hạn");
             return;
         }
 
@@ -44,13 +44,13 @@ public class SessionFilter implements Filter {
                 if (!sessionManager.validateSession(user, session)) {
                     System.out.println("Invalid session for user: " + user.getUsername());
                     session.invalidate();
-                    httpResponse.sendRedirect(httpRequest.getContextPath() + "/view/login.jsp?error=Phiên+làm+việc+hết+hạn+do+đăng+nhập+từ+thiết+bị+khác");
+                    httpResponse.sendRedirect(httpRequest.getContextPath() + "/loginPage?error=Phiên+làm+việc+hết+hạn+do+đăng+nhập+từ+thiết+bị+khác");
                     return;
                 }
             } catch (Exception e) {
                 System.out.println("Session validation error: " + e.getMessage());
                 session.invalidate();
-                httpResponse.sendRedirect(httpRequest.getContextPath() + "/view/login.jsp?error=" + java.net.URLEncoder.encode(e.getMessage(), "UTF-8"));
+                httpResponse.sendRedirect(httpRequest.getContextPath() + "/loginPage?error=" + java.net.URLEncoder.encode(e.getMessage(), "UTF-8"));
                 return;
             }
         }

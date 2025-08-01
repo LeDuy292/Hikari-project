@@ -396,7 +396,7 @@
                             <% } else if (currentUser == null) {%>
                             <div class="permission-info">
                                 <i class="fas fa-sign-in-alt"></i>
-                                <a href="<%= request.getContextPath()%>/view/login.jsp">Đăng nhập</a> để bình luận.
+                                <a href="<%= request.getContextPath()%>/loginPage">Đăng nhập</a> để bình luận.
                             </div>
                             <% } else { %>
                             <div class="permission-info">
@@ -588,8 +588,8 @@
             </div>
         </div>
         <script>
-            const forumUserId = "<%= request.getAttribute("userId") != null ? request.getAttribute("userId") : ""%>";
-            const forumContextPath = "<%= request.getContextPath()%>";
+            const forumUserId = "<c:out value="${requestScope.userId}" default=""/>";
+            const forumContextPath = "<c:out value="${pageContext.request.contextPath}"/>";
         </script>
         <script src="${pageContext.request.contextPath}/assets/js/forum/postDetail.js"></script>
         <%@include file="chatbox.jsp" %>

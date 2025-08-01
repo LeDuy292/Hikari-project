@@ -503,7 +503,7 @@
     function showLoginRequired() {
         showMessage('Bạn cần đăng nhập để mua khóa học!', 'info', 3000);
         setTimeout(() => {
-            window.location.href = '${pageContext.request.contextPath}/view/login.jsp';
+            window.location.href = '${pageContext.request.contextPath}/loginPage';
         }, 1500);
     }
 

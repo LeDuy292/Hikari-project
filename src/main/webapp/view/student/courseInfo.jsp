@@ -299,7 +299,7 @@ String error = request.getParameter("error");
 window.courseRegistration = {
     // Check if user is logged in
     checkUserLogin: function() {
-        return ${sessionScope.user != null};
+        return <c:out value="${sessionScope.user != null}" default="false"/>;
     },
     
     // Get current user ID
@@ -380,7 +380,7 @@ window.courseRegistration = {
     showLoginRequired: function() {
         this.showMessage('Bạn cần đăng nhập để đăng ký khóa học!', 'warning');
         setTimeout(() => {
-            window.location.href = '${pageContext.request.contextPath}/view/login.jsp';
+            window.location.href = '${pageContext.request.contextPath}/loginPage';
         }, 2000);
     },
     
