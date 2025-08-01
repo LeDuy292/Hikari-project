@@ -32,28 +32,29 @@ public class ExerciseDAO {
 
         return -1;
     }
-public List<Exercise> getExercisesByLessonID(int lessonID) {
-    List<Exercise> list = new ArrayList<>();
-    String sql = "SELECT * FROM Exercise WHERE lessonID = ?";
-    try (Connection con = new DBContext().getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setInt(1, lessonID);
-        ResultSet rs = ps.executeQuery();
-        QuestionDAO questionDAO = new QuestionDAO();
-        while (rs.next()) {
-            Exercise e = new Exercise();
-            e.setId(rs.getInt("id"));
-            e.setTitle(rs.getString("title"));
-            e.setDescription(rs.getString("description"));
-            e.setLessonID(lessonID);
-            e.setQuestions(questionDAO.getQuestionsByEntity("exercise", e.getId())); 
-            list.add(e);
+
+    public List<Exercise> getExercisesByLessonID(int lessonID) {
+        List<Exercise> list = new ArrayList<>();
+        String sql = "SELECT * FROM Exercise WHERE lessonID = ?";
+        try (Connection con = new DBContext().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, lessonID);
+            ResultSet rs = ps.executeQuery();
+            QuestionDAO questionDAO = new QuestionDAO();
+            while (rs.next()) {
+                Exercise e = new Exercise();
+                e.setId(rs.getInt("id"));
+                e.setTitle(rs.getString("title"));
+                e.setDescription(rs.getString("description"));
+                e.setLessonID(lessonID);
+                e.setQuestions(questionDAO.getQuestionsByEntity("exercise", e.getId())); 
+                list.add(e);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return list;
     }
-    return list;
-}
 
     public List<Exercise> getAll() {
         List<Exercise> list = new ArrayList<>();
@@ -79,6 +80,7 @@ public List<Exercise> getExercisesByLessonID(int lessonID) {
 
         return list;
     }
+
     public static void main(String[] args) {
         ExerciseDAO dao = new ExerciseDAO();
         System.out.println("1"+dao.getExercisesByLessonID(2));

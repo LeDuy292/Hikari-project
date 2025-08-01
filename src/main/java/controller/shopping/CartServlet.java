@@ -257,7 +257,14 @@ public class CartServlet extends HttpServlet {
                 enrichedItem.put("totalPrice", item.getPriceAtTime().multiply(BigDecimal.valueOf(item.getQuantity())));
                 enrichedItem.put("courseTitle", course.getTitle());
                 enrichedItem.put("courseDescription", course.getDescription());
-                enrichedItem.put("courseImageUrl", course.getImageUrl() != null ? course.getImageUrl() : "");
+                // Use imageUrl from CartItem first (which comes from database JOIN), then fallback to Course object
+                String imageUrl = item.getCourseImageUrl();
+                if (imageUrl == null || imageUrl.trim().isEmpty()) {
+                    imageUrl = course.getImageUrl();
+                }
+                enrichedItem.put("courseImageUrl", imageUrl != null ? imageUrl : "");
+                logger.info("CartServlet: Course {} imageUrl: {} (from CartItem: {}, from Course: {})", 
+                    course.getCourseID(), imageUrl, item.getCourseImageUrl(), course.getImageUrl());
                 enrichedItems.add(enrichedItem);
             }
         }
@@ -284,12 +291,8 @@ public class CartServlet extends HttpServlet {
             if (cartItemDAO.updateCartItemQuantity(cartItemID, quantity)) {
                 recalculateCartTotals(userID);
                 jsonResponse.put("success", true);
-                jsonResponse.put("message", "Đã cập nhật số lượng.");
-            } else {
-                jsonResponse.put("success", false);
-                jsonResponse.put("message", "Không thể cập nhật số lượng.");
-                logger.warn("updateQuantity: Failed for cartItemID {}", cartItemID);
-            }
+                
+            } 
         } catch (NumberFormatException e) {
             jsonResponse.put("success", false);
             jsonResponse.put("message", "Dữ liệu không hợp lệ.");
@@ -441,7 +444,7 @@ public class CartServlet extends HttpServlet {
                 return;
             }
 
-            Long orderCode = System.currentTimeMillis() / 1000; // Used for PayOS, not stored in Cart
+            Long orderCode = System.currentTimeMillis() / 1000;
             String description = "Thanh toán khóa học";
             if (description.length() > 255) {
                 description = description.substring(0, 252) + "...";
@@ -461,7 +464,7 @@ public class CartServlet extends HttpServlet {
             CheckoutResponseData result = payOS.createPaymentLink(paymentData);
 
             HttpSession session = request.getSession();
-            session.setAttribute("cartID", userCart.getCartID()); // Ensure cartID is stored
+            session.setAttribute("cartID", userCart.getCartID());
 
             jsonResponse.put("success", true);
             jsonResponse.put("redirectUrl", result.getCheckoutUrl());

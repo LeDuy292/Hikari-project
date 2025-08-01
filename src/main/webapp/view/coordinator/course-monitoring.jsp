@@ -108,11 +108,13 @@
                                                         </div>
                                                         <div class="stat-item">
                                                             <i class="fas fa-clock"></i>
-                                                            Bắt đầu:<span>${course.startDate}</span>Kết thúc:<span>${course.endDate}</span>
+                                                            <!--Bắt đầu:<span>${course.startDate}</span>Kết thúc:<span>${course.endDate}</span>-->
+                                                            Tổng thời gian: <span>${course.duration}</span> (Giờ)
                                                         </div>
                                                         <div class="stat-item">
                                                             <i class="fas fa-chart-line"></i>
-                                                            <span>75% hoàn thành</span>
+                                                            <!--<span>75% hoàn thành</span>-->
+                                                            Giá bán:<span>${course.fee}</span> vnđ
                                                         </div>
                                                     </div>
                                                     <div class="course-progress">
@@ -160,16 +162,74 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+        <!--        <div id="addCourseModal" class="modal-overlay">
+                    <div class="form-container">
+                        <span onclick="closeModal()" class="close-button">×</span>
+                        <h2 class="form-title">Thêm Khóa Học</h2>
+                        <form action="AddCourse" method="post" class="course-form" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="courseID" class="form-label">Mã khóa học:</label>  Thêm trường courseID 
+                                <input type="text" id="courseID" name="courseID" class="form-input" required>
+                                <span class="error-message" id="courseID-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="title" class="form-label">Tên khóa học:</label>
+                                <input type="text" id="title" name="title" class="form-input" required>
+                                <span class="error-message" id="title-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="description" class="form-label">Mô tả:</label>
+                                <textarea id="description" name="description" class="form-textarea" required></textarea>
+                                <span class="error-message" id="description-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="fee" class="form-label">Học phí:</label>
+                                <input type="number" step="0.01" id="fee" name="fee" class="form-input" required>
+                                <span class="error-message" id="fee-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="duration" class="form-label">Thời lượng (giờ):</label>
+                                <input type="number" id="duration" name="duration" class="form-input" required>
+                                <span class="error-message" id="duration-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="startDate" class="form-label">Ngày bắt đầu:</label>
+                                <input type="date" id="startDate" name="startDate" class="form-input" required>
+                                <span class="error-message" id="startDate-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="endDate" class="form-label">Ngày kết thúc:</label>
+                                <input type="date" id="endDate" name="endDate" class="form-input" required>
+                                 <span class="error-message" id="endDate-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="isActive" class="form-label">Hoạt động:</label>
+                                <select id="isActive" name="isActive" class="form-select" required>
+                                    <option value="true">Có</option>
+                                    <option value="false">Không</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="imageUrl" class="form-label">Ảnh khóa học:</label>  Thay đổi: Thêm label cho input file 
+                                <input type="file" id="imageUrl" name="imageUrl" class="form-input" accept="image/png,image/jpeg,image/jpg">  Thay đổi: Thêm input file cho ảnh 
+                                <span class="error-message" id="imageUrl-error"></span>  Thay đổi: Thêm span để hiển thị lỗi 
+                                <div class="image-preview">
+                                    <img id="imagePreview" src="" alt="Course Image Preview" style="display: none; max-width: 200px; border-radius: 12px; margin-top: 10px;">  Thay đổi: Thêm preview ảnh 
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="submit-button">Thêm khóa học</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>-->
+
         <div id="addCourseModal" class="modal-overlay">
             <div class="form-container">
                 <span onclick="closeModal()" class="close-button">×</span>
                 <h2 class="form-title">Thêm Khóa Học</h2>
                 <form action="AddCourse" method="post" class="course-form" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="courseID" class="form-label">Mã khóa học:</label> <!-- Thêm trường courseID -->
-                        <input type="text" id="courseID" name="courseID" class="form-input" required>
-                        <span class="error-message" id="courseID-error"></span>
-                    </div>
+                    <!-- Remove courseID field since it's auto-generated -->
                     <div class="form-group">
                         <label for="title" class="form-label">Tên khóa học:</label>
                         <input type="text" id="title" name="title" class="form-input" required>
@@ -190,16 +250,7 @@
                         <input type="number" id="duration" name="duration" class="form-input" required>
                         <span class="error-message" id="duration-error"></span>
                     </div>
-                    <div class="form-group">
-                        <label for="startDate" class="form-label">Ngày bắt đầu:</label>
-                        <input type="date" id="startDate" name="startDate" class="form-input" required>
-                        <span class="error-message" id="startDate-error"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="endDate" class="form-label">Ngày kết thúc:</label>
-                        <input type="date" id="endDate" name="endDate" class="form-input" required>
-                         <span class="error-message" id="endDate-error"></span>
-                    </div>
+                    <!-- Remove startDate and endDate fields -->
                     <div class="form-group">
                         <label for="isActive" class="form-label">Hoạt động:</label>
                         <select id="isActive" name="isActive" class="form-select" required>
@@ -208,11 +259,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="imageUrl" class="form-label">Ảnh khóa học:</label> <!-- Thay đổi: Thêm label cho input file -->
-                        <input type="file" id="imageUrl" name="imageUrl" class="form-input" accept="image/png,image/jpeg,image/jpg"> <!-- Thay đổi: Thêm input file cho ảnh -->
-                        <span class="error-message" id="imageUrl-error"></span> <!-- Thay đổi: Thêm span để hiển thị lỗi -->
+                        <label for="imageUrl" class="form-label">Ảnh khóa học:</label>
+                        <input type="file" id="imageUrl" name="imageUrl" class="form-input" accept="image/png,image/jpeg,image/jpg">
+                        <span class="error-message" id="imageUrl-error"></span>
                         <div class="image-preview">
-                            <img id="imagePreview" src="" alt="Course Image Preview" style="display: none; max-width: 200px; border-radius: 12px; margin-top: 10px;"> <!-- Thay đổi: Thêm preview ảnh -->
+                            <img id="imagePreview" src="/placeholder.svg" alt="Course Image Preview" style="display: none; max-width: 200px; border-radius: 12px; margin-top: 10px;">
                         </div>
                     </div>
                     <div class="form-group">
@@ -234,90 +285,6 @@
                     closeModal();
                 }
             });
-
-//            const searchInput = document.getElementById('searchInput');
-//            const suggestionsContainer = document.getElementById('suggestionsContainer');
-//            const searchButton = document.getElementById('searchButton');
-//            const courseCards = document.querySelectorAll('.course-card');
-//
-//            // Lấy dữ liệu khóa học từ các card hiện có
-//            const courseData = Array.from(courseCards).map(card => ({
-//                    title: card.querySelector('.course-title').textContent,
-//                    element: card.closest('.col-md-6')
-//                }));
-//
-//            function filterCourses(query) {
-//                const searchTerm = query.toLowerCase();
-//                courseCards.forEach(card => {
-//                    const title = card.querySelector('.course-title').textContent.toLowerCase();
-//                    const parent = card.closest('.col-md-6');
-//
-//                    if (title.includes(searchTerm)) {
-//                        parent.style.display = '';
-//                    } else {
-//                        parent.style.display = 'none';
-//                    }
-//                });
-//            }
-//
-//            function showSuggestions(query) {
-//                if (!query) {
-//                    suggestionsContainer.style.display = 'none';
-//                    return;
-//                }
-//
-//                const filteredCourses = courseData.filter(course =>
-//                    course.title.toLowerCase().includes(query.toLowerCase())
-//                );
-//
-//                if (filteredCourses.length > 0) {
-//                    suggestionsContainer.innerHTML = '';
-//                    filteredCourses.forEach(course => {
-//                        const div = document.createElement('div');
-//                        div.className = 'suggestion-item';
-//                        div.textContent = course.title;
-//                        div.addEventListener('click', () => {
-//                            searchInput.value = course.title;
-//                            suggestionsContainer.style.display = 'none';
-//                            filterCourses(course.title);
-//                        });
-//                        suggestionsContainer.appendChild(div);
-//                    });
-//                    suggestionsContainer.style.display = 'block';
-//                } else {
-//                    suggestionsContainer.style.display = 'none';
-//                }
-//            }
-//
-//            // Xử lý sự kiện input
-//            searchInput.addEventListener('input', function () {
-//                const query = this.value.trim();
-//                showSuggestions(query);
-//                filterCourses(query);
-//            });
-//
-//            // Đóng suggestions khi click ra ngoài
-//            document.addEventListener('click', function (e) {
-//                if (!searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
-//                    suggestionsContainer.style.display = 'none';
-//                }
-//            });
-//
-//            // Xử lý sự kiện Enter
-//            searchInput.addEventListener('keypress', function (e) {
-//                if (e.key === 'Enter') {
-//                    const query = this.value.trim();
-//                    filterCourses(query);
-//                    suggestionsContainer.style.display = 'none';
-//                }
-//            });
-//
-//            // Xử lý sự kiện click nút tìm kiếm
-//            searchButton.addEventListener('click', function () {
-//                const query = searchInput.value.trim();
-//                filterCourses(query);
-//                suggestionsContainer.style.display = 'none';
-//            });
 
             // Thay đổi: Thêm JavaScript để xử lý preview và validation cho ảnh
             document.getElementById('imageUrl').addEventListener('change', function (event) {
@@ -356,14 +323,78 @@
             });
 
             // Thay đổi: Thêm validation cho form khi submit
+//            document.querySelector('#addCourseModal .course-form').addEventListener('submit', function (e) {
+//                let isValid = true;
+//                const title = document.getElementById('title').value.trim();
+//                const description = document.getElementById('description').value.trim();
+//                const fee = parseFloat(document.getElementById('fee').value);
+//                const duration = parseInt(document.getElementById('duration').value);
+//                const startDate = document.getElementById('startDate').value;
+//                const endDate = document.getElementById('endDate').value;
+//                const imageUrl = document.getElementById('imageUrl').files[0];
+//
+//                // Reset error messages
+//                document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+//
+//                if (!title) {
+//                    document.getElementById('title-error').textContent = 'Vui lòng nhập tên khóa học';
+//                    document.getElementById('title-error').style.display = 'block';
+//                    isValid = false;
+//                }
+//                if (!description) {
+//                    document.getElementById('description-error').textContent = 'Vui lòng nhập mô tả';
+//                    document.getElementById('description-error').style.display = 'block';
+//                    isValid = false;
+//                }
+//                if (isNaN(fee) || fee <= 0) {
+//                    document.getElementById('fee-error').textContent = 'Học phí phải lớn hơn 0';
+//                    document.getElementById('fee-error').style.display = 'block';
+//                    isValid = false;
+//                }
+//                if (isNaN(duration) || duration <= 0) {
+//                    document.getElementById('duration-error').textContent = 'Thời lượng phải lớn hơn 0';
+//                    document.getElementById('duration-error').style.display = 'block';
+//                    isValid = false;
+//                }
+//                if (!startDate) {
+//                    document.getElementById('startDate-error').textContent = 'Vui lòng chọn ngày bắt đầu';
+//                    document.getElementById('startDate-error').style.display = 'block';
+//                    isValid = false;
+//                }
+//                if (!endDate) {
+//                    document.getElementById('endDate-error').textContent = 'Vui lòng chọn ngày kết thúc';
+//                    document.getElementById('endDate-error').style.display = 'block';
+//                    isValid = false;
+//                } else if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+//                    document.getElementById('endDate-error').textContent = 'Ngày kết thúc phải sau ngày bắt đầu';
+//                    document.getElementById('endDate-error').style.display = 'block';
+//                    isValid = false;
+//                }
+//                if (imageUrl) {
+//                    const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+//                    if (!validTypes.includes(imageUrl.type)) {
+//                        document.getElementById('imageUrl-error').textContent = 'Vui lòng chọn file ảnh (PNG, JPG, JPEG)';
+//                        document.getElementById('imageUrl-error').style.display = 'block';
+//                        isValid = false;
+//                    }
+//                    if (imageUrl.size > 5 * 1024 * 1024) {
+//                        document.getElementById('imageUrl-error').textContent = 'Kích thước ảnh không được vượt quá 5MB';
+//                        document.getElementById('imageUrl-error').style.display = 'block';
+//                        isValid = false;
+//                    }
+//                }
+//
+//                if (!isValid) {
+//                    e.preventDefault();
+//                }
+//            });
+            // Updated JavaScript validation (remove date validation)
             document.querySelector('#addCourseModal .course-form').addEventListener('submit', function (e) {
                 let isValid = true;
                 const title = document.getElementById('title').value.trim();
                 const description = document.getElementById('description').value.trim();
                 const fee = parseFloat(document.getElementById('fee').value);
                 const duration = parseInt(document.getElementById('duration').value);
-                const startDate = document.getElementById('startDate').value;
-                const endDate = document.getElementById('endDate').value;
                 const imageUrl = document.getElementById('imageUrl').files[0];
 
                 // Reset error messages
@@ -387,20 +418,6 @@
                 if (isNaN(duration) || duration <= 0) {
                     document.getElementById('duration-error').textContent = 'Thời lượng phải lớn hơn 0';
                     document.getElementById('duration-error').style.display = 'block';
-                    isValid = false;
-                }
-                if (!startDate) {
-                    document.getElementById('startDate-error').textContent = 'Vui lòng chọn ngày bắt đầu';
-                    document.getElementById('startDate-error').style.display = 'block';
-                    isValid = false;
-                }
-                if (!endDate) {
-                    document.getElementById('endDate-error').textContent = 'Vui lòng chọn ngày kết thúc';
-                    document.getElementById('endDate-error').style.display = 'block';
-                    isValid = false;
-                } else if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-                    document.getElementById('endDate-error').textContent = 'Ngày kết thúc phải sau ngày bắt đầu';
-                    document.getElementById('endDate-error').style.display = 'block';
                     isValid = false;
                 }
                 if (imageUrl) {
