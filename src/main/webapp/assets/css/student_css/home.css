@@ -327,14 +327,14 @@ body {
   margin: 0 auto;
 }
 
-/* Special layout for 5 cards: 3 on top, 2 on bottom */
-.features-grid .feature-card:nth-child(4) {
+/* Remove the special layout rules that were causing misalignment */
+/* .features-grid .feature-card:nth-child(4) {
   grid-column: 2;
 }
 
 .features-grid .feature-card:nth-child(5) {
   grid-column: 3;
-}
+} */
 
 /* Responsive adjustments for features grid - optimized for 75% zoom */
 @media (max-width: 1400px) {

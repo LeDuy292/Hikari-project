@@ -129,7 +129,7 @@
         <%
             UserAccount user = (UserAccount) session.getAttribute("user");
             if (user == null) {
-                response.sendRedirect(request.getContextPath() + "/view/login.jsp?error=Phiên+làm+việc+hết+hạn");
+                response.sendRedirect(request.getContextPath() + "/loginPage?error=Phiên+làm+việc+hết+hạn");
                 return;
             }
             @SuppressWarnings("unchecked")
@@ -143,6 +143,17 @@
                 !stats.containsKey("completedCourses") || !stats.containsKey("totalHours")) {
                 statsError = "Dữ liệu thống kê không đầy đủ. Vui lòng liên hệ quản trị viên.";
             }
+            
+            // Debug information
+            System.out.println("DEBUG - myCourses.jsp:");
+            System.out.println("User ID: " + user.getUserID());
+            System.out.println("Enrolled courses count: " + (enrolledCourses != null ? enrolledCourses.size() : "null"));
+            System.out.println("Stats keys: " + (stats != null ? stats.keySet() : "null"));
+            if (stats != null) {
+                for (Map.Entry<String, Object> entry : stats.entrySet()) {
+                    System.out.println("  " + entry.getKey() + " = " + entry.getValue());
+                }
+            }
         %>
 
         <c:set var="averageProgress" value="${stats['averageProgress'] != null ? stats['averageProgress'] : 0}" />
@@ -155,11 +166,12 @@
         </a>
 
        <div class="tab-navigation">
-            <button class="tab-btn active" onclick="window.location.href='${pageContext.request.contextPath}/view/student/profile.jsp'">
+            <button class="tab-btn active" onclick="window.location.href='${pageContext.request.contextPath}/view/authentication/profile.jsp'">
                 <i class="fas fa-user"></i>
                 Thông tin cá nhân
             </button>
-            <button class="tab-btn" onclick="window.location.href='http://localhost:8080/Hikari/profile/myCourses'">
+            <button class="tab-btn" onclick="window.location.href='${pageContext.request.contextPath}/profile/myCourses'">
+
                 <i class="fas fa-book"></i>
                 Khóa học của tôi 
             </button>
@@ -197,17 +209,13 @@
                         <c:forEach var="course" items="${enrolledCourses}">
                             <c:set var="progress" value="${stats[course.courseID] != null ? stats[course.courseID] : 0}" />
                             <div class="course-card" data-progress="${progress}">
-                                <img src="${pageContext.request.contextPath}${not empty course.imageUrl ? course.imageUrl : '/assets/img/course-default.jpg'}"
+                                <img src="${pageContext.request.contextPath}${not empty course.imageUrl ? course.imageUrl : '/assets/img/img_student/course.jpg'}"
                                      alt="${course.title}" class="course-image">
                                 <div class="course-content">
                                     <div class="course-header">
                                         <div>
                                             <h3 class="course-title">${course.title}</h3>
                                             <div class="course-meta">
-                                                <div class="meta-item">
-                                                    <i class="fas fa-clock"></i>
-                                                    ${course.duration != null ? course.duration : 0} giờ
-                                                </div>
                                             </div>
                                         </div>
                                         <span class="course-status ${progress >= 100 ? 'status-completed' : 'status-in-progress'}">
@@ -221,17 +229,14 @@
                                                 course.description) : "Không có mô tả"}
                                     </p>
                                     <div class="progress-section">
-                                        <div class="progress-header">
-                                            <span class="progress-label">Tiến độ học tập</span>
-                                            <span class="progress-value">${progress}%</span>
-                                        </div>
                                         <div class="progress-bar">
-                                            <div class="progress-fill" style="width: ${progress}%;"></div>
+                                            <div class="progress-fill" style="width: <c:out value='${progress}'/>%;"></div>
                                         </div>
                                     </div>
                                     <div class="course-actions">
                                         <button class="action-btn btn-primary" onclick="continueCourse('${course.courseID}')" aria-label="Tiếp tục học ${course.title}">
-                                            <i class="fas fa-play"></i> Tiếp tục học
+                                            <i class="fas fa-play"></i> 
+                                            ${progress >= 100 ? 'Ôn tập' : 'Tiếp tục học'}
                                         </button>
                                         <button class="action-btn btn-secondary" onclick="viewCourseDetails('${course.courseID}')" aria-label="Xem chi tiết ${course.title}">
                                             <i class="fas fa-info-circle"></i> Chi tiết
@@ -249,10 +254,6 @@
                 <div class="sidebar-card">
                     <div class="card-header stats">
                         <i class="fas fa-chart-line"></i>
-                        <div>
-                            <h3>Thống kê học tập</h3>
-                            <p>Tiến độ học tập của bạn</p>
-                        </div>
                     </div>
                     <div class="card-content">
                         <div class="main-stat">
@@ -298,7 +299,6 @@
                                         <c:otherwise>0</c:otherwise>
                                     </c:choose>
                                 </div>
-                                <div class="stat-label">Giờ học</div>
                             </div>
                         </div>
                     </div>

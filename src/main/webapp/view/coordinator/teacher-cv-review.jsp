@@ -28,7 +28,7 @@
                         <div class="alert alert-success">Phê duyệt CV thành công!</div>
                     </c:if>
                     <c:if test="${param.error == 'please_login'}">
-                        <div class="alert alert-warning">Vui lòng <a href="login.jsp">đăng nhập</a> để tiếp tục.</div>
+                        <div class="alert alert-warning">Vui lòng <a href="loginPage">đăng nhập</a> để tiếp tục.</div>
                     </c:if>
                     <c:if test="${param.error == 'unauthorized'}">
                         <div class="alert alert-danger">Bạn không có quyền truy cập trang này.</div>

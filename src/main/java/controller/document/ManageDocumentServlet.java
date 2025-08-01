@@ -37,7 +37,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
 
     UserAccount currentUser = (UserAccount) request.getSession().getAttribute("user");
     if (currentUser == null || !"Teacher".equals(currentUser.getRole())) {
-        response.sendRedirect(request.getContextPath() + "/view/authentication/login.jsp");
+        response.sendRedirect(request.getContextPath() + "/loginPage");
         return;
     }
 
@@ -97,7 +97,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         UserAccount currentUser = (UserAccount) request.getSession().getAttribute("user");
         if (currentUser == null || !"Teacher".equals(currentUser.getRole())) {
-            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/loginPage");
             return;
         }
 
@@ -155,7 +155,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         UserAccount currentUser = (UserAccount) request.getSession().getAttribute("user");
         if (currentUser == null || !"Teacher".equals(currentUser.getRole())) {
-            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/loginPage");
             return;
         }
 

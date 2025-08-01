@@ -63,7 +63,7 @@
         </a>
 
         <div class="tab-navigation">
-            <button class="tab-btn active" onclick="window.location.href='${pageContext.request.contextPath}/view/student/profile.jsp'">
+            <button class="tab-btn active" onclick="window.location.href='${pageContext.request.contextPath}/view/authentication/profile.jsp'">
                 <i class="fas fa-user"></i>
                 Thông tin cá nhân
             </button>

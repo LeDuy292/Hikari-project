@@ -42,7 +42,7 @@ public class MyCourseServlet extends HttpServlet {
 
         if (user == null) {
             logger.warn("MyCourseServlet: User not logged in. Redirecting to login.");
-            response.sendRedirect(request.getContextPath() + "/view/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/loginPage");
             return;
         }
 

@@ -30,7 +30,7 @@
                         <div class="alert alert-success">Tải CV lên thành công!</div>
                     </c:if>
                     <c:if test="${param.error == 'please_login'}">
-                        <div class="alert alert-warning">Vui lòng <a href="login.jsp">đăng nhập</a> để tiếp tục.</div>
+                        <div class="alert alert-warning">Vui lòng <a href="loginPage">đăng nhập</a> để tiếp tục.</div>
                     </c:if>
                     <c:if test="${param.error == 'invalid_file'}">
                         <div class="alert alert-danger">Vui lòng tải lên tệp PDF!</div>

@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.UserAccount;
 import model.admin.PaymentDTO; // **CHANGED**: Use PaymentDTO instead of Payment
-import dao.admin.PaymentDAO;
+import dao.PaymentDAO;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,16 +28,12 @@ public class ProfileMyPaymentServlet extends HttpServlet {
         UserAccount user = (UserAccount) request.getSession().getAttribute("user");
         if (user == null) {
             LOGGER.warn("Phiên làm việc hết hạn, chuyển hướng đến trang đăng nhập");
-            response.sendRedirect(request.getContextPath() + "/view/login.jsp?error=Phiên+làm+việc+hết+hạn");
+            response.sendRedirect(request.getContextPath() + "/loginPage?error=Phiên+làm+việc+hết+hạn");
             return;
         }
 
         PaymentDAO paymentDAO = new PaymentDAO();
         List<PaymentDTO> payments = new ArrayList<>(); // **CHANGED**: Use PaymentDTO
-        int pageSize = 10;
-        int currentPage = 1;
-        int totalPayments = 0;
-        int totalPages = 1;
         String studentID = null;
 
         try {
@@ -50,59 +46,8 @@ public class ProfileMyPaymentServlet extends HttpServlet {
                 return;
             }
 
-            // Lấy các tham số lọc
-            String status = request.getParameter("status");
-            String date = request.getParameter("date");
-            String minAmountStr = request.getParameter("minAmount");
-            String maxAmountStr = request.getParameter("maxAmount");
-            String sortBy = request.getParameter("sortBy");
-            String pageParam = request.getParameter("page");
-
-            // Xử lý tham số trang
-            if (pageParam != null && !pageParam.isEmpty()) {
-                try {
-                    currentPage = Integer.parseInt(pageParam);
-                    if (currentPage < 1) currentPage = 1;
-                } catch (NumberFormatException e) {
-                    LOGGER.warn("Tham số page không hợp lệ: {}, sử dụng mặc định: 1", pageParam);
-                    currentPage = 1;
-                }
-            }
-
-            // Xử lý tham số số tiền với giá trị mặc định hợp lệ
-            double minAmount = 0.0;
-            double maxAmount = Double.MAX_VALUE;
-            try {
-                if (minAmountStr != null && !minAmountStr.trim().isEmpty()) {
-                    minAmount = Double.parseDouble(minAmountStr);
-                    if (minAmount < 0) throw new NumberFormatException("Số tiền tối thiểu không được âm");
-                }
-                if (maxAmountStr != null && !maxAmountStr.trim().isEmpty()) {
-                    maxAmount = Double.parseDouble(maxAmountStr);
-                    if (maxAmount < 0) throw new NumberFormatException("Số tiền tối đa không được âm");
-                }
-                if (minAmount > maxAmount) {
-                    throw new NumberFormatException("Số tiền tối thiểu không được lớn hơn số tiền tối đa");
-                }
-            } catch (NumberFormatException e) {
-                LOGGER.error("Lỗi định dạng số cho tham số minAmount hoặc maxAmount: {}", e.getMessage(), e);
-                request.setAttribute("error", "Số tiền tối thiểu hoặc tối đa không hợp lệ: " + e.getMessage());
-                request.getRequestDispatcher("/view/student/paymentHistory.jsp").forward(request, response);
-                return;
-            }
-
-            // Thiết lập mặc định cho sortBy
-            if (sortBy == null || sortBy.isEmpty()) {
-                sortBy = "date_DESC";
-            }
-
-            // Tính offset cho phân trang
-            int offset = (currentPage - 1) * pageSize;
-
-            // Lấy danh sách thanh toán từ database
-            payments = paymentDAO.getPaymentsWithFilters(status, studentID, date, minAmount, maxAmount, sortBy, offset, pageSize);
-            totalPayments = paymentDAO.countPaymentsWithFilters(status, studentID, date, minAmount, maxAmount);
-            totalPages = (int) Math.ceil((double) totalPayments / pageSize);
+            // Sử dụng method đơn giản để lấy tất cả payments của student
+            payments = paymentDAO.getPaymentsByStudentId(studentID);
 
             LOGGER.debug("Đã lấy được {} thanh toán cho studentID: {}", payments.size(), studentID);
 
@@ -114,14 +59,6 @@ public class ProfileMyPaymentServlet extends HttpServlet {
 
             // Đưa dữ liệu vào request
             request.setAttribute("payments", payments);
-            request.setAttribute("currentPage", currentPage);
-            request.setAttribute("totalPayments", totalPayments);
-            request.setAttribute("totalPages", totalPages);
-            request.setAttribute("status", status);
-            request.setAttribute("date", date);
-            request.setAttribute("minAmount", minAmountStr);
-            request.setAttribute("maxAmount", maxAmountStr);
-            request.setAttribute("sortBy", sortBy);
             request.setAttribute("totalSpent", totalSpent);
 
             request.getRequestDispatcher("/view/student/paymentHistory.jsp").forward(request, response);
@@ -155,3 +92,5 @@ public class ProfileMyPaymentServlet extends HttpServlet {
         }
     }
 }
+
+
