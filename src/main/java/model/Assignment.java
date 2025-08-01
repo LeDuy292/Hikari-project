@@ -12,6 +12,7 @@ public class Assignment {
     private int duration;
     private int totalQuestions;
     private boolean isComplete;
+
     private List<Question> questions;
 
     public List<Question> getQuestions() {
@@ -111,6 +112,8 @@ public class Assignment {
     public void setIsComplete(boolean isComplete) {
         this.isComplete = isComplete;
     }
+
+
 
     @Override
     public String toString() {

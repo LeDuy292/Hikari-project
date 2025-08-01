@@ -20,7 +20,9 @@ public class PaymentDAO {
 
     public List<PaymentDTO> getAllPayments() throws SQLException {
         List<PaymentDTO> payments = new ArrayList<>();
-        String sql = "SELECT p.*, u.fullName as studentName, GROUP_CONCAT(c.title) as courseNames "
+        String sql = "SELECT p.*, u.fullName as studentName, "
+                + "GROUP_CONCAT(DISTINCT c.title SEPARATOR ', ') as courseNames, "
+                + "GROUP_CONCAT(DISTINCT c.courseID SEPARATOR ',') as courseIDs "
                 + "FROM Payment p "
                 + "JOIN Student s ON p.studentID = s.studentID "
                 + "JOIN UserAccount u ON s.userID = u.userID "
@@ -42,7 +44,9 @@ public class PaymentDAO {
     }
 
     public PaymentDTO getPaymentById(int id) throws SQLException {
-        String sql = "SELECT p.*, u.fullName as studentName, GROUP_CONCAT(c.title) as courseNames "
+        String sql = "SELECT p.*, u.fullName as studentName, "
+                + "GROUP_CONCAT(DISTINCT c.title SEPARATOR ', ') as courseNames, "
+                + "GROUP_CONCAT(DISTINCT c.courseID SEPARATOR ',') as courseIDs "
                 + "FROM Payment p "
                 + "JOIN Student s ON p.studentID = s.studentID "
                 + "JOIN UserAccount u ON s.userID = u.userID "
@@ -68,7 +72,9 @@ public class PaymentDAO {
 
     public List<PaymentDTO> getPaymentsByStatus(String status) throws SQLException {
         List<PaymentDTO> payments = new ArrayList<>();
-        String sql = "SELECT p.*, u.fullName as studentName, GROUP_CONCAT(c.title) as courseNames "
+        String sql = "SELECT p.*, u.fullName as studentName, "
+                + "GROUP_CONCAT(DISTINCT c.title SEPARATOR ', ') as courseNames, "
+                + "GROUP_CONCAT(DISTINCT c.courseID SEPARATOR ',') as courseIDs "
                 + "FROM Payment p "
                 + "JOIN Student s ON p.studentID = s.studentID "
                 + "JOIN UserAccount u ON s.userID = u.userID "
@@ -112,7 +118,9 @@ public class PaymentDAO {
 
     public List<PaymentDTO> getPaymentsByStudentId(String studentID) throws SQLException {
         List<PaymentDTO> payments = new ArrayList<>();
-        String sql = "SELECT p.*, u.fullName as studentName, GROUP_CONCAT(c.title) as courseNames "
+        String sql = "SELECT p.*, u.fullName as studentName, "
+                + "GROUP_CONCAT(DISTINCT c.title SEPARATOR ', ') as courseNames, "
+                + "GROUP_CONCAT(DISTINCT c.courseID SEPARATOR ',') as courseIDs "
                 + "FROM Payment p "
                 + "JOIN Student s ON p.studentID = s.studentID "
                 + "JOIN UserAccount u ON s.userID = u.userID "
@@ -137,24 +145,34 @@ public class PaymentDAO {
         return payments;
     }
 
-    public List<PaymentDTO> getPaymentsWithFilters(String status, String studentID, String date,
+    public List<PaymentDTO> getPaymentsWithFilters(String status, String search, String date,
             double minAmount, double maxAmount, String sortBy, int offset, int limit) throws SQLException {
         List<PaymentDTO> payments = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-                "SELECT p.*, u.fullName as studentName, GROUP_CONCAT(c.title) as courseNames "
+                "SELECT p.*, u.fullName as studentName, "
+                + "GROUP_CONCAT(DISTINCT c.title SEPARATOR ', ') as courseNames, "
+                + "GROUP_CONCAT(DISTINCT c.courseID SEPARATOR ',') as courseIDs "
                 + "FROM Payment p "
                 + "JOIN Student s ON p.studentID = s.studentID "
                 + "JOIN UserAccount u ON s.userID = u.userID "
                 + "LEFT JOIN Payment_Courses pc ON p.id = pc.paymentID "
                 + "LEFT JOIN Courses c ON pc.courseID = c.courseID "
-                + "WHERE p.studentID = ?"
+                + "WHERE 1=1 "
         );
         List<Object> params = new ArrayList<>();
-        params.add(studentID);
 
         if (status != null && !status.trim().isEmpty()) {
             sql.append(" AND p.paymentStatus = ?");
             params.add(status.trim());
+        }
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND (u.fullName LIKE ? OR p.id LIKE ? OR c.title LIKE ? OR p.transactionID LIKE ?)");
+            String searchPattern = "%" + search.trim() + "%";
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
         }
 
         if (date != null && !date.trim().isEmpty()) {
@@ -165,6 +183,8 @@ public class PaymentDAO {
         sql.append(" AND p.amount BETWEEN ? AND ?");
         params.add(minAmount);
         params.add(maxAmount);
+
+        sql.append(" GROUP BY p.id"); // Ensure space before GROUP BY
 
         if (sortBy != null && !sortBy.trim().isEmpty()) {
             String[] sortParts = sortBy.split("_");
@@ -190,7 +210,7 @@ public class PaymentDAO {
             sql.append(" ORDER BY p.paymentDate DESC");
         }
 
-        sql.append(" GROUP BY p.id LIMIT ? OFFSET ?");
+        sql.append(" LIMIT ? OFFSET ?");
         params.add(limit);
         params.add(offset);
 
@@ -211,7 +231,7 @@ public class PaymentDAO {
         return payments;
     }
 
-    public int countPaymentsWithFilters(String status, String studentID, String date, double minAmount, double maxAmount) throws SQLException {
+    public int countPaymentsWithFilters(String status, String search, String date, double minAmount, double maxAmount) throws SQLException {
         StringBuilder sql = new StringBuilder(
                 "SELECT COUNT(DISTINCT p.id) "
                 + "FROM Payment p "
@@ -219,14 +239,22 @@ public class PaymentDAO {
                 + "JOIN UserAccount u ON s.userID = u.userID "
                 + "LEFT JOIN Payment_Courses pc ON p.id = pc.paymentID "
                 + "LEFT JOIN Courses c ON pc.courseID = c.courseID "
-                + "WHERE p.studentID = ?"
+                + "WHERE 1=1 "
         );
         List<Object> params = new ArrayList<>();
-        params.add(studentID);
 
         if (status != null && !status.trim().isEmpty()) {
             sql.append(" AND p.paymentStatus = ?");
             params.add(status.trim());
+        }
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND (u.fullName LIKE ? OR p.id LIKE ? OR c.title LIKE ? OR p.transactionID LIKE ?)");
+            String searchPattern = "%" + search.trim() + "%";
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
         }
 
         if (date != null && !date.trim().isEmpty()) {
@@ -375,72 +403,11 @@ public class PaymentDAO {
         return true;
     }
 
-    public double getTotalAmountByFilters(String status, String studentID, String date, double minAmount, double maxAmount) throws SQLException {
-        StringBuilder sql = new StringBuilder(
-                "SELECT COALESCE(SUM(p.amount), 0) "
-                + "FROM Payment p "
-                + "JOIN Student s ON p.studentID = s.studentID "
-                + "JOIN UserAccount u ON s.userID = u.userID "
-                + "LEFT JOIN Payment_Courses pc ON p.id = pc.paymentID "
-                + "LEFT JOIN Courses c ON pc.courseID = c.courseID "
-                + "WHERE p.studentID = ?"
-        );
-        List<Object> params = new ArrayList<>();
-        params.add(studentID);
-
-        if (status != null && !status.trim().isEmpty()) {
-            sql.append(" AND p.paymentStatus = ?");
-            params.add(status.trim());
-        }
-
-        if (date != null && !date.trim().isEmpty()) {
-            sql.append(" AND DATE(p.paymentDate) = ?");
-            params.add(date);
-        }
-
-        sql.append(" AND p.amount BETWEEN ? AND ?");
-        params.add(minAmount);
-        params.add(maxAmount);
-
-        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
-            for (int i = 0; i < params.size(); i++) {
-                stmt.setObject(i + 1, params.get(i));
-            }
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getDouble(1);
-                }
-            }
-            LOGGER.debug("Calculated total amount with filters, SQL: {}", sql.toString());
-        } catch (SQLException e) {
-            LOGGER.error("Error calculating total amount with filters", e);
-            throw e;
-        }
-        return 0.0;
-    }
-
     public void closeConnection() {
         if (dbContext != null) {
             dbContext.closeConnection();
             LOGGER.info("Connection closed in PaymentDAO.");
         }
-    }
-
-    private Payment mapResultSetToPayment(ResultSet rs) throws SQLException {
-        Payment payment = new Payment();
-        payment.setId(rs.getInt("id"));
-        payment.setStudentID(rs.getString("studentID"));
-        payment.setAmount(rs.getDouble("amount"));
-        payment.setPaymentMethod(rs.getString("paymentMethod"));
-        payment.setPaymentStatus(rs.getString("paymentStatus"));
-        payment.setPaymentDate(rs.getTimestamp("paymentDate"));
-        payment.setTransactionID(rs.getString("transactionID"));
-        payment.setCartID(rs.getInt("cartID") == 0 ? null : rs.getInt("cartID"));
-
-        List<String> courseIDs = getCourseIDsForPayment(rs.getInt("id"));
-        payment.setCourseIDs(courseIDs);
-
-        return payment;
     }
 
     private PaymentDTO mapResultSetToPaymentDTO(ResultSet rs) throws SQLException {
@@ -454,25 +421,28 @@ public class PaymentDAO {
         payment.setTransactionID(rs.getString("transactionID"));
         payment.setStudentName(rs.getString("studentName"));
         payment.setCourseNames(rs.getString("courseNames"));
-        payment.setCartID(rs.getInt("cartID") == 0 ? null : rs.getInt("cartID"));
+        
+        // Set cartID safely
+        try {
+            int cartID = rs.getInt("cartID");
+            payment.setCartID(rs.wasNull() ? 0 : cartID);
+        } catch (SQLException e) {
+            payment.setCartID(0);
+        }
 
-        List<String> courseIDs = getCourseIDsForPayment(rs.getInt("id"));
-        payment.setCourseIDs(courseIDs);
-
-        return payment;
-    }
-
-    private List<String> getCourseIDsForPayment(int paymentId) throws SQLException {
+        // Parse courseIDs from the GROUP_CONCAT result
+        String courseIDsStr = rs.getString("courseIDs");
         List<String> courseIDs = new ArrayList<>();
-        String sql = "SELECT courseID FROM Payment_Courses WHERE paymentID = ?";
-        try (Connection conn = dbContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, paymentId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    courseIDs.add(rs.getString("courseID"));
+        if (courseIDsStr != null && !courseIDsStr.trim().isEmpty()) {
+            String[] ids = courseIDsStr.split(",");
+            for (String id : ids) {
+                if (id != null && !id.trim().isEmpty()) {
+                    courseIDs.add(id.trim());
                 }
             }
         }
-        return courseIDs;
+        payment.setCourseIDs(courseIDs);
+
+        return payment;
     }
 }

@@ -19,16 +19,16 @@
             UserAccount user = (UserAccount) session.getAttribute("user");
             if (user != null) { 
                 String profilePic = (user.getProfilePicture() != null && !user.getProfilePicture().isEmpty()) 
-                    ? request.getContextPath() + "/uploads/" + user.getProfilePicture() // Sanitized path
-                    : request.getContextPath() + "/assets/img/default-avatar.png";
+                    ? request.getContextPath() + user.getProfilePicture() // Đường dẫn đã có /assets/img/uploads/ trong database
+                    : request.getContextPath() + "/assets/img/avatar.png";
         %>
             <div class="user-info">
                 <a href="${pageContext.request.contextPath}/view/authentication/profile.jsp" aria-label="View Profile">
-                    <img src="<%= profilePic %>?t=<%= System.currentTimeMillis() %>" alt="User Avatar" class="user-avatar">
+                    <img src="<%= profilePic %>?t=<%= System.currentTimeMillis() %>" alt="User Avatar" class="user-avatar" onerror="this.src='${pageContext.request.contextPath}/assets/img/avatar.png'">
                 </a>
-                <span class="user-name"><%= user.getUsername() != null ? user.getUsername() : user.getFullName() %></span>
+                <span class="user-name"><%= user.getFullName() != null && !user.getFullName().isEmpty() ? user.getFullName() : user.getUsername() %></span>
                 <form action="${pageContext.request.contextPath}/logout" method="post" class="logout-form">
-                    <button type="submit" class="logout-btn" onclick="return confirm('Bạn có chắc muốn đăng xuất?')">Đăng xuất</button>
+                    <button type="button" class="logout-btn" id="openLogoutModal">Đăng xuất</button>
                 </form>
             </div>
         <% } else { %>
@@ -42,6 +42,22 @@
     window.contextPath = '${pageContext.request.contextPath}';
 </script>
 <script src="${pageContext.request.contextPath}/assets/js/student/notifications.js"></script>
+
+<!-- Custom Logout Modal -->
+<div id="logoutModal" class="custom-modal">
+  <div class="custom-modal-content">
+    <div class="custom-modal-header">
+      <span class="custom-modal-title">Xác nhận đăng xuất</span>
+    </div>
+    <div class="custom-modal-body">
+      <p>Bạn có chắc muốn đăng xuất?</p>
+    </div>
+    <div class="custom-modal-footer">
+      <button id="confirmLogoutBtn" class="modal-btn danger">Đăng xuất</button>
+      <button id="cancelLogoutBtn" class="modal-btn">Hủy</button>
+    </div>
+  </div>
+</div>
 
 <style>
     :root {
@@ -163,4 +179,74 @@
         background: linear-gradient(90deg, #e06e4c 60%, #ffaa66 100%);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
+
+.custom-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0; top: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.25);
+  justify-content: center;
+  align-items: center;
+}
+.custom-modal.show { display: flex; }
+.custom-modal-content {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 32px 28px 24px 28px;
+  min-width: 320px;
+  max-width: 90vw;
+  animation: fadeInModal 0.2s;
+}
+@keyframes fadeInModal { from { opacity: 0; transform: translateY(-20px);} to { opacity: 1; transform: none; } }
+.custom-modal-header { margin-bottom: 12px; }
+.custom-modal-title { font-size: 1.2rem; font-weight: 700; color: #ff9800; }
+.custom-modal-body { margin-bottom: 18px; color: #333; font-size: 1rem; }
+.custom-modal-footer { display: flex; gap: 16px; justify-content: flex-end; }
+.modal-btn {
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  background: #f5f5f5;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-btn.danger {
+  background: linear-gradient(90deg, #ff9100 0%, #ffb347 100%);
+  color: #fff;
+}
+.modal-btn:hover { background: #ffe0b2; }
+.modal-btn.danger:hover { background: #ff9800; }
 </style>
+<script>
+// Modal logic
+const openLogoutModalBtn = document.getElementById('openLogoutModal');
+const logoutModal = document.getElementById('logoutModal');
+const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+const logoutForm = document.querySelector('.logout-form');
+
+if (openLogoutModalBtn && logoutModal && confirmLogoutBtn && cancelLogoutBtn && logoutForm) {
+  openLogoutModalBtn.onclick = function() {
+    logoutModal.classList.add('show');
+  };
+  cancelLogoutBtn.onclick = function() {
+    logoutModal.classList.remove('show');
+  };
+  confirmLogoutBtn.onclick = function() {
+    logoutForm.submit();
+  };
+  // Đóng modal khi bấm ra ngoài
+  logoutModal.onclick = function(e) {
+    if (e.target === logoutModal) logoutModal.classList.remove('show');
+  };
+  // Đóng modal bằng phím ESC
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') logoutModal.classList.remove('show');
+  });
+}
+</script>
