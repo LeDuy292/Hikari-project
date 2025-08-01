@@ -257,7 +257,14 @@ public class CartServlet extends HttpServlet {
                 enrichedItem.put("totalPrice", item.getPriceAtTime().multiply(BigDecimal.valueOf(item.getQuantity())));
                 enrichedItem.put("courseTitle", course.getTitle());
                 enrichedItem.put("courseDescription", course.getDescription());
-                enrichedItem.put("courseImageUrl", course.getImageUrl() != null ? course.getImageUrl() : "");
+                // Use imageUrl from CartItem first (which comes from database JOIN), then fallback to Course object
+                String imageUrl = item.getCourseImageUrl();
+                if (imageUrl == null || imageUrl.trim().isEmpty()) {
+                    imageUrl = course.getImageUrl();
+                }
+                enrichedItem.put("courseImageUrl", imageUrl != null ? imageUrl : "");
+                logger.info("CartServlet: Course {} imageUrl: {} (from CartItem: {}, from Course: {})", 
+                    course.getCourseID(), imageUrl, item.getCourseImageUrl(), course.getImageUrl());
                 enrichedItems.add(enrichedItem);
             }
         }
