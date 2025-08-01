@@ -128,6 +128,13 @@
                 display: block;
             }
 
+            .course-id-display {
+                background-color: #e9ecef;
+                color: #495057;
+                font-weight: 600;
+                cursor: not-allowed;
+            }
+
             @media (max-width: 480px) {
                 .form-container {
                     padding: 20px;
@@ -143,8 +150,16 @@
                 <!-- Thay đổi: Thêm nút đóng và tiêu đề form -->
                 <span onclick="window.history.back()" class="close-button">×</span>
                 <h2 class="form-title">Chỉnh sửa khóa học</h2>
+                <!-- Thay đổi: Cập nhật action để sử dụng EditCourseNew servlet -->
                 <form action="EditCourse" method="post" class="course-form" enctype="multipart/form-data">
                     <input type="hidden" name="courseNum" value="${course.courseID}">
+                    
+                    <!-- Thay đổi: Hiển thị CourseID như một trường chỉ đọc -->
+                    <div class="form-group">
+                        <label for="courseIDDisplay" class="form-label">Mã khóa học:</label>
+                        <input type="text" id="courseIDDisplay" name="courseIDDisplay" class="form-input course-id-display" value="${course.courseID}" readonly>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="title" class="form-label">Tên khóa học:</label>
                         <input type="text" id="title" name="title" class="form-input" value="${course.title}" required>
@@ -165,6 +180,9 @@
                         <input type="number" id="duration" name="duration" class="form-input" value="${course.duration}" required>
                         <span class="error-message" id="duration-error"></span>
                     </div>
+                    
+                    <!-- Thay đổi: Loại bỏ các trường startDate và endDate -->
+                    <!-- 
                     <div class="form-group">
                         <label for="startDate" class="form-label">Ngày bắt đầu:</label>
                         <input type="date" id="startDate" name="startDate" class="form-input" value="${course.startDate}" required>
@@ -175,6 +193,8 @@
                         <input type="date" id="endDate" name="endDate" class="form-input" value="${course.endDate}" required>
                         <span class="error-message" id="endDate-error"></span>
                     </div>
+                    -->
+                    
                     <div class="form-group">
                         <label for="isActive" class="form-label">Hoạt động:</label>
                         <select id="isActive" name="isActive" class="form-select" required>
@@ -203,7 +223,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
         <script>
-            // Thay đổi: Đồng bộ JavaScript validation và preview ảnh với course-monitoring.jsp
+            // Thay đổi: Cập nhật JavaScript validation - loại bỏ validation cho startDate và endDate
             const form = document.querySelector('.course-form');
             form.addEventListener('submit', (e) => {
                 let isValid = true;
@@ -211,33 +231,65 @@
                 const description = document.getElementById('description').value.trim();
                 const fee = parseFloat(document.getElementById('fee').value);
                 const duration = parseInt(document.getElementById('duration').value);
-                const startDate = document.getElementById('startDate').value;
-                const endDate = document.getElementById('endDate').value;
                 const imageUrl = document.getElementById('imageUrl').files[0];
 
                 // Reset error messages
                 document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
 
+                // Validation cho title
                 if (!title) {
                     document.getElementById('title-error').textContent = 'Vui lòng nhập tên khóa học';
                     document.getElementById('title-error').style.display = 'block';
                     isValid = false;
+                } else if (title.length < 3) {
+                    document.getElementById('title-error').textContent = 'Tên khóa học phải có ít nhất 3 ký tự';
+                    document.getElementById('title-error').style.display = 'block';
+                    isValid = false;
+                } else if (title.length > 200) {
+                    document.getElementById('title-error').textContent = 'Tên khóa học không được vượt quá 200 ký tự';
+                    document.getElementById('title-error').style.display = 'block';
+                    isValid = false;
                 }
+
+                // Validation cho description
                 if (!description) {
                     document.getElementById('description-error').textContent = 'Vui lòng nhập mô tả';
                     document.getElementById('description-error').style.display = 'block';
                     isValid = false;
+                } else if (description.length < 10) {
+                    document.getElementById('description-error').textContent = 'Mô tả phải có ít nhất 10 ký tự';
+                    document.getElementById('description-error').style.display = 'block';
+                    isValid = false;
+                } else if (description.length > 1000) {
+                    document.getElementById('description-error').textContent = 'Mô tả không được vượt quá 1000 ký tự';
+                    document.getElementById('description-error').style.display = 'block';
+                    isValid = false;
                 }
+
+                // Validation cho fee
                 if (isNaN(fee) || fee <= 0) {
                     document.getElementById('fee-error').textContent = 'Học phí phải lớn hơn 0';
                     document.getElementById('fee-error').style.display = 'block';
                     isValid = false;
+                } else if (fee > 999999999) {
+                    document.getElementById('fee-error').textContent = 'Học phí không được vượt quá 999,999,999 VND';
+                    document.getElementById('fee-error').style.display = 'block';
+                    isValid = false;
                 }
+
+                // Validation cho duration
                 if (isNaN(duration) || duration <= 0) {
                     document.getElementById('duration-error').textContent = 'Thời lượng phải lớn hơn 0';
                     document.getElementById('duration-error').style.display = 'block';
                     isValid = false;
+                } else if (duration > 10000) {
+                    document.getElementById('duration-error').textContent = 'Thời lượng không được vượt quá 10,000 giờ';
+                    document.getElementById('duration-error').style.display = 'block';
+                    isValid = false;
                 }
+
+                // Thay đổi: Loại bỏ validation cho startDate và endDate
+                /*
                 if (!startDate) {
                     document.getElementById('startDate-error').textContent = 'Vui lòng chọn ngày bắt đầu';
                     document.getElementById('startDate-error').style.display = 'block';
@@ -252,6 +304,9 @@
                     document.getElementById('endDate-error').style.display = 'block';
                     isValid = false;
                 }
+                */
+
+                // Validation cho image file
                 if (imageUrl) {
                     const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
                     if (!validTypes.includes(imageUrl.type)) {
@@ -271,7 +326,7 @@
                 }
             });
 
-            // Image preview
+            // Image preview functionality
             document.getElementById('imageUrl').addEventListener('change', function (event) {
                 const file = event.target.files[0];
                 const preview = document.getElementById('imagePreview');
@@ -305,6 +360,63 @@
                 } else {
                     preview.style.display = 'none';
                 }
+            });
+
+            // Thay đổi: Thêm hiệu ứng hover cho CourseID field
+            document.getElementById('courseIDDisplay').addEventListener('mouseenter', function() {
+                this.title = 'Mã khóa học không thể thay đổi';
+            });
+
+            // Thay đổi: Thêm confirmation khi submit form
+            form.addEventListener('submit', function(e) {
+                if (this.checkValidity()) {
+                    const confirmUpdate = confirm('Bạn có chắc chắn muốn cập nhật thông tin khóa học này không?');
+                    if (!confirmUpdate) {
+                        e.preventDefault();
+                    }
+                }
+            });
+
+            // Thay đổi: Thêm auto-save draft functionality (optional)
+            let autoSaveTimer;
+            const formInputs = document.querySelectorAll('.form-input, .form-textarea, .form-select');
+            
+            formInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    clearTimeout(autoSaveTimer);
+                    autoSaveTimer = setTimeout(() => {
+                        // Save form data to localStorage
+                        const formData = {};
+                        formInputs.forEach(field => {
+                            if (field.type !== 'file') {
+                                formData[field.name] = field.value;
+                            }
+                        });
+                        localStorage.setItem('editCourseForm_' + document.querySelector('input[name="courseNum"]').value, JSON.stringify(formData));
+                    }, 2000); // Auto-save after 2 seconds of inactivity
+                });
+            });
+
+            // Thay đổi: Load saved draft on page load
+            window.addEventListener('load', function() {
+                const courseID = document.querySelector('input[name="courseNum"]').value;
+                const savedData = localStorage.getItem('editCourseForm_' + courseID);
+                
+                if (savedData) {
+                    const formData = JSON.parse(savedData);
+                    Object.keys(formData).forEach(key => {
+                        const field = document.querySelector(`[name="${key}"]`);
+                        if (field && field.type !== 'file') {
+                            field.value = formData[key];
+                        }
+                    });
+                }
+            });
+
+            // Thay đổi: Clear saved draft on successful form submission
+            form.addEventListener('submit', function() {
+                const courseID = document.querySelector('input[name="courseNum"]').value;
+                localStorage.removeItem('editCourseForm_' + courseID);
             });
         </script>
     </body>
