@@ -81,7 +81,7 @@ public class GrammarCheckServlet extends HttpServlet {
                 + "Yêu cầu:\n"
                 + "- Dòng đầu tiên: hiển thị lại câu đúng.\n"
                 + "- Dòng thứ hai trở đi: liệt kê các thay đổi theo định dạng đơn giản: sai → đúng.\n"
-                + "Không cần giải thích dài dòng.\n"
+                + "giải thích không cần dài dòng chỉ 1 dòng giải thích thôi rõ ràng ngắn gọn.\n"
                 + "Câu:「" + userText + "」"
         );
         parts.add(partNode);

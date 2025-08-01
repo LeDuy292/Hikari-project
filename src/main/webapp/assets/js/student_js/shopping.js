@@ -239,24 +239,6 @@ class ShoppingCart {
                     <p class="text-sm text-gray-600 mb-2 line-clamp-2">${escapedDescription}</p>
                     <div class="flex items-center space-x-4">
                         <div class="flex items-center">
-                            <label class="text-sm text-gray-500 mr-2" for="quantity-${
-                              item.cartItemID
-                            }">Số lượng:</label>
-                            <div class="flex items-center border border-gray-300 rounded">
-                                <button class="quantity-btn minus px-3 py-1 text-gray-600 hover:bg-gray-100" 
-                                        onclick="cart.updateQuantity(${
-                                          item.cartItemID
-                                        }, ${item.quantity - 1})"
-                                        aria-label="Giảm số lượng ${escapedTitle}">-</button>
-                                <span class="px-3 py-1 text-center min-w-[40px]" id="quantity-${
-                                  item.cartItemID
-                                }">${item.quantity}</span>
-                                <button class="quantity-btn plus px-3 py-1 text-gray-600 hover:bg-gray-100"
-                                        onclick="cart.updateQuantity(${
-                                          item.cartItemID
-                                        }, ${item.quantity + 1})"
-                                        aria-label="Tăng số lượng ${escapedTitle}">+</button>
-                            </div>
                         </div>
                         ${
                           item.discountApplied > 0
