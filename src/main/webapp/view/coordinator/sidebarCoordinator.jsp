@@ -35,13 +35,13 @@
             <i class="fas fa-book"></i>
             <span>Phê duyệt bài học</span>
         </a>
--->        
+     
 <!--        <a href="${pageContext.request.contextPath}/view/coordinator/document-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("document-approval.jsp") ? "active" : ""%>">
         -->        
-<!--        <a href="${pageContext.request.contextPath}/view/coordinator/test-approval.jsp" class="sidebar-nav-item <%= currentPage.equals("test-approval.jsp") ? "active" : ""%>">
+       <a href="${pageContext.request.contextPath}/CoordinatorTask" class="sidebar-nav-item <%= currentPage.equals("test-approval.jsp") ? "active" : ""%>">
             <i class="fas fa-star"></i>
-            <span>Phê duyệt bài kiểm tra</span>
-        </a>-->
+            <span>Nhiệm vụ</span>
+
         <a href="${pageContext.request.contextPath}/LoadTeacher" class="sidebar-nav-item <%= currentPage.equals("instructor-assignment.jsp") ? "active" : ""%>">
             <i class="fas fa-bell"></i>
             <span>Phân công giảng viên</span>
@@ -49,6 +49,10 @@
         <a href="${pageContext.request.contextPath}/cv" class="sidebar-nav-item <%= currentPage.equals("teacher-cv-review.jsp") ? "active" : ""%>">
             <i class="fas fa-users"></i>
             <span>Phê Duyệt Hồ Sơ Giảng Viên</span>
+        </a>
+        <a href="${pageContext.request.contextPath}/coordinator/contact-management" class="sidebar-nav-item <%= currentPage.equals("contact-management.jsp") ? "active" : ""%>">
+            <i class="fas fa-headset"></i>
+            <span>Trung tâm hỗ trợ</span>
         </a>
         <a href="${pageContext.request.contextPath}/forum" class="sidebar-nav-item <%= currentPage.equals("forum.jsp") ? "active" : ""%>">
             <i class="fa fa-comments"></i><span>Diễn Đàn</span>

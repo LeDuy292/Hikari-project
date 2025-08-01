@@ -100,21 +100,13 @@
                                     </div>
                                     <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
                                         <div class="feature-icon">
-                                            <i class="fas fa-certificate"></i>
-                                        </div>
-                                        <h3 class="feature-title">Chứng chỉ uy tín</h3>
-                                        <p class="feature-description">Cấp chứng chỉ hoàn thành khóa học được công nhận rộng
-                                            rãi</p>
-                                    </div>
-                                    <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
-                                        <div class="feature-icon">
                                             <i class="fas fa-users"></i>
                                         </div>
                                         <h3 class="feature-title">Cộng đồng học tập</h3>
                                         <p class="feature-description">Tham gia cộng đồng học viên năng động, hỗ trợ lẫn
                                             nhau trong quá trình học</p>
                                     </div>
-                                    <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
+                                    <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
                                         <div class="feature-icon">
                                             <i class="fas fa-book-reader"></i>
                                         </div>
@@ -122,7 +114,7 @@
                                         <p class="feature-description">Kho tài liệu học tập đa dạng từ cơ bản đến nâng cao,
                                             cập nhật liên tục</p>
                                     </div>
-                                    <div class="feature-card" data-aos="fade-up" data-aos-delay="600">
+                                    <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
                                         <div class="feature-icon">
                                             <i class="fas fa-chart-line"></i>
                                         </div>
