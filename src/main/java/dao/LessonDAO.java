@@ -13,11 +13,12 @@ import utils.DBContext;
 
 public class LessonDAO {
     private CourseReponsitory res = new CourseReponsitory();
+
     // Lấy tất cả bài học theo topicID
     public List<Lesson> getAllLessonsByTopicID(String topicID) {
         List<Lesson> lessonList = new ArrayList<>();
-        String sql = "SELECT l.id, l.topicID, l.title, l.description, l.mediaUrl, l.isCompleted "
-                   + "FROM Lesson l join Lesson_Reviews lr on l.id = lr.lessonID WHERE l.topicID = ? AND lr.reviewStatus = 'Approved'";
+        String sql = "SELECT l.id, l.topicID, l.title, l.description, l.mediaUrl, l.isCompleted, l.teacherID "
+                   + "FROM Lesson l WHERE l.topicID = ?";
         try (Connection conn = new DBContext().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -30,7 +31,8 @@ public class LessonDAO {
                             rs.getString("title"),
                             rs.getString("description"),
                             rs.getString("mediaUrl"),
-                            rs.getBoolean("isCompleted")
+                            rs.getBoolean("isCompleted"),
+                            rs.getString("teacherID")
                     ));
                 }
             }
@@ -40,10 +42,40 @@ public class LessonDAO {
 
         return lessonList;
     }
+    
+    // Insert lesson and return the generated ID
+    public int insertAndReturnId(Lesson lesson) {
+        String sql = "INSERT INTO Lesson (topicID, title, description, mediaUrl, isCompleted, teacherID) VALUES (?, ?, ?, ?, ?, ?)";
+        
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
+            
+            pstmt.setString(1, lesson.getTopicID());
+            pstmt.setString(2, lesson.getTitle());
+            pstmt.setString(3, lesson.getDescription());
+            pstmt.setString(4, lesson.getMediaUrl() != null ? lesson.getMediaUrl() : "");
+            pstmt.setBoolean(5, lesson.isIsCompleted());
+            pstmt.setString(6, lesson.getTeacherID());
+            
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error at insertAndReturnId: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return -1;
+    }
 
     public List<Lesson> getAllLessons() {
         List<Lesson> lessonList = new ArrayList<>();
-        String sql = "SELECT id, topicID, title, description, mediaUrl,  isCompleted "
+        String sql = "SELECT id, topicID, title, description, mediaUrl, isCompleted, teacherID "
                    + "FROM Lesson";
 
         try (Connection conn = new DBContext().getConnection();
@@ -57,7 +89,8 @@ public class LessonDAO {
                         rs.getString("title"),
                         rs.getString("description"),
                         rs.getString("mediaUrl"),
-                        rs.getBoolean("isCompleted")
+                        rs.getBoolean("isCompleted"),
+                        rs.getString("teacherID")
                 ));
             }
         } catch (SQLException e) {
@@ -66,10 +99,11 @@ public class LessonDAO {
 
         return lessonList;
     }
- // Thêm bài học mới
+
+    // Thêm bài học mới
     public boolean addLesson(Lesson lesson, Part videoPart, String courseId) {
-        String sql = "INSERT INTO Lesson (topicID, title, description, mediaUrl,  isCompleted ) "
-                   + "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Lesson (topicID, title, description, mediaUrl, isCompleted, teacherID) "
+                   + "VALUES (?, ?, ?, ?, ?, ?)";
 
         String mediaUrl = lesson.getMediaUrl();
         if (videoPart != null && videoPart.getSize() > 0) {
@@ -92,6 +126,7 @@ public class LessonDAO {
             pstmt.setString(3, lesson.getDescription());
             pstmt.setString(4, mediaUrl);
             pstmt.setBoolean(5, lesson.isIsCompleted());
+            pstmt.setString(6, lesson.getTeacherID());
 
             int rowsAffected = pstmt.executeUpdate();
             System.out.println("Lesson added successfully with mediaUrl: " + mediaUrl);
@@ -101,23 +136,25 @@ public class LessonDAO {
             return false;
         }
     }
-     public Lesson getLessonById(int lessonId) {
+
+    public Lesson getLessonById(int lessonId) {
         Lesson lesson = null;
-        String sql = "SELECT id, topicID, title, description, mediaUrl, isCompleted "
+        String sql = "SELECT id, topicID, title, description, mediaUrl, isCompleted, teacherID "
                    + "FROM Lesson WHERE id = ?";
         try (Connection conn = new DBContext().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, lessonId); // Thiết lập tham số ID
+            pstmt.setInt(1, lessonId);
             try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) { // Chỉ cần đọc một dòng vì ID là duy nhất
+                if (rs.next()) {
                     lesson = new Lesson(
-                                    rs.getInt("id"),
-                                    rs.getString("topicID"),
-                                    rs.getString("title"),
-                                    rs.getString("description"),
-                                    rs.getString("mediaUrl"),
-                                    rs.getBoolean("isCompleted")
+                            rs.getInt("id"),
+                            rs.getString("topicID"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getString("mediaUrl"),
+                            rs.getBoolean("isCompleted"),
+                            rs.getString("teacherID")
                     );
                 }
             }
@@ -126,6 +163,7 @@ public class LessonDAO {
         }
         return lesson;
     }
+
     // Demo
     public static void main(String[] args) {
         LessonDAO dao = new LessonDAO();
