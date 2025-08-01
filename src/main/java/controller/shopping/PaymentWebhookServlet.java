@@ -6,6 +6,7 @@ import dao.admin.PaymentDAO;
 import dao.student.CartDAO;
 import dao.student.CartItemDAO;
 import dao.student.CourseEnrollmentDAO;
+import dao.ClassDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -218,7 +219,28 @@ public class PaymentWebhookServlet extends HttpServlet {
                                 }
 
                                 boolean enrolled = courseEnrollmentDAO.enrollCourse(userID, courseID, conn);
-                                if (!enrolled) {
+                                if (enrolled) {
+                                    // After successful enrollment, try to assign the student to a class
+                                    try {
+                                        // Find an available class for the course
+                                        String classId = ClassDAO.findAvailableClass(conn, courseID);
+                                        if (classId != null) {
+                                            // Enroll the student in the class
+                                            boolean assigned = ClassDAO.enrollStudentInClass(conn, classId, studentID);
+                                            if (assigned) {
+                                                logger.info("Successfully assigned studentID: {} to classID: {} for courseID: {}", studentID, classId, courseID);
+                                            } else {
+                                                logger.warn("Failed to assign studentID: {} to class for courseID: {}", studentID, courseID);
+                                            }
+                                        } else {
+                                            logger.warn("No available class found for courseID: {} to assign studentID: {}", courseID, studentID);
+                                            // Optionally add to waiting list or notify coordinator
+                                        }
+                                    } catch (Exception e) {
+                                        // Log the error but don't fail the entire transaction
+                                        logger.error("Error during class assignment for studentID: {} and courseID: {}", studentID, courseID, e);
+                                    }
+                                } else {
                                     logger.warn("Failed to enroll userID: {} for courseID: {}, cartID: {}, transactionID: {}", userID, courseID, cartID, transactionID);
                                     failedCourses.add(courseID);
                                 }
@@ -394,6 +416,28 @@ public class PaymentWebhookServlet extends HttpServlet {
                             }
 
                             boolean enrolled = courseEnrollmentDAO.enrollCourse(userID, courseID, conn);
+                            if (enrolled) {
+                                    // After successful enrollment, try to assign the student to a class
+                                    try {
+                                        // Find an available class for the course
+                                        String classId = ClassDAO.findAvailableClass(conn, courseID);
+                                        if (classId != null) {
+                                            // Enroll the student in the class
+                                            boolean assigned = ClassDAO.enrollStudentInClass(conn, classId, studentID);
+                                            if (assigned) {
+                                                logger.info("Successfully assigned studentID: {} to classID: {} for courseID: {}", studentID, classId, courseID);
+                                            } else {
+                                                logger.warn("Failed to assign studentID: {} to class for courseID: {}", studentID, courseID);
+                                            }
+                                        } else {
+                                            logger.warn("No available class found for courseID: {} to assign studentID: {}", courseID, studentID);
+                                            // Optionally add to waiting list or notify coordinator
+                                        }
+                                    } catch (Exception e) {
+                                        // Log the error but don't fail the entire transaction
+                                        logger.error("Error during class assignment for studentID: {} and courseID: {}", studentID, courseID, e);
+                                    }
+                                }
                             if (!enrolled) {
                                 logger.warn("Failed to enroll userID: {} for courseID: {}, cartID: {}, transactionID: {}", userID, courseID, cartID, id);
                                 failedCourses.add(courseID);

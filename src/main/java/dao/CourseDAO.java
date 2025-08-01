@@ -34,8 +34,7 @@ public class CourseDAO {
         String sql = "SELECT * FROM courses";
 
         try (
-             PreparedStatement pstmt = con.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+                PreparedStatement pstmt = con.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
                 courseList.add(new Course(
@@ -61,7 +60,7 @@ public class CourseDAO {
     public int studentCount(String courseID) {
         String sql = "SELECT COUNT(*) AS total FROM Course_Enrollments WHERE courseID = ?";
         try (
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
+                PreparedStatement pstmt = con.prepareStatement(sql)) {
 
             pstmt.setString(1, courseID);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -75,6 +74,7 @@ public class CourseDAO {
 
         return 0;
     }
+
     public List<Course> getAll() {
         String sql = "select * from Courses";
         List<Course> list = new ArrayList<>();
@@ -98,6 +98,86 @@ public class CourseDAO {
             logger.error("CourseDAO: Error getting all courses: {}", e.getMessage(), e);
         }
         return list;
+    }
+
+    // Add these new methods to your existing CourseDAO class
+    /**
+     * Get the next available CourseID by finding the highest existing ID and
+     * incrementing
+     */
+    public String getNextCourseID() {
+        String sql = "SELECT courseID FROM Courses WHERE courseID LIKE 'CO%' ORDER BY courseID DESC LIMIT 1";
+        String nextID = "CO001"; // Default if no courses exist
+
+        try (PreparedStatement pre = con.prepareStatement(sql); ResultSet rs = pre.executeQuery()) {
+
+            if (rs.next()) {
+                String lastID = rs.getString("courseID");
+                // Extract number part (e.g., "014" from "CO014")
+                String numberPart = lastID.substring(2);
+                int nextNumber = Integer.parseInt(numberPart) + 1;
+                // Format with leading zeros (e.g., "015")
+                nextID = String.format("CO%03d", nextNumber);
+            }
+
+            logger.info("CourseDAO: Generated next course ID: {}", nextID);
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error generating next course ID: {}", e.getMessage(), e);
+        }
+
+        return nextID;
+    }
+
+    /**
+     * Add new course without startDate and endDate fields
+     */
+    public void addCourseNew(Course course) {
+        String sql = "INSERT INTO Courses (courseID, title, description, fee, duration, isActive, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
+            pre.setString(1, course.getCourseID());
+            pre.setString(2, course.getTitle());
+            pre.setString(3, course.getDescription());
+            pre.setDouble(4, course.getFee());
+            pre.setInt(5, course.getDuration());
+            pre.setBoolean(6, course.isIsActive());
+            pre.setString(7, course.getImageUrl());
+
+            pre.executeUpdate();
+            logger.info("CourseDAO: Added new course (without dates) with ID: {}", course.getCourseID());
+
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error adding new course {}: {}", course.getCourseID(), e.getMessage(), e);
+            throw new RuntimeException("Failed to add course: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Update course without modifying startDate and endDate fields
+     */
+    public void updateCourseNew(Course course) {
+        String sql = "UPDATE Courses SET title = ?, description = ?, fee = ?, duration = ?, isActive = ?, imageUrl = ? WHERE courseID = ?";
+
+        try (PreparedStatement pre = con.prepareStatement(sql)) {
+            pre.setString(1, course.getTitle());
+            pre.setString(2, course.getDescription());
+            pre.setDouble(3, course.getFee());
+            pre.setInt(4, course.getDuration());
+            pre.setBoolean(5, course.isIsActive());
+            pre.setString(6, course.getImageUrl());
+            pre.setString(7, course.getCourseID());
+
+            int rowsAffected = pre.executeUpdate();
+            if (rowsAffected > 0) {
+                logger.info("CourseDAO: Updated course (without dates) with ID: {}", course.getCourseID());
+            } else {
+                logger.warn("CourseDAO: No course found to update with ID: {}", course.getCourseID());
+            }
+
+        } catch (SQLException e) {
+            logger.error("CourseDAO: Error updating course {}: {}", course.getCourseID(), e.getMessage(), e);
+            throw new RuntimeException("Failed to update course: " + e.getMessage());
+        }
     }
 
     public void addCourse(Course course) {
@@ -164,22 +244,22 @@ public class CourseDAO {
 
     // Thêm mới: Phương thức getCourseById để lấy thông tin khóa học bằng courseID
     public Course getCourseById(String courseID) {
-        String sql = "SELECT courseID, title, description, fee, duration, imageUrl, startDate, endDate, isActive " +
-                     "FROM Courses WHERE courseID = ?";
+        String sql = "SELECT courseID, title, description, fee, duration, imageUrl, startDate, endDate, isActive "
+                + "FROM Courses WHERE courseID = ?";
         try (PreparedStatement pre = con.prepareStatement(sql)) {
             pre.setString(1, courseID);
             try (ResultSet rs = pre.executeQuery()) {
                 if (rs.next()) {
                     Course course = new Course(
-                        rs.getString("courseID"),
-                        rs.getString("title"),
-                        rs.getString("description"),
-                        rs.getDouble("fee"),
-                        rs.getInt("duration"),
-                        rs.getDate("startDate"),
-                        rs.getDate("endDate"),
-                        rs.getBoolean("isActive"),
-                        rs.getString("imageUrl")
+                            rs.getString("courseID"),
+                            rs.getString("title"),
+                            rs.getString("description"),
+                            rs.getDouble("fee"),
+                            rs.getInt("duration"),
+                            rs.getDate("startDate"),
+                            rs.getDate("endDate"),
+                            rs.getBoolean("isActive"),
+                            rs.getString("imageUrl")
                     );
                     logger.debug("CourseDAO: Retrieved course with ID {}: {}", courseID, course);
                     return course;
@@ -427,7 +507,7 @@ public class CourseDAO {
         }
         return courses;
     }
-    
+
     // Đếm khóa học với bộ lọc
     public int countCoursesWithFilters(String keyword, Boolean isActive, Double feeFrom, Double feeTo, String startDate) {
         StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Courses WHERE 1=1");
