@@ -130,7 +130,7 @@
                                 <div class="card-body">
                                     <div class="list-group">
                                         <c:forEach var="courseTitle" items="${courseTitles}">
-                                            <a href="${pageContext.request.contextPath}/CourseProgress?courseTitle=${courseTitle}&filter=${param.filter}&page=${param.page}"
+                                            <a href="#"
                                                class="list-group-item list-group-item-action">
                                                 Tiến độ ${courseTitle}
                                             </a>
